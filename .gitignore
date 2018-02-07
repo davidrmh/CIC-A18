@@ -1,1 +1,5 @@
 *.pdf
+*.zip
+*.txt
+*.pyc
+patrones/machinelearninginaction/
