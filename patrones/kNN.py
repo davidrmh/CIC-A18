@@ -8,6 +8,14 @@ import operator
 4. Confusion matrix
 A good proportion test/training is 20/80
 A good value for k is 3
+
+With this parameters the performance
+in the datingTestSet is
+
+Accuracy 0.95
+Precision [.93,.95,.96]
+recall [.98,.93,.94]
+f1 [.96,.94,.94]
 '''
 
 
@@ -89,3 +97,16 @@ def confusionMatrix(testDataSet,trainingDataSet,trainingLabels,classLabelVector,
     print 'The confusion matrix is: '
     print confMat
     return confMat
+
+def performanceMeasures(confMat):
+    m=confMat.shape[0]
+    accuracy=confMat.trace()/confMat.sum()
+    precision=zeros(m)
+    recall=zeros(m)
+
+    for i in range(m):
+        precision[i] = confMat[i,i]/confMat[:,i].sum()
+        recall[i] = confMat[i,i]/confMat[i,:].sum()
+    f1 = 2*precision*recall/(precision + recall)
+
+    return accuracy,precision,recall,f1
