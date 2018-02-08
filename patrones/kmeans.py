@@ -1,19 +1,5 @@
 from numpy import *
-
-def loadDataSet(fileName,sep='\t'):
-    dataMat=[]
-    fr=open(fileName)
-    for line in fr.readlines():
-        curLine = line.strip().split(sep)
-        #The line below is needed in order to be able
-        #work with datingTestSet
-        curLine = curLine[0:len(curLine)-1]
-        #Converts the data into floating point
-        fltLine = map(float,curLine)
-        dataMat.append(fltLine)
-    #Converts the list into a numpy array
-    dataMat=array(dataMat)
-    return dataMat
+import kNN
 
 def distEclud(vecA,vecB):
     return sqrt(sum(power(vecA-vecB,2)))
@@ -31,3 +17,13 @@ def randCent(dataSet,k=3):
         rangeJ = float(max(dataSet[:,j]) - minJ)
         centroids[:,j] = minJ + rangeJ*random.rand(k,1)
     return centroids
+
+def normalize(dataSet):
+    minVals = dataSet.min(0)
+    maxVals = dataSet.max(0)
+    ranges = maxVals - minVals
+    normDataSet = zeros(shape(dataSet))
+    m=dataSet.shape[0]
+    normDataSet=dataSet-tile(minVals,(m,1))
+    normDataSet = normDataSet / tile(ranges,(m,1))
+    return array(normDataSet),ranges,minVals
