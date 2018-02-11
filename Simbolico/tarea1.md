@@ -16,12 +16,19 @@ Utilizando los datos anteriores se forman los puntos $(x_{1l},y_{1l}),\,(x_{1r},
 
  Un punto $(x,y)$ pertenece a $\mathcal{M}$ si alguna de las siguientes condiciones se cumple:
 
-+ $x_{1l} \leq x \leq x_{ir}$ y además ( $y_{1r} \leq y \leq y_{2r}$ o $y_{2l} \leq y \leq y_{1l}$ )
++ $x_{1l} \leq x \leq x_{1r}$ y además ( $y_{1r} \leq y \leq y_{2r}$ o $y_{2l} \leq y \leq y_{1l}$ )
 + $x_{1l} \leq x \leq x_{2l}$ y además $y_{1r} \leq y \leq y_{il}$
 + $x_{2r} \leq x \leq x_{1r}$ y además $y_{1r} \leq y \leq y_{1l}$
 
 ### Algoritmo
 
 ~~~~
-1. Usuario introduce los puntos
+1. Se inicializan las esquinas de los cuadrilateros y el área que los limita
+
+2. Se generan los puntos aleatoriamente.
+
+3. Se clasifican los puntos
+
+4. Se obtienen xil, xir, yil, yir
+   como se describen arriba.
 ~~~~
