@@ -3,7 +3,7 @@
 Para aprender el marco, $\mathcal{M}$, formado por dos rectángulos, necesitamos el siguiente conjunto de datos:
 
  + $y_{1l}=$ Ordenada más grande los ejemplos positivos
- + $y_{2l}=$ Ordenada más grnade de los  ejemplos negativos tal que $y_{2l} < y_{1l}$
+ + $y_{2l}=$ Ordenada más grande de los  ejemplos negativos tal que $y_{2l} < y_{1l}$
  + $y_{1r}=$ Ordenada más pequeña de los ejemplos positivos.
  + $y_{2r}=$ Ordenada más pequeña de ejemplos negativos tal que $y_{2r}>y_{1r}$
  + $x_{1l}=$ Abscisa más pequeña de los ejemplos positivos.
@@ -30,5 +30,5 @@ Utilizando los datos anteriores se forman los puntos $(x_{1l},y_{1l}),\,(x_{1r},
 3. Se clasifican los puntos
 
 4. Se obtienen xil, xir, yil, yir
-   como se describen arriba.
+   como se describe arriba.
 ~~~~
