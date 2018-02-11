@@ -17,7 +17,7 @@ Utilizando los datos anteriores se forman los puntos $(x_{1l},y_{1l}),\,(x_{1r},
  Un punto $(x,y)$ pertenece a $\mathcal{M}$ si alguna de las siguientes condiciones se cumple:
 
 + $x_{1l} \leq x \leq x_{1r}$ y además ( $y_{1r} \leq y \leq y_{2r}$ o $y_{2l} \leq y \leq y_{1l}$ )
-+ $x_{1l} \leq x \leq x_{2l}$ y además $y_{1r} \leq y \leq y_{il}$
++ $x_{1l} \leq x \leq x_{2l}$ y además $y_{1r} \leq y \leq y_{1l}$
 + $x_{2r} \leq x \leq x_{1r}$ y además $y_{1r} \leq y \leq y_{1l}$
 
 ### Algoritmo
