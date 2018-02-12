@@ -8,15 +8,24 @@
 
 ;Esquinas de los rectángulos
 ;Rectángulo mayor
-(setq x1l-v 0.5)
-(setq y1l-v 4.5)
-(setq x1r-v 3.5)
-(setq y1r-v 0.5)
+(format t "Introduce la abscisa de la esquina superior izquierda 1 (x1l-v)~%")
+(setq x1l-v (read))
+(format t "Introduce la ordenada de la esquina superior izquierda 1 (y1l-v)~%")
+(setq y1l-v (read))
+(format t "Introduce la abscisa de la esquina inferior derecha 1 (x1r-v)~%")
+(setq x1r-v (read))
+(format t "Introduce la ordenada de la esquina inferior derecha 1 (y1r-v)~%")
+(setq y1r-v (read))
+
 ;Rectángulo menor
-(setq x2l-v 1.5)
-(setq y2l-v 3.0)
-(setq x2r-v 2.5)
-(setq y2r-v 1.0)
+(format t "Introduce la abscisa de la esquina superior izquierda 2 (x2l-v)~%")
+(setq x2l-v (read))
+(format t "Introduce la ordenada de la esquina superior izquierda 2 (y2l-v)~%")
+(setq y2l-v (read))
+(format t "Introduce la abscisa de la esquina inferior derecha 2 (x2r-v)~%")
+(setq x2r-v (read))
+(format t "Introduce la ordenada de la esquina inferior derecha 2 (y2r-v)~%")
+(setq y2r-v (read))
 
 ;Genera puntos aleatorios
 ;dentro de la región
