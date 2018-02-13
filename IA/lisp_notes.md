@@ -78,3 +78,18 @@ Also one can compile the file first and then load it
 ~~~~
 (load (compile-file "hello.lisp"))
 ~~~~
+
+## Equality predicates
+
+From the more specific to the more general.
++ **eq** Returns *true* if arguments are the same, identical object.
+
++ **eql** Returns *true* if:
+  * Arguments are **eq**.
+  * If they are numbers of the same type and value.
+  * They are both the same character.
++ **equal** Returns *true* if the arguments are structurally similar.
+  * *Rule of thumb* Two objects are **equal** if and only if their printed representations are the same.
++  **equalp** returns *true* if arguments are equal in some sense.
+
++ **=** Is a particular case for **equal** in which only numbers can be used as arguments.
