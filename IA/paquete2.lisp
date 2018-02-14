@@ -89,3 +89,20 @@
 
   );let
 );defun
+
+;EJERCICIO 9
+(defun tipo-dato(lista)
+  (let ((lista-resultado (list)))
+    (loop for elemento in lista do
+      (typecase elemento
+        ;El orden en que se ponen los elementos importa
+        ;Por eso puse primero null, ya que si no '() evalua a atom
+        (null (setq lista-resultado (append lista-resultado (list 'N))))
+        (atom (setq lista-resultado (append lista-resultado (list 'A))))
+        (list (setq lista-resultado (append lista-resultado (list 'L))))
+        (t (setq lista-resultado (append lista-resultado (list "Otro Tipo"))))
+        );typecase
+      );loop
+    lista-resultado
+    );let
+);defun
