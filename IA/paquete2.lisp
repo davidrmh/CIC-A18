@@ -106,3 +106,15 @@
     lista-resultado
     );let
 );defun
+
+;EJERCICIO 10
+(defun suma-numérica(lista)
+  (let ((suma 0))
+    (loop for elemento in lista do
+      (when (numberp elemento)
+        (setq suma (+ suma elemento))
+        );when
+      );loop
+    suma
+    );let
+  );defun
