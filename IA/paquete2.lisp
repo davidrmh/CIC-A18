@@ -69,3 +69,23 @@
       (cons conteo-numeros (- (length lista) conteo-numeros))
     )
   )
+
+;EJERCICIO 7
+
+;EJERCICIO 8
+(defun diagonal(lista)
+  (let ((m 0) (n 0) (diag (list)) (renglon nil))
+    ;número de renglones
+    (setq m (length lista))
+    ;número de columnas
+    (setq n (length (first lista)))
+    (do ((i 0 (+ i 1)))
+      ;La condición de paro es hasta que ya no haya renglones o columnas
+      ((or (> i (- n 1)) (> i (- m 1))) diag)
+
+      (setq renglon (nth i lista))
+      (setq diag (append diag (list (nth i renglon))))
+    );do
+
+  );let
+);defun
