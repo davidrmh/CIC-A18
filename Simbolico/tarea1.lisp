@@ -1,3 +1,7 @@
+;Instrucciones
+(format t "Primero introduce los límites de la región del plano cartesiano (X Y)~%")
+(format t "Después introduce las esquinas del marco verdadero~%")
+
 ;Limites de la región
 (format t "Introduce el valor máximo para X~%")
 (defvar lim-x)
