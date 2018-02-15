@@ -118,3 +118,92 @@
     suma
     );let
   );defun
+
+;EJERCICIO 11
+
+;EJERCICIO 12
+(defun filtra-múltiplos(lista numero)
+  (let ((lista-resultado (list)))
+    (loop for elemento in lista do
+      (when (not (= (mod elemento numero) 0))
+        (setq lista-resultado (append lista-resultado (list elemento)))
+        );when
+      );loop
+    lista-resultado
+    );let
+  );defun
+
+;EJERCICIO 13 (REVISAR)
+;Por cada elemento de la lista se tiene una celda de construcción
+;Si la lista tiene n elementos y al menos una sublista tiene m elementos
+;entonces al menos se tienen n + m celdas.
+(defun celdas(lista)
+  (when (atom lista)
+    (return-from celdas 0)
+    );when
+  (let ((cuenta 0))
+    (setq cuenta (length lista))
+    (loop for elemento in lista do
+      (setq cuenta (+ cuenta (celdas elemento)))
+      );loop
+    cuenta
+    );let
+  );defun
+
+;EJERCICIO 14
+;La implicación p->q puede ser representada como p o (not q)
+
+;EJERCICIO 15
+;La matriz resultante está formada Por
+;las entradas c_{ij} = \sum_{l=1}^{n} a_{il}b_{lj}
+;Creé dos funciones auxiliares
+;Una para obtener la columna de la matriz derecha
+;otra para realizar el producto punto
+;entre el renglón de la matriz izquierda
+;y la columna de la matriz derecha
+
+(defun obten-columna(lista indice)
+  (let ((columna (list)))
+    (loop for renglon in lista do
+      (setq columna (append columna (list (nth indice renglon))))
+      );loop
+    columna
+    );let
+  );defun
+
+(defun producto-punto(lista1 lista2)
+  (let ((resultado 0) (n 0))
+    (setq n (length lista1))
+    (loop for i from 0 to (- n 1) by 1 do
+      (setq resultado (+ resultado (* (nth i lista1) (nth i lista2))))
+      );loop
+    resultado
+    );let
+  );defun
+
+(defun mult(lista1 lista2)
+;lista1 (mxn)
+;lista2 (nxk)
+;Selecciona renglón
+;Selecciona columna
+;producto punto
+(let ((matriz-resultado (list)) (aux-res (list)) (n 0) (k 0) (renglon (list)) (columna (list)))
+  ;Revisa dimensiones
+  (setq renglon (nth 1 lista1))
+  (setq columna (obten-columna lista2 1))
+  (when (/= (length renglon) (length columna))
+    (return-from mult nil)
+    );when
+  (setq n (length lista1))
+  (setq k (length (first lista2)))
+  (loop for renglon in lista1 do
+    (setq aux-res (list))
+    (loop for i from 0 to (- k 1) by 1 do
+      (setq columna (obten-columna lista2 i))
+      (setq aux-res (append aux-res (list (producto-punto renglon columna))))
+      );loop
+    (setq matriz-resultado (append matriz-resultado (list aux-res)))
+    );loop
+    matriz-resultado
+  );let
+);defun
