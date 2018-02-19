@@ -2,6 +2,7 @@
 ;David Ricardo Montalván  Hernández
 
 ;EJERCICIO 1
+;La posición (pos) es un número mayor o igual a 1
 (defun eleminpos (elem lista pos)
  (let ((contador-pos 0) (flag nil))
    (loop for elemento-lista in lista
@@ -17,8 +18,55 @@
 )
 
 ;EJERCICIO 2
+;primero encuentra el índice en el cual
+;se encuentra la primer ocurrencia del elemento
+;Después iniciando desde el índice encontrado empieza a juntar
+;los elementos
+(defun inicio-en(lista elemento)
+  (let ((flag t) (indice-inicio nil) (conteo-auxiliar 0) (lista-resultado (list)))
+  ;Encuentra índice
+  ;flag es para considerar la primer ocurrencia
+  (loop for elem in lista do
+    (when (and (equal elem elemento) flag)
+      (setq indice-inicio conteo-auxiliar)
+      (setq flag nil)
+        );when
+    (setq conteo-auxiliar (+ conteo-auxiliar 1))
+      );loop
+    ;Concatena elementos iniciando desde el índice encontrado
+    (when (not (equal indice-inicio nil))
+      (loop for i from indice-inicio to (- (length lista) 1) do
+        (setq lista-resultado (append lista-resultado (list (nth i lista))))
+        );loop
+      );when
+    lista-resultado
+    );let
+  );defun
 
 ;EJERCICIO 3
+;primero encuentra el índice en el cual
+;se encuentra la última ocurrencia del elemento
+;Después iniciando desde el índice encontrado empieza a juntar
+;los elementos
+(defun termina-en(lista elemento)
+  (let ((indice-fin nil) (conteo-auxiliar 0) (lista-resultado (list)))
+  ;Encuentra índice de última ocurrencia
+  (loop for elem in lista do
+    (when (equal elem elemento)
+      (setq indice-fin conteo-auxiliar)
+        );when
+    (setq conteo-auxiliar (+ conteo-auxiliar 1))
+      );loop
+    ;Concatena elementos iniciando desde 0 hasta el índice encontrado
+    (when (not (equal indice-fin nil))
+      (loop for i from 0 to indice-fin do
+        (setq lista-resultado (append lista-resultado (list (nth i lista))))
+        );loop
+      );when
+    lista-resultado
+    );let
+  );defun
+
 
 ;EJERCICIO 4
 (defun primer-impar(lista)
