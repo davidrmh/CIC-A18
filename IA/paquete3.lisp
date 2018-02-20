@@ -113,3 +113,14 @@
       (t (append (list (determina-tipo-aux (first lista))) (ejercicio9 (rest lista))))
       );cond
     );defun
+
+  ;EJERCICIO 10
+  ;Caso base: si no es número regresar cero
+
+  (defun suma-numérica(lista)
+    (cond
+        ((null lista) 0)
+        ((not (numberp (first lista))) (+ 0 (suma-numérica (rest lista))))
+        ((numberp (first lista)) (+ (first lista) (suma-numérica (rest lista))))
+      );cond
+    );defun
