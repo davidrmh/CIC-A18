@@ -59,7 +59,37 @@
         (t (aux-conteo (rest lista) conteo-numeros conteo-listas))
         );cond
     );defun
-    
+
   (defun conteo(lista)
     (aux-conteo lista 0 0)
+    );defun
+
+  ;EJERCICIO 7
+  ;APLANA
+
+  ;EJERCICIO 8
+  ;Determinar el mínimo entre columnas y renglones
+  ;Llevar un contador que no rebase o sea igual al mínimo
+  ;Caso base si el contador es mayor o igual al mínimo
+  ;De first de la lista extraer el nth contador lista
+  ;Recursión utilizando rest
+  ;Definir una función auxiliar en la que se realiza la Recursión
+  ;La función principal calcula el mínimo entre columnas y renglones
+  ;y manda a llamar a la función auxiliar
+
+  (defun diagonal-aux(lista contador minimo)
+    (cond
+      ((or (null lista) (>= contador minimo)) nil) ;Casos base
+      (t (append (list (nth contador (first lista)))
+         (diagonal-aux (rest lista) (+ contador 1) minimo)))
+      );cond
+    );defun
+
+  (defun diagonal(lista)
+    (let ((renglones 0) (columnas 0) (minimo 0) (diagonal-res (list)))
+      (setq renglones (length lista))
+      (setq columnas (length (first lista)))
+      (setq minimo (min renglones columnas))
+      (setq diagonal-res (diagonal-aux lista 0 minimo))
+      );let
     );defun
