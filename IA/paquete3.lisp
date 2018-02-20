@@ -138,3 +138,16 @@
           (append (list (first lista)) (filtra-múltiplos (rest lista) entero)));No es múltiplo
       );cond
     );defun
+
+  ;EJERCICIO 13
+  ;EJERCICIO 14
+  ;EJERCICIO 15
+
+  ;EJERCICIO 16
+  (defun cambia(lista elem1 elem2)
+    (cond
+      ((null lista) nil)
+      ((equal (first lista) elem1) (append (list elem2) (cambia (rest lista) elem1 elem2)))
+      ((not (equal (first lista) elem1)) (append (list (first lista)) (cambia (rest lista) elem1 elem2)))
+    );cond
+  );defun
