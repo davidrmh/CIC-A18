@@ -124,3 +124,17 @@
         ((numberp (first lista)) (+ (first lista) (suma-numérica (rest lista))))
       );cond
     );defun
+
+  ;EJERCICIO 11
+  ;FILTRA VOCALES
+
+  ;EJERCICIO 12
+  (defun filtra-múltiplos(lista entero)
+      (cond
+        ((null lista) nil)
+        ((= (mod (first lista) entero) 0)
+          (append (list) (filtra-múltiplos (rest lista) entero))) ;Si es múltiplo
+        ((/= (mod (first lista) entero) 0)
+          (append (list (first lista)) (filtra-múltiplos (rest lista) entero)));No es múltiplo
+      );cond
+    );defun
