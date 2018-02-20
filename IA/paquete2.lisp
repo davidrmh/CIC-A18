@@ -100,11 +100,11 @@
           )
           (setq nueva-lista (list numero conteo))
           (setq flag nil)
-      )
-    )
+      );when
+    );loop
     nueva-lista
-  )
-)
+  );let
+);defun
 
 ;EJERCICIO 6
 (defun conteo(lista)
@@ -119,6 +119,7 @@
   )
 
 ;EJERCICIO 7
+;APLANA
 
 ;EJERCICIO 8
 (defun diagonal(lista)
@@ -181,7 +182,7 @@
     );let
   );defun
 
-;EJERCICIO 13 (REVISAR)
+;EJERCICIO 13 (VERSIÓN RECURISA)
 ;Por cada elemento de la lista se tiene una celda de construcción
 ;Si la lista tiene n elementos y al menos una sublista tiene m elementos
 ;entonces al menos se tienen n + m celdas.
