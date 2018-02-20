@@ -93,3 +93,23 @@
       (setq diagonal-res (diagonal-aux lista 0 minimo))
       );let
     );defun
+
+  ;EJERCICIO 9
+  ;Determinar el tipo de elemento del primer miembro de la lista
+  ;Recursión utilizando rest
+  ;Utiliza una función auxiliar (sólo por comodidad) para determinar el tipo
+
+  (defun determina-tipo-aux(elemento)
+    (typecase elemento
+      (null 'N)
+      (atom 'A)
+      (list 'L)
+    );typecase
+  );defun
+
+  (defun ejercicio9(lista)
+    (cond
+      ((null lista) nil)
+      (t (append (list (determina-tipo-aux (first lista))) (ejercicio9 (rest lista))))
+      );cond
+    );defun
