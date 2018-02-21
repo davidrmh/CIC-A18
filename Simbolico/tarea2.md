@@ -1,6 +1,8 @@
 # Tarea 2
+
 ## Aprendizaje simbólico
-### David Ricardo Montalván Hernández
+
+David Ricardo Montalván Hernández
 ---
 * **Sabores**
 
@@ -27,16 +29,16 @@ $$Dom(edad)=\{0,1,2,\ldots,120\}$$
 La **distancia** (métrica) a utilizar sería el valor absoluto
 $$d(a,b) = |a-b|$$
 
-Se define la función de **semejanza** como una función de la distancia observando lo siguiente:
+Considerando lo siguiente, se define la función de **semejanza** como una función de la distancia:
 
-* La función $d$ está acotada en $[0,120]$
-* *Condiciones frontera:* Buscamos una semejanza, $s$, tal que si $d=0$, entonces $s=1$ y si $d=120$, entonces $s=0$
+* La función $d$ está acotada en $[0,120]$.
+* *Condiciones frontera:* Buscamos una semejanza, $s$, tal que si $d=0$, entonces $s=1$ y si $d=120$, entonces $s=0$.
 
 Dado lo anterior, se propone $s$ como
 
 $$s(a,b)=p +qd(a,b)$$
 
-además utilizando las *condiciones frontera* podemos obtener los valores de $p=1$ y $q=-\dfrac{1}{120}$, con lo que obtenemos
+además utilizando las *condiciones frontera* podemos obtener los valores de $p=1$ y $q=-\dfrac{1}{120}$, en consecuencia
 
 $$s(a,b)=1 - \dfrac{1}{120}d(a,b)$$
 
@@ -65,9 +67,9 @@ Por ejemplo $d(sábado,jueves)=min(5,2)=2$.
 La función de **semejanza** se define en función de $d$ observando lo siguiente:
 
 * $d$ está acotada entre $0$ y $3$.
-* *Condiciones frontera* si $d=0$, entonces necesitamos $s=1$ y si $d=3$, necesitamos $s=0$.
+* *Condiciones frontera:* Si $d=0$, entonces necesitamos $s=1$ y si $d=3$, necesitamos $s=0$.
 
-Proponiendo $s(a,b)=p+qd(a,b)$ y utilizando las *condiciones frontera* la función de semejanza está dada por:
+Proponiendo $s(a,b)=p+qd(a,b)$ y utilizando las *condiciones frontera*, $s$ está dada por:
 
 $$s(a,b)=1-\dfrac{1}{3}d(a,b)$$
 
@@ -87,6 +89,12 @@ $$d(a,b)=
 \end{cases}
 $$
 
-Para definir la función de **semejanza** se procede como en los casos anteriores, observando que $d$ está acotada entre $0$ y $5$, por lo tanto
+Para definir la función de **semejanza** se procede como en los casos anteriores y de esta manera
 
 $$s(a,b) = 1 - \dfrac{1}{5}d(a,b)$$
+
+* **Caso general**
+
+Dada una función de distancia, $d$, acotada superiormente por $L>0$, se puede definir una función de semejanza, $s$, de la siguiente manera
+
+$$s(a,b)=1 - \dfrac{1}{L}d(a,b)$$
