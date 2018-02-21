@@ -166,6 +166,23 @@
     (cond
         ((null lista) nil)
         ((and (numberp (first lista)) (<= (first lista) n)) (cons (first lista) (elimina (rest lista) n)))
-        (t (elimina (rest lista) n))  
+        (t (elimina (rest lista) n))
       );cond
+    );defun
+
+  ;EJERCICIO 21
+  ;Se utiliza la función auxiliar pega-aux para primero pegar las listas
+  ;Después si utiliza la función cambia del ejercicio 16
+
+  (defun pega-aux(lista1 lista2)
+    (cond
+      ((null lista1) lista2)
+      (t (cons (first lista1) (pega-aux (rest lista1) lista2)))
+      );cond
+    );defun
+  (defun pegaycambia(lista1 lista2 elem1 elem2)
+    (let ((lista-combinada (list)))
+        (setq lista-combinada (pega-aux lista1 lista2))
+        (setq lista-combinada (cambia lista-combinada elem1 elem2))
+      );let
     );defun
