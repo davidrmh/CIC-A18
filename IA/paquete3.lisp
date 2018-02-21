@@ -151,3 +151,21 @@
       ((not (equal (first lista) elem1)) (append (list (first lista)) (cambia (rest lista) elem1 elem2)))
     );cond
   );defun
+
+  ;EJERCICIO 17
+  ;FIBONACCI
+
+  ;EJERCICIO 18
+  ;MAPEA
+
+  ;EJERCICIO 19
+  ;APLANA
+
+  ;EJERCICIO 20
+  (defun elimina(lista n)
+    (cond
+        ((null lista) nil)
+        ((and (numberp (first lista)) (<= (first lista) n)) (cons (first lista) (elimina (rest lista) n)))
+        (t (elimina (rest lista) n))  
+      );cond
+    );defun
