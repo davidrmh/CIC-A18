@@ -21,6 +21,8 @@
   );defun
 
 ;EJERCICIO 3
+;Los mismo que en el ejercicio 2
+;pero se iniciar con la lista en reversa.
 (defun termina-en(lista elemento)
   (setq lista (reverse lista))
   (setq lista (inicio-en lista elemento))
@@ -69,13 +71,8 @@
 
   ;EJERCICIO 8
   ;Determinar el mínimo entre columnas y renglones
-  ;Llevar un contador que no rebase o sea igual al mínimo
-  ;Caso base si el contador es mayor o igual al mínimo
-  ;De first de la lista extraer el nth contador lista
-  ;Recursión utilizando rest
-  ;Definir una función auxiliar en la que se realiza la Recursión
-  ;La función principal calcula el mínimo entre columnas y renglones
-  ;y manda a llamar a la función auxiliar
+  ;Llevar un contador para asegurarse que no se rebase este mínimo
+  ;Por cada renglón extraer la posición que lleva el contador
 
   (defun diagonal-aux(lista contador minimo)
     (cond
@@ -185,4 +182,20 @@
         (setq lista-combinada (pega-aux lista1 lista2))
         (setq lista-combinada (cambia lista-combinada elem1 elem2))
       );let
+    );defun
+
+  ;EJERCICIO 22
+  ;Primero quitar los no númericos con la función auxiliar quita-no-numéricos
+  ;Después aplicar quicksort con la función quicksort-aux
+
+  (defun quita-no-numéricos(lista)
+    (cond
+        ((null lista) nil)
+        ((numberp (first lista)) (cons (first lista) (quita-no-numéricos (rest lista))))
+        (t (quita-no-numéricos (rest lista)))
+      );cond
+    );defun
+
+  (defun quicksort-aux(lista)
+    
     );defun
