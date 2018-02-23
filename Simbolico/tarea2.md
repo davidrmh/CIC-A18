@@ -98,3 +98,10 @@ $$s(a,b) = 1 - \dfrac{1}{5}d(a,b)$$
 Dada una función de distancia, $d$, acotada superiormente por $L>0$, se puede definir una función de semejanza, $s$, de la siguiente manera
 
 $$s(a,b)=1 - \dfrac{1}{L}d(a,b)$$
+
+* **Cálculo de distancia/semejanza sintáctica**
+
+Para los patrones $P_{1}=(dulce,27,sábado,grande)$, $P_{2}=(salado,25,jueves,mediano)$, la distancia/semejanza sintáctica está dada por:
+
+$D_{s}(P_{1},P_{2})=1+2+2+1=6\\
+S_{s}(P_{1},P_{2})=\dfrac{1}{4}(0+\dfrac{59}{60}+\dfrac{1}{3}+\dfrac{4}{5})=\dfrac{127}{240}=0.5291$
