@@ -41,7 +41,7 @@
     );let
   );defun
 
-(defun lee-separado(ruta-archivo &optional (separador '#\,))
+(defun lee-separado(ruta-archivo &optional (header t) (separador '#\,))
   (let
     ((archivo nil) (num-col 0) (reng-pos 0) (col-pos 0)
       (inicio-aux 0) (tabla nil) (linea nil) (dato nil)
@@ -51,18 +51,25 @@
       ;Cuenta cuantas columnas tiene el archivo
       (setq num-col (cuenta-columnas (read-line archivo) separador))
       ;Crea arreglo que contendrá la información
-      (setq tabla (make-array (list 1 num-col) :adjustable t))
+      (setq tabla (make-array (list 0 num-col) :adjustable t))
 
       ; ME FALTA CONSIDERAR ENCABEZADOS
-      ; POR EL MOMENTO NO CREO QUE SEA TAN NECESARIO
-      ; CREO QUE BASTARÍA CON CERRAR Y VOLVER A ABRIR EL ARCHIVO
+      (when header
+        (close archivo)
+        (setq archivo (open ruta-archivo :if-does-not-exist nil))
+        );when
 
       ;Lee cada línea del archivo y guarda los datos
       (loop
         (setq linea (read-line archivo nil))
 
         ;Si ya se leyó todo el archivo, regresa la tabla
-        (when (not linea) (return-from lee-separado tabla))
+        (when (not linea)
+          (close archivo)
+          (return-from lee-separado tabla))
+
+        ;Redimensiona el arreglo
+        (setq tabla (adjust-array tabla (list (+ reng-pos 1) num-col)))
 
         ;Itera sobre cada línea separando la información con los delimitadores
         (setq inicio-aux 0)
@@ -76,10 +83,7 @@
             );if
 
           ;Actualiza la tabla
-          (format t "~a~%~a~%~a~%~a~%" reng-pos col-pos dato indice-delim)
-
           (setf (aref tabla reng-pos col-pos) dato)
-          (format t "~a~%" tabla)
 
           ;Prepara el índice de inicio de subseq para la siguiente iteración
           (setq inicio-aux (+ indice-delim 1))
@@ -89,13 +93,8 @@
 
           );loop de delimitadores en una línea
 
-        ;Actualiza el índice del renglón para la siguiente iteración
-        (setq reng-pos (+ reng-pos 1))
-
-        ;Redimensiona el arreglo
-        (setq tabla (adjust-array tabla (list reng-pos num-col)))
-        (format t "~a~%" tabla)
-
+          ;Actualiza el índice del renglón para la siguiente iteración
+          (setq reng-pos (+ reng-pos 1))
         );loop de línea en el archivo
     );let
   );defun
