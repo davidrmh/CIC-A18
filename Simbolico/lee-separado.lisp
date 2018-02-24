@@ -22,7 +22,7 @@
 (defun cuenta-columnas(linea separador)
   (let ((cont-col 0) (inicio-pos 0))
     (loop
-      (when (not (position separador linea :start inicio-pos)) (return cont-col))
+      (when (not (position separador linea :start inicio-pos)) (return (1+ cont-col)))
       (setq cont-col (+ cont-col 1))
       (setq inicio-pos (+ (position separador linea :start inicio-pos) 1))
       );loop
@@ -33,7 +33,8 @@
 (defun indices-delim(linea separador)
   (let ((indices (list)) (inicio-pos 0))
       (loop
-        (when (not (position separador linea :start inicio-pos)) (return indices))
+        (when (not (position separador linea :start inicio-pos))
+          (return (append indices (list (length linea)))))
         (setq indices (append indices (list (position separador linea :start inicio-pos))))
         (setq inicio-pos (1+ (position separador linea :start inicio-pos)))
         );loop
@@ -42,7 +43,7 @@
 
 (defun lee-separado(ruta-archivo &optional (separador '#\,))
   (let
-    ((archivo nil) (num-col 0) (reng-pos 1) (col-pos 0)
+    ((archivo nil) (num-col 0) (reng-pos 0) (col-pos 0)
       (inicio-aux 0) (tabla nil) (linea nil) (dato nil)
       );argumentos de let
       ;Abre el archivo, validando que exista
@@ -63,12 +64,9 @@
         ;Si ya se leyó todo el archivo, regresa la tabla
         (when (not linea) (return-from lee-separado tabla))
 
-        ;Redimensiona el arreglo
-        (format t "~a~%~a~%~a~%" linea reng-pos num-col)
-        (setq tabla (adjust-array tabla (list reng-pos num-col)))
-
         ;Itera sobre cada línea separando la información con los delimitadores
         (setq inicio-aux 0)
+        (setq col-pos 0)
         (loop for indice-delim in (indices-delim linea separador) do
           (setq dato (subseq linea inicio-aux indice-delim))
 
@@ -78,7 +76,10 @@
             );if
 
           ;Actualiza la tabla
+          (format t "~a~%~a~%~a~%~a~%" reng-pos col-pos dato indice-delim)
+
           (setf (aref tabla reng-pos col-pos) dato)
+          (format t "~a~%" tabla)
 
           ;Prepara el índice de inicio de subseq para la siguiente iteración
           (setq inicio-aux (+ indice-delim 1))
@@ -90,6 +91,10 @@
 
         ;Actualiza el índice del renglón para la siguiente iteración
         (setq reng-pos (+ reng-pos 1))
+
+        ;Redimensiona el arreglo
+        (setq tabla (adjust-array tabla (list reng-pos num-col)))
+        (format t "~a~%" tabla)
 
         );loop de línea en el archivo
     );let
