@@ -131,7 +131,7 @@
         ;itera la lista hasta encontrar el valor máximo
         (loop for val in lista do
             (when (equal val max-val)
-                (if headers
+                (if (not headers)
                   (return-from arg-k-max arg-max)
                   (return-from arg-k-max (1+ arg-max))
                   );if
