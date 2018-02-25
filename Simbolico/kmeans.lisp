@@ -121,8 +121,9 @@
   (nth (1- k) lista)
 );defun
 
-;Función para obtener el argumento del k-ésimo mayor
-;en una lista
+;Función para obtener el argumento del k-ésimo mayor en una lista
+;Los índices son relativos a la tabla que contiene los datos
+;no son relativos a la lista con la suma de distancias
 (defun arg-k-max(lista k &optional (headers t))
     (let ((max-val 0) (arg-max 0))
         ;primero encuentra el valor k-max
@@ -131,7 +132,7 @@
         ;itera la lista hasta encontrar el valor máximo
         (loop for val in lista do
             (when (equal val max-val)
-                (if (not headers)
+                (if (not headers) ;relativo a la tabla de datos
                   (return-from arg-k-max arg-max)
                   (return-from arg-k-max (1+ arg-max))
                   );if
