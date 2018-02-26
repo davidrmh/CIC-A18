@@ -33,6 +33,8 @@ and thus the projection of $\mathbf{x}$ onto $\mathbf{w}$ is given by
 
 $$\mathbf{Proj_{w}x}=\dfrac{\mathbf{w^T}\mathbf{x}}{||\mathbf{w}||^2} \mathbf{w}$$
 
+The norm of the projection vector can be interpreted as the "vertical" distance from $\mathbf{x}$ to $\mathbf{w}$.
+
 In particular, if $\mathbf{x_{0}}$ is a point in the hyperplane $L$, then the distance from any point $\mathbf{x}$ to  $L$ is given by the norm of the projection of the vector $\mathbf{x-x_{0}}$ (the vector that starts in $\mathbf{x}$ and points in the direction of $\mathbf{x_{0}}$) on to $\mathbf{w}$
 
 $$\dfrac{|\mathbf{w^T}(\mathbf{x-x_{0}})|}{||\mathbf{w}||}=\dfrac{|\mathbf{w^Tx}+b|}{||\mathbf{w}||}$$
