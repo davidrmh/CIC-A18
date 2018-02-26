@@ -19,7 +19,7 @@ Our purpose is finding the separating hyperplane that best classifies our data i
 
 Let us first observe if a data point, $\mathbf{x_{n}}$, is correctly classified, then $t_{n}y(x_{n})>0$.
 
-Now let's consider a hyperplane defined by $y(\mathbf{x})=0$ (or $\mathbf{w^T}\phi(\mathbf{x})=-b$) and a point $\mathbf{x}$, for sake of simplicity let's consider the case when $y(\mathbf{x})=\mathbf{w^{T}x}+b$
+Now let's consider a hyperplane defined by $y(\mathbf{x})=0$ (or $\mathbf{w^T}\phi(\mathbf{x})=-b$) and a point $\mathbf{x}$, for sake of simplicity let's consider the case in $\mathbb{R}^2$ when $y(\mathbf{x})=\mathbf{w^{T}x}+b$
 
 The point $\mathbf{x}$ can be expressed as a linear combination of $\mathbf{w}$ and $\mathbf{w_{*}}$, where $\mathbf{w_{*}}$ is orthogonal to $\mathbf{w}$
 
@@ -33,9 +33,9 @@ and thus the projection of $\mathbf{x}$ onto $\mathbf{w}$ is given by
 
 $$\mathbf{Proj_{w}x}=\dfrac{\mathbf{w^T}\mathbf{x}}{||\mathbf{w}||^2} \mathbf{w}$$
 
-Finally the distance from $\mathbf{x}$ to the hyperplane $y(\mathbf{x})=0$ is given by the norm of the projection, i.e.,
+In particular, if $\mathbf{x_{0}}$ is a point in the hyperplane $L$, then the distance from any point $\mathbf{x}$ to  $L$ is given by the norm of the projection of the vector $\mathbf{x-x_{0}}$ (the vector that starts in $\mathbf{x}$ and points in the direction of $\mathbf{x_{0}}$) on to $\mathbf{w}$
 
-$$\dfrac{|\mathbf{w^T}\mathbf{x}|}{||\mathbf{w}||}=\dfrac{|b|}{||\mathbf{w}||}$$
+$$\dfrac{|\mathbf{w^T}(\mathbf{x-x_{0}})|}{||\mathbf{w}||}=\dfrac{|\mathbf{w^Tx}+b|}{||\mathbf{w}||}$$
 
 in our more general case the distance of a point $\mathbf{x_{n}}$ to the decision surface is
 
