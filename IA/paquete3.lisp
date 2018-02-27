@@ -196,6 +196,56 @@
       );cond
     );defun
 
-  (defun quicksort-aux(lista)
-    
-    );defun
+  (defun particion(lista inicio fin)
+    (let ((izq inicio) (der fin) (pivote 0) (aux 0))
+      (setq pivote (nth izq lista))
+
+      (loop
+        (when (> izq der) (return));condición de salida
+        (loop
+          (when (>= (nth izq lista) pivote) (return))
+          (setq izq (1+ izq))
+        );loop
+        (loop
+          (when (<= (nth der lista) pivote) (return))
+          (setq der (1- der))
+        );loop
+        (when (<= izq der)
+          (setq aux (nth izq lista))
+          (setf (nth izq lista) (nth der lista))
+          (setf (nth der lista) aux)
+          (setq izq (1+ izq))
+          (setq der (1- der))
+        );when
+      );loop
+      (list izq lista)
+    );let
+  );defun
+
+  (defun quick-sort-aux(lista inicio fin)
+    (let ((izq 0) (resultado (list)))
+      (cond
+        ((null lista) nil) ;caso base 1
+        ;((= (length (list lista)) 1) lista) ;caso base 2
+      );cond
+      (setq resultado (particion lista inicio fin))
+      (setq izq (first resultado))
+      (setq lista (second resultado))
+      (when (< inicio (1- izq))
+        (quick-sort-aux lista inicio (1- izq));Recursión
+      );when
+      (when (> fin izq)
+        (quick-sort-aux lista izq fin);Recursión
+      );when
+    lista
+    );let
+  );defun
+
+(defun quick-sort(lista)
+  (let((lista-num (list)))
+  ;primero quita los dato no numéricos
+  (setq lista-num (quita-no-numéricos lista))
+  ;después realiza el quicksort
+  (setq lista (quick-sort-aux lista-num 0 (1- (length lista-num))))
+  );let
+);defun
