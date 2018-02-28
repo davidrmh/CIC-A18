@@ -41,7 +41,7 @@
     );let
   );defun
 
-(defun lee-separado(ruta-archivo &optional (header t) (separador '#\,))
+(defun lee-separado(ruta-archivo &optional (header nil) (separador '#\,))
   (let
     ((archivo nil) (num-col 0) (reng-pos 0) (col-pos 0)
       (inicio-aux 0) (tabla nil) (linea nil) (dato nil)
