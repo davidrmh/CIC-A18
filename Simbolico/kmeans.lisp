@@ -143,3 +143,42 @@
           );loop
       );let
   );defun
+
+  ;Filtra e identifica los registros repetidos
+  ;Primero guarda cada renglón en una lista
+  ;después compara, utilizando equal, los renglones subsecuentes
+  ;datos es un arreglo creado con la función lee-separado
+
+  (defun repetidos(datos)
+    (let ((lista-repetidos (list)) (n-reng 0) (patron1 (list)) (patron2 (list))
+      (n-col 0) (indices-repetidos (list)));args-let
+
+    ;número de registros
+     (setq n-reng (first (array-dimensions datos)))
+    ;número de columnas
+    (setq n-col (second (array-dimensions datos)))
+
+     (loop for i from 0 to (- n-reng 2) do
+       ;extrae el patrón 1
+       (setq patron1 (list))
+       (loop for j from 0 to (1- n-col) do
+          (setq patron1 (append patron1 (list (aref datos i j))))
+        );loop
+
+        ;extrae el patrón 2 y compara
+        (loop for k from (1+ i) to (1- n-reng) do
+          (setq patron2 (list))
+          (loop for j from 0 to (1- n-col) do
+            (setq patron2 (append patron2 (list (aref datos k j))))
+          );loop
+          (when
+            (and (equal patron1 patron2) (or (not (find i indices-repetidos :test #'equal))
+              (not (find k indices-repetidos :test #'equal))))
+            (setq lista-repetidos (append lista-repetidos (list (list i k) patron1)))
+            (setq indices-repetidos (append indices-repetidos (list i k)))
+            );when
+        );loop
+      );loop
+    lista-repetidos
+    );let
+  );defun
