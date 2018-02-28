@@ -13,7 +13,7 @@
 ;8. Repetir hasta condición de paro.
 
 ;ALGORITMO MATRIZ DE DISTANCIAS
-;SÓLO SE CALCULA LA MATRIZ TRIANGULAR SUPERIOR
+;CALCULA TODA LA MATRIZ
 ;Inicializa arreglo de D de dimensión n x n (matriz de distancias)
 ;Para cada patrón i:
   ;Obtener los valores a  utilizar del patrón i
@@ -38,14 +38,15 @@
       (setq sum-dif(mapcar #'(lambda(x1 x2)
         (when (and (numberp x1) (numberp x2)) (* (- x1 x2) (- x1 x2))))
          patron1 patron2))
-      (suma-numérica sum-dif)
+      (sqrt (suma-numérica sum-dif))
     );let
   );defun
 
-(defun matriz-distancias(datos indices &optional (headers t) (fun-dist 'dist-eucl))
+(defun matriz-distancias(datos indices &optional (headers nil) (fun-dist 'dist-eucl))
 ;NOTA: indices es una lista con los índices de las "columnas" de interés
 ;fun-dist es un símbolo con el nombre de una función
-  (let ((n-datos 0) (D nil) (patron1 (list)) (patron2 (list)) (aux-cont 0))
+  (let ((n-datos 0) (D nil) (patron1 (list)) (patron2 (list)) (aux-reng 0)
+    (aux-col 0))
       ;Obtiene el número de datos considerando encabezados
       (if headers
         (setq n-datos (- (array-dimension datos 0) 1))
@@ -56,7 +57,7 @@
       (setq D (make-array (list n-datos n-datos) :initial-element 0 :adjustable t))
 
       ;Comienza el llenado de la matriz
-      (loop for i from (if headers 1 0) to (- n-datos 2) do
+      (loop for i from (if headers 1 0) to (- n-datos 1) do
 
           ;obtiene el patrón i
           (loop for l in indices do
@@ -66,26 +67,27 @@
           ;obtiene los patrones distintos al patrón i
           ;y calcula las distancias
 
-          (loop for j from (1+ i) to (- n-datos 1) do
+          (loop for j from (if headers 1 0) to (- n-datos 1) do
                 ;patrón 2
                 (loop for l in indices do
                     (setq patron2 (append patron2 (list (aref datos j l))))
                   );loop
               ;distancia
-              (setf (aref D aux-cont j) (funcall fun-dist patron1 patron2))
+              (setf (aref D aux-reng aux-col) (funcall fun-dist patron1 patron2))
               ;reinicia para la próxima iteración
               (setq patron2 (list))
+              (setq aux-col (1+ aux-col))
             );loop
           ;reinicia para la próxima iteración
           (setq patron1 (list))
-          (setq aux-cont (1+ aux-cont))
+          (setq aux-reng (1+ aux-reng))
+          (setq aux-col 0)
         );loop
     (return-from matriz-distancias D)
     );let
   );defun
 
 ;Función para obtener entradas de la matriz de distancias
-;fue necesaria hacerla ya que la matriz es diagonal superior
 (defun obten-el(matriz reng col)
   (if (<= reng col)
       (aref matriz reng col)
@@ -124,7 +126,7 @@
 ;Función para obtener el argumento del k-ésimo mayor en una lista
 ;Los índices son relativos a la tabla que contiene los datos
 ;no son relativos a la lista con la suma de distancias
-(defun arg-k-max(lista k &optional (headers t))
+(defun arg-k-max(lista k &optional (headers nil))
     (let ((max-val 0) (arg-max 0))
         ;primero encuentra el valor k-max
         (setq max-val (k-max lista k))
