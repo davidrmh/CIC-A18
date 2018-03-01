@@ -310,3 +310,60 @@
     clases
     );let
   );defun
+
+  ;Función para calcular el promedio por columna en una tabla de datos
+  ;Regresa una lista cuya entrada i es el promedio de la columna i
+  (defun promedio-columna(datos)
+    (let ((n-col 0) (n-ren 0) (suma 0) (centroide (list)))
+      (setq n-ren (array-dimension datos 0))
+      (setq n-col (array-dimension datos 1))
+
+      ;Inicializa centroide
+      (loop for i from 0 to (1- n-col) do
+        (setq centroide (append centroide (list 0)))
+      );loop
+
+      (loop for i from 0 to (1- n-col) do ;Fija columna
+        (setq suma 0)
+        (loop for j from 0 to (1- n-ren) do ;Se mueve por renglón
+          (setq suma (+ suma (aref datos j i)))
+        );loop
+        (setf (nth i centroide) (/ suma n-ren)) ;promedio
+      );loop
+    centroide
+    );let
+  );defun
+
+  ;Función para encontrar los nuevos centroides
+  ;Inputs
+  ;Datos (arreglo ajustable creado con la función lee-separado)
+  ;Grupos (creados con la función agrupa)
+  ;k
+  ;ind-col (índices de las columnas con los valores para cada atributo)
+  (defun encuentra-centroides(datos grupos k &optional (ind-col (list 0 1 2 3)))
+    (let ((datos-agrup nil) (centroides (list)) (aux-reng 0) (dim-arreg 0)
+      (n-col 0))
+
+      (setq n-col (length ind-col));número de atributos
+      (setq datos-agrup (make-array (list 0 n-col) :adjustable t))
+      (loop for i from 0 to (1- k) do ;iterador de las clases
+        (adjust-array datos-agrup (list 0 n-col));Arreglo para calcular promedios
+        (setq aux-reng 0)
+        (loop for j from 0 to (1- (length grupos)) do
+          (when (= (nth j grupos) i)
+            (setq dim-arreg (1+ (array-dimension datos-agrup 0)))
+            (adjust-array datos-agrup (list dim-arreg n-col)) ;Agrega un renglón mas
+
+            ;Extrae las columnas del la observación en la clase
+            (loop for l in ind-col do
+              (setf (aref datos-agrup aux-reng l) (aref datos j l))
+            );loop
+
+            (setq aux-reng (1+ aux-reng))
+          );when
+        );loop
+        (setq centroides (append centroides (list (promedio-columna datos-agrup))))
+      );loop
+    centroides  
+    );let
+  );defun
