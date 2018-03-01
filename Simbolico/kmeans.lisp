@@ -32,6 +32,8 @@
 );defun
 
 ;Distancia euclidiana
+;Inputs
+;Dos listas con los rasgos de los patrones
 (defun dist-eucl(patron1 patron2)
   (let ((sum-dif (list)))
       ;Calcula el cuadrado de las diferencias
@@ -180,5 +182,73 @@
         );loop
       );loop
     lista-repetidos
+    );let
+  );defun
+
+
+
+  ;Función para encontrar el primer atractor
+  ;Inputs
+  ;Matriz de distancias
+  (defun atractor1(mat)
+    (let ((dist-acum (list)))
+    (setq dist-acum (suma-dist mat))
+    (arg-k-max dist-acum 1)
+    );let
+  );defun
+
+  ;Función para encontrar el segundo atractor
+  ;Inputs
+  ;Matriz de distancias
+  ;Índice del primer atractor
+  (defun atractor2(mat ind)
+    (let ((max-dist 0) (dist 0) (n-col 0) (clase nil))
+      (setq n-col (array-dimension mat 1));número de columnas
+      (loop for i from 0 to (1- n-col) do
+        (setq dist (aref mat ind i))
+        (when (> dist max-dist)
+          (setq max-dist dist)
+          (setq clase i)
+        );when
+      );loop
+      clase
+    );let
+  );defun
+
+  ;Función para encontrar el k-ésimo atractor
+  ;Inputs
+  ;Matriz de distancias
+  ;Lista con los índices de los atractores previos
+  (defun atractork(mat list-ind)
+    (let ((clase 0) (suma 0) (suma-max 0) (n-col 0))
+      (setq n-col (array-dimension mat 1));número de columnas
+      (loop for j from 0 to (1- n-col) do
+        (loop for i in list-ind do
+          (setq suma (+ suma (aref mat i j)))
+          (when (>= suma suma-max)
+            (setq suma-max suma)
+            (setq clase j)
+          );when
+        );loop
+      );loop
+    clase
+    );let
+  );defun
+
+
+  ;Función para encontrar los indices de los k atractores
+  ;Inputs
+  ;Matriz de distancias
+  ;Número de atractores k
+  (defun encuentra-atractores(mat k)
+    (let ((list-ind (list)))
+      (loop for i from 1 to k do
+        (cond
+          ((= i 1) (setq list-ind (append list-ind (list (atractor1 mat)))))
+          ((= i 2) (setq list-ind (append list-ind (list (atractor2 mat (first list-ind))))))
+          ((>= i 3) (setq list-ind (append list-ind (list (atractork mat list-ind)))))
+        );cond
+      );loop
+    list-ind
     );let
   );defun
