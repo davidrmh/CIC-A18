@@ -338,7 +338,7 @@
   ;Inputs
   ;Datos (arreglo ajustable creado con la función lee-separado)
   ;Grupos (creados con la función agrupa)
-  ;k
+  ;k (número de grupos)
   ;ind-col (índices de las columnas con los valores para cada atributo)
   (defun encuentra-centroides(datos grupos k &optional (ind-col (list 0 1 2 3)))
     (let ((datos-agrup nil) (centroides (list)) (aux-reng 0) (dim-arreg 0)
@@ -364,6 +364,83 @@
         );loop
         (setq centroides (append centroides (list (promedio-columna datos-agrup))))
       );loop
-    centroides  
+    centroides
+    );let
+  );defun
+
+  ;Función para determinar la condición de paro
+  ;Inputs
+  ;atractores (lista con los atractores anteriores)
+  ;nuevos-atrac (lista con los nuevos atractores)
+  ;tol (distancia mínima que debe de haber entre cada atractor)
+  ;Output
+  ;nil o t
+  (defun condicion-paro(atractores nuevos-atrac &optional (tol 0.001) (fun-dist 'dist-eucl))
+    (let ((distancias (list)) (flag t))
+      (setq distancias (mapcar fun-dist atractores nuevos-atrac));calcula distancias
+      (loop for distancia in distancias do
+        (when (> distancia tol)
+          (setq flag nil) (return-from condicion-paro flag)) ;Si alguna no cumple regresa nil
+      );loop
+    t ;Si todas las distancias cumple la tolerancia regresa t
+    );let
+  );defun
+
+  ;Función para escribir los datos en un archivo de texto
+  ;Inputs
+  ;datos (arreglo con los datos)
+  ;grupos (lista con i-ésimo elemento el grupo de la observación i)
+  ;n-reng (número de renglones)
+  ;n-col (número de columnas)
+(defun escribe-resultados(datos grupos)
+  (let ((n-reng 0) (n-col 0))
+    (setq n-reng (array-dimension datos 0)) ;Número de renglones
+    (setq n-col (array-dimension datos 1)) ;Número de columnas
+      (loop for i from 0 to (1- n-reng) do
+        (setf (aref datos i (- n-col 1)) (nth i grupos))
+      );loop
+      (format t "~a" datos)
+      (with-open-file
+        (stream "resultados.txt"
+          :direction :output :if-does-not-exist :create
+          :if-exists :supersede)
+        (format stream "~a" (write-to-string datos))
+      );with-open-file
+    datos
+  );let
+);defun
+
+
+  ;Función para encontrar grupos utilizando el
+  ;algoritmo k-means
+  ;Inputs
+  ;Ruta -> Ruta del archivo con los datos (string)
+  ;k -> Número de clusters (entero mayor o igual a 1)
+  ;headers -> El archivo tiene encabezados (opcional t o nil)
+  ;ind-col -> índice de las columnas que contienen los valores de los atributos (opcional)
+  ;fun-dist -> Símbolo con nombre de función de distancia (opcional)
+  ;tol -> Tolerancia para la condición de paro (opcional float "pequeño")
+
+  (defun kmeans(ruta k &optional (tol 0.001) (fun-dist 'dist-eucl)
+    (headers nil) (ind-col (list 0 1 2 3)))
+    (load "lee-separado.lisp")
+    (let ((datos nil) (mat-dist nil) (atractores (list)) (nuevos-atrac (list))
+      (grupos (list)) (flag-paro nil) (n-col 0) (n-reng 0))
+      (setq datos (lee-separado ruta headers)) ;lee datos
+      (setq mat-dist (matriz-distancias datos ind-col headers fun-dist)) ;matriz de distancias
+      (setq atractores (encuentra-atractores mat-dist k datos)) ;atractores
+
+      (loop
+        (setq grupos (agrupa datos atractores ind-col fun-dist)) ;agrupa datos
+        (setq nuevos-atrac (encuentra-centroides datos grupos k ind-col)) ;nuevos atractores
+        (setq flag-paro (condicion-paro atractores nuevos-atrac tol fun-dist)) ;evalua condición de paro
+        (when flag-paro (return));when
+        (setq atractores (copy-seq nuevos-atrac)) ;copia los nuevos atractores
+      );loop
+      (setq n-reng (array-dimension datos 0)) ;Número de renglones
+      (setq n-col (array-dimension datos 1)) ;Número de columnas
+      (adjust-array datos (list n-reng (+ n-col 1))) ;agrega una columna a los datos
+      (setq datos (escribe-resultados datos grupos)) ;Escribe resultados en un txt
+      datos  
     );let
   );defun
