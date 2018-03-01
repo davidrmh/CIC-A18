@@ -7,7 +7,7 @@
 ;2.Seleccionar los k patrones más alejados como atractores iniciales
 ;3.Calcular la distancia entre cada punto y cada atractor (matriz n x k)
 ;4.Particionar el espacio (agrupar)
-;5.Para cada grupo encontrar sus centroide
+;5.Para cada grupo encontrar el centroide
 ;6.Considerar los centroides del paso 5 como los nuevos atractores
 ;7.Regresar al paso 6
 ;8. Repetir hasta condición de paro.
@@ -240,11 +240,11 @@
   ;Inputs
   ;Arreglo de datos
   ;Lista con índices de los k atractores
-  (defun aux-atractores(datos list-ind)
+  (defun aux-atractores(datos list-ind etiquetas)
     (let ((list-atractores (list)) (n-col 0) (atractor (list)))
     (setq n-col (array-dimension datos 1));Número de columnas
     (loop for i in list-ind do
-      (loop for j from 0 to (1- n-col) do
+      (loop for j from 0 to (if etiquetas (1- n-col) (- n-col 2)) do
         (setq atractor (append atractor (list (aref datos i j))))
       );loop
       (setq list-atractores (append list-atractores (list atractor)))
@@ -258,7 +258,7 @@
   ;Inputs
   ;Matriz de distancias
   ;Número de atractores k
-  (defun encuentra-atractores(mat k datos)
+  (defun encuentra-atractores(mat k datos &optional (etiquetas nil))
     (let ((list-ind (list)) (list-atractores (list)))
       (loop for i from 1 to k do
         (cond
@@ -267,7 +267,7 @@
           ((>= i 3) (setq list-ind (append list-ind (list (atractork mat list-ind)))))
         );cond
       );loop
-    (setq list-atractores (aux-atractores datos list-ind))
+    (setq list-atractores (aux-atractores datos list-ind etiquetas))
     list-atractores
     );let
   );defun
