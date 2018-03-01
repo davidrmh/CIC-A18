@@ -272,8 +272,41 @@
     );let
   );defun
 
-  ;Función para calcular la distancias entre los atractores y los puntos
+  ;Función para agrupar los datos
   ;Inputs
   ;datos (Arreglo con los datos)
   ;atractores (Lista con los atractores)
-  ;ind-col (Indices)
+  ;ind-col (Indices de las columnas que contienen la información de los atributos)
+  ;fun-dist (Símbolo que indica la función de distancia)
+  ;Output
+  ;Una lista cuyo i-ésimo elemento es la clase a la que corresponde
+  ;la i-ésima observación
+
+  (defun agrupa(datos atractores &optional (ind-col (list 0 1 2 3)) (fun-dist 'dist-eucl))
+    (let ((list-dist (list)) (clases (list)) (n-obs 0) (obser (list)) (dist 0))
+      (setq n-obs (array-dimension datos 0)) ;Número de observaciones
+
+      (loop for i from 0 to (1- n-obs) do
+        ;Junta la observación i en una lista
+        (loop for j in ind-col do
+          (setq obser (append obser (list (aref datos i j))))
+        );loop
+
+        ;Calcula la distancias entre la observación y cada atractor
+        ;Multiplica por -1 para utilizar la función arg-k-max
+        (loop for atractor in atractores do
+          (setq dist (funcall fun-dist obser atractor))
+          (setq list-dist (append list-dist (list (* -1 dist))))
+        );loop
+
+        ;Obtiene el argumento con la distancia mínima
+        ;Usando la multiplicación por -1 y la función arg-k-max
+        (setq clases (append clases (list (arg-k-max (copy-seq list-dist) 1))))
+
+        ;Reinicia para la siguiente iteración
+        (setq obser (list))
+        (setq list-dist (list))
+      );loop
+    clases
+    );let
+  );defun
