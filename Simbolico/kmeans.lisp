@@ -44,7 +44,7 @@
     );let
   );defun
 
-(defun matriz-distancias(datos indices &optional (headers nil) (fun-dist 'dist-eucl))
+(defun matriz-distancias(datos &optional (indices (list 0 1 2 3)) (headers nil) (fun-dist 'dist-eucl))
 ;NOTA: indices es una lista con los índices de las "columnas" de interés
 ;fun-dist es un símbolo con el nombre de una función
   (let ((n-datos 0) (D nil) (patron1 (list)) (patron2 (list)) (aux-reng 0)
@@ -271,3 +271,9 @@
     list-atractores
     );let
   );defun
+
+  ;Función para calcular la distancias entre los atractores y los puntos
+  ;Inputs
+  ;datos (Arreglo con los datos)
+  ;atractores (Lista con los atractores)
+  ;ind-col (Indices)
