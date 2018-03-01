@@ -54,7 +54,7 @@
       (setq tabla (make-array (list 0 num-col) :adjustable t))
 
       ; ME FALTA CONSIDERAR ENCABEZADOS
-      (when header
+      (when (not header)
         (close archivo)
         (setq archivo (open ruta-archivo :if-does-not-exist nil))
         );when
