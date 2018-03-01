@@ -236,12 +236,30 @@
   );defun
 
 
+  ;Función para obtener los rasgos de los k atractores
+  ;Inputs
+  ;Arreglo de datos
+  ;Lista con índices de los k atractores
+  (defun aux-atractores(datos list-ind)
+    (let ((list-atractores (list)) (n-col 0) (atractor (list)))
+    (setq n-col (array-dimension datos 1));Número de columnas
+    (loop for i in list-ind do
+      (loop for j from 0 to (1- n-col) do
+        (setq atractor (append atractor (list (aref datos i j))))
+      );loop
+      (setq list-atractores (append list-atractores (list atractor)))
+      (setq atractor (list))
+    );loop
+    list-atractores
+    );let
+  );defun
+
   ;Función para encontrar los indices de los k atractores
   ;Inputs
   ;Matriz de distancias
   ;Número de atractores k
-  (defun encuentra-atractores(mat k)
-    (let ((list-ind (list)))
+  (defun encuentra-atractores(mat k datos)
+    (let ((list-ind (list)) (list-atractores (list)))
       (loop for i from 1 to k do
         (cond
           ((= i 1) (setq list-ind (append list-ind (list (atractor1 mat)))))
@@ -249,6 +267,7 @@
           ((>= i 3) (setq list-ind (append list-ind (list (atractork mat list-ind)))))
         );cond
       );loop
-    list-ind
+    (setq list-atractores (aux-atractores datos list-ind))
+    list-atractores
     );let
   );defun
