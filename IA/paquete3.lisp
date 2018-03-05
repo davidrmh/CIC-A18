@@ -264,6 +264,23 @@
    (- (expt (/ (+ 1 (sqrt 5)) 2) n)
 	(expt (/ (- 1 (sqrt 5)) 2) n))))
 
+  ;LA IMPLEMENTACIÓN INGENUA DE FIBONACCI TOMÓ
+
+;  Evaluation took:
+;  548.189 seconds of real time
+;  548.096000 seconds of total run time (548.096000 user, 0.000000 system)
+;  99.98% CPU
+;  1,553,414,310,710 processor cycles
+;  0 bytes consed
+
+  ;PARA LA FUNCIÓN FIB4 SE TIENE
+  ;Evaluation took:
+  ;0.000 seconds of real time
+  ;0.000000 seconds of total run time (0.000000 user, 0.000000 system)
+  ;100.00% CPU
+  ;2,484 processor cycles
+  ;0 bytes consed
+
   (defun ejercicio17()
     (let ((nombre-funcion ""))
       (loop for i from 1 to 10 do
