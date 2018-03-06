@@ -48,3 +48,21 @@
   palindromo
   );let
 );defun
+
+;EJERCICIO 5
+(defun listrotate(cadena n  &key (right nil) (left nil))
+  (let ((resultado nil) (long 0))
+    (setq long (length cadena))
+    (cond
+      ((and right left) (format t "Utiliza sólo una llave"))
+      ((= (/ long 2) n) (setq resultado (concatenate 'string (subseq cadena n long)
+        (subseq cadena 0 n)))) ;Cadenas de longitud par y se corta en el punto medio
+      ((not left) (setq resultado (concatenate 'string (subseq cadena n long)
+        (subseq cadena 0 n))));Derecha
+      ((not right) (setq resultado (concatenate 'string (subseq cadena (- long n) long)
+        (subseq  cadena 0 (- long n) )))) ;izquierda
+      (t nil)
+    );cond
+    resultado
+  );let
+);defun
