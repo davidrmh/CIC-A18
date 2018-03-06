@@ -164,6 +164,7 @@ Es el conjunto de posibles valores que puede tomar un **rasgo descriptivo**.
 **Definición (patrón)**
 
 Un patrón es un elemento del espacio formado por el producto cruz de los dominios de todos sus rasgos descriptivos.
+Así pues, un patrón es un conjunto de atributos relacionados a un objeto.
 
 Cada objeto de estudio se representa con un patrón único.
 
@@ -186,3 +187,25 @@ $$D_{S}(A,B)=\sum_{i}^{r}g_{i}(a_{i},b_{i})$$
 Sea $g_{i}(a_{i},b_{i})$ una función de semejanza para el rasgo descriptivo $i$ entre un conjunto de $r$ rasgos, la función de semejanza sintáctica entre los patrones $A$ y $B$ se define como
 
 $$D_{S}(A,B)=\dfrac{1}{r} \sum_{i}^{r}g_{i}(a_{i},b_{i})$$
+
+## Presentación 04 - Estructuración del espacio parte 1.
+
+## Presentación 05 - Estructuración jerárquica (parte 1)
+
+**Algortimos de agrupamiento jerárquico**
+
+A diferencia del algoritmo de **k-means**, estos algoritmos no necesitan como entrada el número de grupos a formar.
+
+* Hacen el supuesto de que el espacio de ejemplos se encuentra particionado (inclusive si esto implica considerar un sólo grupo con todos los patrones).
+
+* Aglomerativos (bottom-up) y divisivos (up-bottom).
+
+* Requieren el uso una función para comparar **patrones** y otra función de enlace entre **grupos**.
+
+Para comparar **patrones** se utiliza una función de **semejanza** o una función de **distancia**.
+
+Para comparar **grupos** se usans funciones de **enlace** (**linkage functions**)
+
+**Visualización**
+
+Para visualizar jerarquías de agrupamiento se utilizan **dendrogramas**
