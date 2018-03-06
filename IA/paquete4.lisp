@@ -66,3 +66,29 @@
     resultado
   );let
 );defun
+
+
+;EJERCICIO 6
+
+;(setq lista (append lista (list (cons col row))))
+
+(defun max&pos(matriz)
+  (let ((num-col 0) (num-reng 0) (maximo 0) (reng-max 0) (lista (list)))
+    ;Obtiene las dimensiones de la matriz
+    (setq num-col (second (array-dimensions matriz))) ;Columnas
+    (setq num-reng (first (array-dimensions matriz))) ;renglones
+
+    ;Itera sobre la matriz
+    (loop for col from 0 to (1- num-col) do ;fija columna
+      (setq maximo (aref matriz 0 col)) ;Valor arbritario (lo utilicé para considerar positivos y negativos)
+      (loop for reng from 0 to (1- num-reng) do
+        (when (>= (aref matriz reng col) maximo)
+            (setq maximo (aref matriz reng col))
+            (setq reng-max reng)
+        );when
+      );loop reng
+      (setq lista (append lista (list (cons col reng-max))))
+    );loop col
+  lista
+  );let
+);defun
