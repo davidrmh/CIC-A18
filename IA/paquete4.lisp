@@ -92,3 +92,46 @@
   lista
   );let
 );defun
+
+
+;EJERCICIO 7
+
+(defun combine(funcion lista)
+  "Simula la función reduce
+  -> funcion es un símbolo indicando el nombre de una función
+  esta función debe de recibir al menos dos argumentos.
+  lista es una lista
+  "
+  (cond
+    ;Si la lista es vacía
+    ((null lista) nil)
+    ;Si la lista tiene dos elementos
+    ((= (length lista) 2) (funcall funcion (first lista) (second lista)))
+    ;Si la lista sólo tiene un elemento
+    ((= (length lista) 1) (first lista))
+    ;Si la lista tiene tres o más elementos
+    (t (funcall funcion (first lista) (combine funcion (rest lista))))
+  );cond
+);defun
+
+;EJERCICIO 8
+;EJERCICIO 9
+
+;EJERCICIO 10
+(defun strcypher(cadena &optional (code "abcdefghijklmnñopqrstuvwxyz"))
+"Devuelve una cadena en la que cada caracter del agumento original
+fue sustituido por el indicado en la posición correspondiente en la
+cadena code
+"
+  (let ((lista-letras (list)) (pos-aux 0) (resultado ""))
+    ;Primero guardo las letras del abecedario en una lista
+    (loop for char across code do
+      (setq lista-letras (append lista-letras (list char))));loop
+    ;Itera sobre cadena y va cambiando de acuerdo a la posición
+    (loop for i from 0 to (1- (length cadena)) do
+      (setq resultado (concatenate 'string resultado (list (nth pos-aux lista-letras))))
+      (setq pos-aux (1+ pos-aux))
+    );loop
+  resultado
+  );let
+);defun
