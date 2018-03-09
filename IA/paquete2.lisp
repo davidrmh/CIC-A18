@@ -200,7 +200,13 @@
   );defun
 
 ;EJERCICIO 14
-;La implicación p->q puede ser representada como p o (not q)
+;La implicación p->q puede ser representada como (not p) or q
+(defun implica(&rest argumentos)
+  (cond
+    ((eq (or (not (first argumentos)) (rest argumentos)) t) t)
+    ;Cuando el resutaldo del or es (T) necesito la siguiente línea
+    ((eq (first (or (not (first argumentos)) (rest argumentos))) t) t)
+    (t nil)));defun
 
 ;EJERCICIO 15
 ;La matriz resultante está formada Por
