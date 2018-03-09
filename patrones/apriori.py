@@ -1,4 +1,23 @@
+def loaddata(filename,sep=","):
+    '''
+    Reads delimited file separated by sep
+    For convinience file should not contain headers
 
+    Inputs:
+    filename: string with file's path
+    sep: separator used in the file
+
+    Output:
+    data: a list of lists in the form of
+    [[feat1.Obs1,...,featM.Obs1],...,[feat1.ObsN,...,featM.ObsN]]
+    '''
+    #Open file
+    f=open(filename)
+    #reads the lines
+    data=[line.strip().split(sep) for line in f.readlines()]
+    #closes the file
+    f.close()
+    return data
 
 def createC1(dataset):
     '''
@@ -62,7 +81,7 @@ def apriori(dataset,minsupport=0.5):
     k=2
     while(len(l[k-2])>0):
         ck=aprioriGen(l[k-2],k)
-        lk,supk=scandD(d,ck,minsupport)
+        lk,supk=scanD(d,ck,minsupport)
         supportdata.update(supk)
         l.append(lk)
         k+=1
