@@ -66,4 +66,33 @@ def apriori(dataset,minsupport=0.5):
         supportdata.update(supk)
         l.append(lk)
         k+=1
-    return l,supportdata    
+    return l,supportdata
+
+def generateRules(l,supportdata,minconf=0.7):
+    bigrulelist=[]
+    for i in range(1,len(l)):
+        for freqset in l[i]:
+            h1=[frozenset([item]) for item in freqset]
+            if(i>1):
+                rulesfromconseq(freqset,h1,supportdata,bigrulelist,minconf)
+            else:
+                calcconf(freqset,h1,supportdata,bigrulelist,minconf)
+    return bigrulelist
+
+def calcconf(freqset,h,supportdata,brl,minconf=0.7):
+    prunedh=[]
+    for conseq in h:
+        conf=supportdata[freqset]/supportdata[freqset-conseq]
+        if conf>= minconf:
+            print freqset-conseq,'-->',conseq,'conf:',conf
+            brl.append((freqset-conseq,conseq,conf))
+            prunedh.append(conseq)
+    return prunedh
+
+def rulesfromconseq(freqset,h,supportdata,brl,minconf=0.7):
+    m=len(h[0])
+    if (len(freqset)>(m+1)):
+        hmp1=aprioriGen(h,m+1)
+        hmp1=calcconf(freqset,hmp1,supportdata,brl,minconf)
+        if(len(hmp1)>1):
+            rulesfromconseq(freqset,hmp1,supportdata,brl,minconf)
