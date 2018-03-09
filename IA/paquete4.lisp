@@ -162,7 +162,6 @@ cadena code
 );defun
 
 ;EJERCICIO 12
-
 (defun make-nodo(elemento)
   "Agrega un nodo al árbol (método visto en clase)"
   (cons (cons elemento nil) nil))
@@ -251,3 +250,14 @@ cadena code
     nivel
   );let
 );defun
+
+;EJERCICIO 13
+;EJERCICIO 14
+
+;EJERCICIO 15
+(defmacro if-positive(expresion &key then-do else-do)
+  `(cond
+    ((not (numberp (eval ,expresion))) (format t "Necesitas expresión numérica"))
+    (t (if (> (eval ,expresion) 0)
+      (eval ,then-do)
+      (eval ,else-do)))))
