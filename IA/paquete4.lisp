@@ -69,9 +69,6 @@
 
 
 ;EJERCICIO 6
-
-;(setq lista (append lista (list (cons col row))))
-
 (defun max&pos(matriz)
   (let ((num-col 0) (num-reng 0) (maximo 0) (reng-max 0) (lista (list)))
     ;Obtiene las dimensiones de la matriz
@@ -95,7 +92,6 @@
 
 
 ;EJERCICIO 7
-
 (defun combine(funcion lista)
   "Simula la función reduce
   -> funcion es un símbolo indicando el nombre de una función
@@ -137,7 +133,33 @@ cadena code
 );defun
 
 ;EJERCICIO 11
-;MULTIPLICACIÓN DE MATRICES VALIDANDO DIMENSIONES Y CON ARREGLOS
+(defun matmult(m1 m2)
+  (let((m3) (col-m1 0) (col-m2 0) (reng-m1 0) (suma-aux 0))
+    ;Primero revisa si es posible realizar la multiplicación
+    (when (/= (second (array-dimensions m1)) (first (array-dimensions m2)))
+      (return-from matmult nil));when
+    ;Obtiene las dimensiones de cada matriz
+    (setq col-m1 (array-dimension m1 1)) ;columnas m1
+    (setq col-m2 (array-dimension m2 1)) ;columnas m2
+    (setq reng-m1 (array-dimension m1 0));renglones m1
+    ;Dimensiona la matriz del producto (m3)
+    (setq m3 (make-array (list reng-m1 col-m2)))
+
+    ;Llena la matriz entrada por entrada
+    (loop for i from 0 to (1- reng-m1) do ;renglones
+      (loop for j from 0 to (1- col-m2) do  ;columnas
+        (setq suma-aux 0)
+        (loop for h from 0 to (1- col-m1) do
+          ;Producto punto renglón i de m1 con columna j de m2
+          (setq suma-aux (+ suma-aux (* (aref m1 i h) (aref m2 h j))))
+        );loop
+        ;Actualiza entrada (i,j) de m3
+        (setf (aref m3 i j) suma-aux)
+      );loop
+    );loop
+  m3
+  );let
+);defun
 
 ;EJERCICIO 12
 
