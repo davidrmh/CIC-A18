@@ -9,6 +9,10 @@
   Regresa una lista conteniendo sólomante los elementos en los cuales
   el predicado evalua T
   "
+  ;Valida argumentos
+  (if (not (and (eq (type-of pred) 'SYMBOL) (listp lista)))
+    (return-from collect (format t "Parámetros inválidos"))
+  )
   (let ((lista-resultado (list)))
     (cond
       ((null lista) nil);caso base
@@ -20,9 +24,13 @@
 
 (defun palíndromo(lista &optional (pos 0))
   "En esta función se realiza la recursión
-  Se compara la lista original y su reversión en reversa posición
+  Se compara la lista original y su versión en reversa posición
   por posición
   "
+  ;Valida argumentos
+  (if (not (listp lista))
+    (return-from palíndromo (format t "Parámetros inválidos")))
+
   (let ((lista-rev (list)) (flag t))
     (setq lista-rev (reverse lista)) ;Lista original en reversa
     (cond
@@ -36,6 +44,11 @@
 
 ;EJERCICIO 4
 (defun iterativepalindrome(cadena)
+
+  ;Valida argumentos
+  (if (not (stringp cadena))
+    (return-from iterativepalindrome (format t "Argumento inválido")))
+
   (let ((cadena-rev) (palindromo))
     (setq cadena-rev (reverse cadena)) ;cadena en reversa
     (setq palindromo (copy-seq cadena)) ;Copia la cadena de entrada
@@ -51,6 +64,7 @@
 
 ;EJERCICIO 5
 (defun listrotate(cadena n  &key (right nil) (left nil))
+
   (let ((resultado nil) (long 0))
     (setq long (length cadena))
     (cond
@@ -70,6 +84,11 @@
 
 ;EJERCICIO 6
 (defun max&pos(matriz)
+
+  ;Valida argumentos
+  (if (not (arrayp matriz))
+    (return-from max&pos (format t "Argumentos inválidos")))
+
   (let ((num-col 0) (num-reng 0) (maximo 0) (reng-max 0) (lista (list)))
     ;Obtiene las dimensiones de la matriz
     (setq num-col (second (array-dimensions matriz))) ;Columnas
@@ -98,6 +117,10 @@
   esta función debe de recibir al menos dos argumentos.
   lista es una lista
   "
+  ;Valida argumentos
+  (if (not (and (eq (type-of funcion) 'SYMBOL) (listp lista)))
+    (return-from combine (format t "Argumentos inválidos")))
+
   (cond
     ;Si la lista es vacía
     ((null lista) nil)
@@ -119,6 +142,10 @@
 fue sustituido por el indicado en la posición correspondiente en la
 cadena code
 "
+  ;Valida argumentos
+  (if (not (stringp cadena))
+  (return-from strcypher (format t "Argumento inválido")))
+
   (let ((lista-letras (list)) (pos-aux 0) (resultado ""))
     ;Primero guardo las letras del abecedario en una lista
     (loop for char across code do
@@ -134,6 +161,11 @@ cadena code
 
 ;EJERCICIO 11
 (defun matmult(m1 m2)
+
+  ;Valida Argumentos
+  (if (not (and (arrayp m1) (arrayp m2)))
+    (return-from matmult (format t "Argumentos inválidos")))
+
   (let((m3) (col-m1 0) (col-m2 0) (reng-m1 0) (suma-aux 0))
     ;Primero revisa si es posible realizar la multiplicación
     (when (/= (second (array-dimensions m1)) (first (array-dimensions m2)))
@@ -234,6 +266,11 @@ cadena code
   (btree 'C tree)
   (btree 'D tree) etc
   "
+
+  ;Valida argumentos
+  (if (not (consp tree))
+    (return-from btree (format t "Argumento tree inválido")))
+
   (let ((flag-repetido nil) (flag-insert t) (nivel 0))
     ;Revisa que el elemento no esté repetido
     (setq flag-repetido (está-elemento? tree elem))
