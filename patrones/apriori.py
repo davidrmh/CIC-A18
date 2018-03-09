@@ -20,6 +20,10 @@ def scanD(dataset,candidates,minsupport):
     Calculates support for every itemset in candidates
     dataset is created with map(set,dataset)
     where dataset is a list of list.
+
+    Returns
+    retlist: A list containing the itemsets that passed the minimum support
+    supportdata: A dictionary with the support of every itemset
     '''
     sscnt={}
     for tid in dataset:
@@ -36,3 +40,30 @@ def scanD(dataset,candidates,minsupport):
             retlist.insert(0,key) #inserts from the left
         supportdata[key]=support
     return retlist,supportdata
+
+def aprioriGen(lk,k):
+    retlist=[]
+    lenlk=len(lk)
+    for i in range(lenlk):
+        for j in range(i+1,lenlk):
+            l1=list(lk[i])[:k-2]
+            l2=list(lk[j])[:k-2]
+            l1.sort()
+            l2.sort()
+            if l1==l2:
+                retlist.append(lk[i]|lk[j])
+    return retlist
+
+def apriori(dataset,minsupport=0.5):
+    c1=createC1(dataset)
+    d=map(set,dataset)
+    l1,supportdata=scanD(d,c1,minsupport)
+    l=[l1]
+    k=2
+    while(len(l[k-2])>0):
+        ck=aprioriGen(l[k-2],k)
+        lk,supk=scandD(d,ck,minsupport)
+        supportdata.update(supk)
+        l.append(lk)
+        k+=1
+    return l,supportdata    
