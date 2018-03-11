@@ -1,10 +1,94 @@
 <!-- $theme: gaia -->
 <!--page_number:true-->
-# Algoritmo apriori para detectar reglas de asociación en el mercado accionario mexicano.
+
+# Creación de índices utilizando PCA
 
 David Ricardo Montalván Hernández
 
 13 de marzo de 2018
+
+---
+
+### Objetivo
+
+Partiendo únicamente de los rendimientos diarios de un grupo de $10$ acciones, construir un índice que represente el valor de todas ellas utilizando un sólo número, es decir, reducir $10$ dimensiones a una sola.
+
+---
+
+### Un poco sobre el NAFTRAC
+
+* El Índice de Precios y Cotizaciones (IPC) principal indicador del mercado accionario mexicano.
+* El NAFTRAC busca replicar al IPC, **el IPC no se compra/vende, el NAFTRAC si**.
+* $NAFTRAC_{t}=\frac{IPC_{t}}{1000}$
+
+---
+
+### Un poco sobre el NAFTRAC (Continúa)
+
+* El IPC utiliza una metodología compleja para seleccionar la ponderación de cada acción, mas aún, utiliza información privada que no es accesible para el público general (no es replicable).
+
+* Por lo tanto, es de utilidad tener un indicador alternativo.
+
+---
+
+
+### Datos
+Se utilizaron precios de cierre diario para las $10$ acciones con mayor ponderación que forman parte del Índice de Precios y Valores (NAFTRAC) de la Bolsa Mexicana de Valores.
+
+La ventana de tiempo para estos datos fue del *1-Septiembre-2016* al *31-Ago-2017*
+
+---
+
+### Datos (Continúa)
+Iniciando el día *2-Septiembre-2016* se calculó, para cada serie accionaria, el cambio diario en los precios de la siguiente forma:
+
+$$\Delta P_{t}=\dfrac{P_{t}-P_{t-1}}{P_{t-1}}$$
+
+con dicha información se creó una matriz $M$ de tamaño $251 \times 10$, la cual fue la entrada para el algoritmo de *PCA*.
+
+
+---
+
+### Resultados
+
+Dada la naturaleza de los datos, se realizaron dos versiones del algoritmo *PCA*:
+
+* Utilizando la matriz de covarianzas.
+
+* Utilizando la matriz de correlaciones.
+
+==**Aclaración**==
+No se está buscando replicar al *NAFTRAC*, como se mencionó, debido a la información utilizada esto no es posible.
+
+---
+
+### Resultados (Continúa)
+
+==Utilizando la matriz de covarianzas==
+
+![75% center](./proyecto1/utilizando_cov.png)
+
+---
+
+### Resultados (Continúa)
+
+==Utilizando la matriz de correlaciones==
+
+![75% center](./proyecto1/utilizando_corr.png)
+
+---
+
+### Conclusiones
+
+* La matriz de correlaciones  genera un índice menos volátil y que representa de mejor forma la dirección del mercado.
+
+* La metodología del algoritmo *PCA* resulta de utilidad si se busca construir indicadores para la **dirección** del mercado.
+
+* Desafortunadamente, dicha metodología carece de interpretación en cuanto a las ponderaciones de cada acción.
+
+---
+
+# Algoritmo apriori para detectar reglas de asociación en el mercado accionario mexicano.
 
 ---
 
