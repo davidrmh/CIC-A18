@@ -141,3 +141,17 @@ Cada día es una "transacción".
 Finalmente, el periodo de entrenamiento fue del 2 de enero de 2014 al último día hábil de diciembre de 2017.
 
 El periodo de prueba abarcó del 2 de enero al 7 de marzo de 2018.
+
+---
+
+### Resultados
+
+---
+
+### Conclusiones
+
+* El algoritmo *apriori* depende fuertemente del umbral mínimo para el soporte/confianza.
+
+* Lo anterior nos lleva a preguntarnos ¿Cuál es un buen valor para los umbrales?
+
+* Además, para este caso de estudio, podemos ver la importancia de tener distintas métricas de desempeño.
