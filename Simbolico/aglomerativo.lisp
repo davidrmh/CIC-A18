@@ -6,7 +6,7 @@
 ;2.Calcular la matriz de distancias inicial
 ;3.Agregar etiquetas iniciales a la tabla de datos
 ;4.Encontrar mínimo
-;5.Actualizar dendrograma
+;5.Actualizar dendrograma y las etiquetas de la tabla datos
 ;6.Actualizar matriz de distancias
 ;7.Ir al paso 4
 ;8.Repetir hasta que el tamaño de la matriz de distancias sea 2x2
@@ -193,4 +193,52 @@
   (append (list dendro) (list lista))
 )
 
-;(defun actualiza-matriz(datos,matriz,cluster))
+
+(defun actualiza-etiquetas(datos cluster)
+  "Actualiza las etiquetas de la tabla de datos
+  ENTRADA
+  datos:tabla de datos (creada con lee-separado)
+  cluster: rest de la función encuentra-min
+  "
+  (loop for i in cluster do
+    (setf (aref datos i (1- (array-dimension datos 1)))
+     (append (aref datos i (1- (array-dimension datos 1))) (list i)))
+  );loop
+  datos
+);defun
+
+(defun linkage(datos ind-obs1 ind-obs2)
+  "
+  Calcula la función de distancia promedio entre grupos
+  ENTRADA:
+  datos:tabla de datos (arreglo)
+  ind-obs1-2: Listas con los índices en la tabla de datos
+  de las observaciones del cluster 1-2.
+  SALIDA:
+  dist-prom: distancia promedio entre los grupos
+  "
+  (let ((card1 0) (card2 0) (obs1 '()) (obs2 '()) (ncol-dat 0) (suma 0) (promedio 0))
+    (setq ncol-dat (1- (array-dimension datos 1))) ;Número de atributos
+    (setq card1 (length ind-obs1)) ;Cardinalidad conjunto 1
+    (setq card2 (length ind-obs2)) ;Cardinalidad conjunto 2
+
+    (loop for i in ind-obs1 do
+      (setq obs1 (make-array ncol-dat))
+      ;extrae observación i de los datos
+        (loop for k from 0 to (1- ncol-dat) do
+          (setf (aref obs1 k) (aref datos i k)));loop
+
+      (loop for j in ind-obs2 do
+        (setq obs2 (make-array ncol-dat))
+        ;extrae observación j
+        (loop for k from 0 to (1- ncol-dat) do
+          (setf (aref obs2 k) (aref datos j k)));loop
+        ;calcula distancia
+        (setq suma (+ suma (dist-sint obs1 obs2)))
+      );loop
+    );loop
+    (setq promedio (/ suma (* card1 card2)))
+    (setq promedio (float promedio))
+    promedio
+  );let
+);defun
