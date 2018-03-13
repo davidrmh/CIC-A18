@@ -194,16 +194,26 @@
 )
 
 
+(defun unicos(lista)
+  "Elimina elementos repetidos de una lista"
+  (let ((nueva-lista '()))
+    (loop for elem in lista do
+      (when (not (find elem nueva-lista))
+        (setq nueva-lista (append nueva-lista (list elem))));when
+    );loop
+  nueva-lista
+  );let
+);defun
+
 (defun actualiza-etiquetas(datos cluster)
   "Actualiza las etiquetas de la tabla de datos
   ENTRADA
   datos:tabla de datos (creada con lee-separado)
   cluster: rest de la función encuentra-min
   "
-  (loop for i in cluster do
-    (setf (aref datos i (1- (array-dimension datos 1)))
-     (append (aref datos i (1- (array-dimension datos 1))) (list i)))
-  );loop
+    (loop for i in (first cluster) do
+        (setf (aref datos i (1- (array-dimension datos 1))) (first cluster))
+    );loop
   datos
 );defun
 
