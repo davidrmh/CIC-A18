@@ -174,7 +174,7 @@
         (cond
             ;Si es un nuevo mínimo
             ;reinicia el cluster
-            ((< (aref matriz i j) dist-min) (setq dist-min (aref matriz i j)) (setq cluster (list i j)))
+            (and((< (aref matriz i j) dist-min) (/= (aref matriz i j) 0)) (setq dist-min (aref matriz i j)) (setq cluster (list i j)))
             ;Si es el mismo mínimo agrega al cluster
             ((= (aref matriz i j) dist-min) (setq cluster (append cluster (list i j))))
         );cond
@@ -211,10 +211,15 @@
   datos:tabla de datos (creada con lee-separado)
   cluster: rest de la función encuentra-min
   "
+  (let ((aux '()) (col-aux 0) )
+    (setq col-aux (1- (array-dimension datos 1)))
     (loop for i in (first cluster) do
-        (setf (aref datos i (1- (array-dimension datos 1))) (first cluster))
+      (setq aux (append (aref datos i col-aux) (first cluster)))
+      (setq aux (unicos aux))
+      (setf (aref datos i col-aux) aux)
     );loop
   datos
+  );let
 );defun
 
 (defun linkage(datos ind-obs1 ind-obs2)
