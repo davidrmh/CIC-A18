@@ -1,9 +1,15 @@
 ;David R. Montalván Hernández
 ;Agrupamiento jerárquico aglomerativo
 
-;Instrucciones
+;Algoritmo
 ;1.Leer los datos (arreglo)
-;2.Calcular la matriz de distancias
+;2.Calcular la matriz de distancias inicial
+;3.Agregar etiquetas iniciales
+;4.Encontrar mínimo
+;5.Actualizar dendrograma
+;6.Actualizar matriz de distancias
+;7.Ir al paso 4
+;8.Repetir hasta que el tamaño de la matriz de distancias sea 2x2
 
 ;Distancia para atributos buying y maint
 (defun dist-buy(atr1 atr2)
@@ -104,7 +110,7 @@
 
 ;Crea la matriz de distancias
 ;Sólo se crea la matriz triangular inferior
-(defun matriz-distancias(datos)
+(defun matriz-distancias-inicial(datos)
   "Crea la matriz de distancias
   Sólo se crea la matriz triangular inferior
   ENTRADA:
@@ -117,7 +123,7 @@
     (setq nreng (array-dimension datos 0)) ;número de renglones
     (setq ncol (array-dimension datos 1));número de columnas
     (setq ncol (1- ncol)) ;este 1- es para no contar la última columna
-    (setq mat-dist (make-array (list nreng nreng) :initial-element 0)) ;dimensiona matriz de distancias
+    (setq mat-dist (make-array (list nreng nreng) :initial-element 0 :adjustable t)) ;dimensiona matriz de distancias
 
     (loop for i from 0 to (1- nreng) do
       (setq obs1 (make-array ncol))
@@ -134,6 +140,58 @@
         (setf (aref mat-dist i j) (dist-sint obs1 obs2))
       );loop
     );loop
-    (return-from matriz-distancias mat-dist)
+    mat-dist
   );let
 );defun
+
+(defun agrega-etiquetas-inicial(matriz)
+  "Agrega una etiqueta en la matriz de distancias
+  con el fin de identificar las observaciones
+  esta etiquieta se agrega en la última columna de la matriz.
+  No me afecta ya que sólo estoy considerando la matriz triangular
+  inferior.
+  "
+  (loop for i from 0 to (1- (array-dimension matriz 0)) do
+    (setf (aref matriz i (1- (array-dimension matriz 1)))
+      i));loop
+  matriz
+);defun
+
+(defun encuentra-min(matriz)
+  "Encuentra el valor de la distancia mínima en la matriz de
+  distancias así como las observaciones que se deben de agrupar
+  ENTRADA:
+  matriz: matriz de distancias (triangular inferior)
+  SALIDA:
+  una lista con first = distancia mínima
+  rest = una lista con los índices de las observaciones que se deben agrupar
+  "
+  (let ((n-reng 0) (dist-min 0) (cluster '()))
+    (setq n-reng (array-dimension matriz 0));renglones (y columnas)
+
+    (loop for i from 1 to (1- n-reng) do
+      (setq dist-min (aref matriz 1 0)) ;arbitrario
+      (loop for j from 0 to (1- i) do
+        (cond
+            ;Si es un nuevo mínimo
+            ;reinicia el cluster
+            ((< (aref matriz i j) dist-min) (setq dist-min (aref matriz i j)) (setq cluster (list i j)))
+            ;Si es el mismo mínimo agrega al cluster
+            ((= (aref matriz i j) dist-min) (setq cluster (append cluster (list i j))))
+        );cond
+      );loop
+    );loop
+  (list dist-min cluster)
+  );let
+);defun
+
+(defun actualiza-dendro(dendro,lista)
+  "Actualiza el dendrograma
+  La representación es utilizando una lista de listas de la forma
+  ((dist1 (Obs1-Obs2)) (dist2 (Obs3-Obs4))...)
+  Cada elemento de la lista se obtiene con la función encuentra-min
+  "
+  (append (list dendro) (list lista))
+)
+
+(defun actualiza-matriz(datos,matriz,cluster))
