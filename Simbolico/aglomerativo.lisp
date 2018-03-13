@@ -4,7 +4,7 @@
 ;Algoritmo
 ;1.Leer los datos (arreglo)
 ;2.Calcular la matriz de distancias inicial
-;3.Agregar etiquetas iniciales
+;3.Agregar etiquetas iniciales a la tabla de datos
 ;4.Encontrar mínimo
 ;5.Actualizar dendrograma
 ;6.Actualizar matriz de distancias
@@ -144,17 +144,16 @@
   );let
 );defun
 
-(defun agrega-etiquetas-inicial(matriz)
-  "Agrega una etiqueta en la matriz de distancias
-  con el fin de identificar las observaciones
-  esta etiquieta se agrega en la última columna de la matriz.
-  No me afecta ya que sólo estoy considerando la matriz triangular
-  inferior.
+(defun agrega-etiquetas-inicial(datos)
+  "Agrega una etiqueta en la tabla de datos
+  con el fin de identificar los grupos
+  esta etiquieta se agrega en la última columna de tabla.
+  (Sobreescribe las etiquetas que no se utilizan)
   "
-  (loop for i from 0 to (1- (array-dimension matriz 0)) do
-    (setf (aref matriz i (1- (array-dimension matriz 1)))
+  (loop for i from 0 to (1- (array-dimension datos 0)) do
+    (setf (aref datos i (1- (array-dimension datos 1)))
     (list i)));loop
-  matriz
+  datos
 );defun
 
 (defun encuentra-min(matriz)
@@ -185,7 +184,7 @@
   );let
 );defun
 
-(defun actualiza-dendro(dendro,lista)
+(defun actualiza-dendro(dendro lista)
   "Actualiza el dendrograma
   La representación es utilizando una lista de listas de la forma
   ((dist1 (Obs1-Obs2)) (dist2 (Obs3-Obs4))...)
@@ -194,4 +193,4 @@
   (append (list dendro) (list lista))
 )
 
-(defun actualiza-matriz(datos,matriz,cluster))
+;(defun actualiza-matriz(datos,matriz,cluster))
