@@ -153,7 +153,7 @@
   "
   (loop for i from 0 to (1- (array-dimension matriz 0)) do
     (setf (aref matriz i (1- (array-dimension matriz 1)))
-      i));loop
+    (list i)));loop
   matriz
 );defun
 
