@@ -8,9 +8,9 @@
 ;4.Encontrar mínimo
 ;5.Actualizar dendrograma y las etiquetas de la tabla datos
 ;6.Actualizar matriz de distancias
-;7.Ir al paso 4
-;8.Repetir mientras el dendrograma no tenga al grupo máximo
-;(equal (first (last dendrograma))) => Stop
+;7.Revisar condición de paro
+;8.Ir al paso 4
+;Repetir hasta condición de paro
 
 ;Distancia para atributos buying y maint
 (defun dist-buy(atr1 atr2)
@@ -19,7 +19,6 @@
   Los valores que pueden tomar estos atributos son:
   v-high,high,med,low
   "
-
   (cond
     ((or (and (equal atr1 "vhigh") (equal atr2 "high"))
         (and (equal atr2 "vhigh") (equal atr1 "high"))) 0.5)
@@ -289,5 +288,74 @@
       );loop
     );loop
   mat-dist
+  );let
+);defun
+
+(defun aux-paro(datos)
+  "Función auxiliar para la condición de paro
+  Sólamente crea una lista con los índices
+  de la tabla de datos (renglones)
+  "
+  (let ((lista nil))
+    (loop for i from 0 to (1- (array-dimension datos 0)) do
+      (setq lista (append lista (list i)))
+    );loop
+    lista
+  );let
+);defun
+
+(defun condicion-paro?(datos lista)
+  "La condición de para es cuando algún renglón de la última
+  columna de la tabla de datos contiene una lista igual a la
+  lista de paro
+  "
+  (let ((renglon nil) (nreng 0) (ncol 0))
+      (setq nreng (array-dimension datos 0))
+      (setq ncol (array-dimension datos 1))
+      (loop for i from 0 to (1- nreng) do
+        (setq renglon (aref datos i (1- ncol)))
+        (when
+          ;subsetp por que no tienen el mismo orden de elementos
+          (and (subsetp renglon lista) (subsetp lista renglon))
+            (return-from condicion-paro? t)
+        );when
+      );loop
+    nil
+  );let
+);defun
+
+(defun aglomerativo(ruta-datos)
+  "Función principal para ejectuar el algoritmo de
+  jerarquización aglomerativa
+  ENTRADA
+  ruta-datos:cadena con la ruta del archivo con los datos de UCI
+  SALIDA
+  dendrograma:lista que representa el dendrograma
+  "
+  (let ((datos nil) ;tabla de datos
+       (mat-dist nil) ;matriz de distancias
+       (lista-min nil);lista que contiene la distancia mínima
+       (dendrograma nil) ;lista que representa al dendrograma
+        (lista-paro nil)) ;auxiliar para la condición de paro
+    ;(load "lee-separado.lisp")
+    (setq datos (lee-separado ruta-datos));lee datos
+    ;matriz de distancias (inicial)
+    (setq mat-dist (matriz-distancias-inicial datos))
+    ;agrega etiquetas iniciales
+    (setq datos (agrega-etiquetas-inicial datos))
+    ;auxiliar para la condición de paro
+    (setq lista-paro (aux-paro datos))
+    (loop
+      ;revisa condición de paro
+      (when (condicion-paro? datos lista-paro) (return-from aglomerativo dendrograma))
+      ;encuentra mínimo
+      (setq lista-min (encuentra-min mat-dist))
+      ;actualiza dendrograma
+      (setq dendrograma (actualiza-dendro dendrograma lista-min))
+      ;actualiza etiquetas
+      (setq datos (actualiza-etiquetas datos (rest lista-min)))
+      ;actualiza matriz de distancias
+      (setq mat-dist (actualiza-distancias datos))
+    );loop
   );let
 );defun
