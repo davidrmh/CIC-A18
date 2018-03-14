@@ -186,6 +186,7 @@
 
       );loop
     );loop
+    (setq cluster (unicos cluster))
   (list dist-min cluster)
   );let
 );defun
@@ -196,7 +197,7 @@
   ((dist1 (Obs1-Obs2)) (dist2 (Obs3-Obs4))...)
   Cada elemento de la lista se obtiene con la función encuentra-min
   "
-  (append (list dendro) (list lista))
+  (append  dendro (list lista))
 )
 
 
@@ -321,6 +322,32 @@
         );when
       );loop
     nil
+  );let
+);defun
+
+(defun limpia-dendro(dendro)
+  "Función auxiliar para limpiar el dendrograma
+  agrupa por distancias
+  "
+  (let((list-dist nil) (list-aux nil) (n 0) (nuevo-den nil))
+    (setq n (length dendro))
+    ;Primer colecta las distancias de agrupamiento
+    (loop for i from 0 to (1- n) do
+      (setq list-dist (append list-dist (list (first (nth i dendro)))))
+    );loop
+
+    ;Después para cada distancia agrupa las observaciones en esa
+    ;distancia
+    (setq list-dist (unicos list-dist))
+    (loop for dist in list-dist do
+      (loop for i from 0 to (1- n) do
+        ;agrupa las observaciones en la misma distancia
+        (if (= dist (first (nth i dendro)))
+          (setq list-aux (append list-aux (second (nth i dendro)))));if
+      );loop
+      (push (list (list dist list-aux)) nuevo-den)
+    );loop
+    nuevo-den
   );let
 );defun
 
