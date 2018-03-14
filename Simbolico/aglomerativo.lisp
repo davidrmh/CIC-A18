@@ -9,7 +9,8 @@
 ;5.Actualizar dendrograma y las etiquetas de la tabla datos
 ;6.Actualizar matriz de distancias
 ;7.Ir al paso 4
-;8.Repetir hasta que el tamaño de la matriz de distancias sea 2x2
+;8.Repetir mientras el dendrograma no tenga al grupo máximo
+;(equal (first (last dendrograma))) => Stop
 
 ;Distancia para atributos buying y maint
 (defun dist-buy(atr1 atr2)
@@ -171,13 +172,19 @@
     (loop for i from 1 to (1- n-reng) do
       (setq dist-min (aref matriz 1 0)) ;arbitrario
       (loop for j from 0 to (1- i) do
-        (cond
-            ;Si es un nuevo mínimo
-            ;reinicia el cluster
-            (and((< (aref matriz i j) dist-min) (/= (aref matriz i j) 0)) (setq dist-min (aref matriz i j)) (setq cluster (list i j)))
-            ;Si es el mismo mínimo agrega al cluster
-            ((= (aref matriz i j) dist-min) (setq cluster (append cluster (list i j))))
-        );cond
+
+        (when (and (< (aref matriz i j) dist-min) (/= (aref matriz i j) 0))
+          ;Si es un nuevo mínimo
+          ;reinicia el cluster
+            (setq dist-min (aref matriz i j))
+            (setq cluster (list i j))
+        );when
+
+        (when (= (aref matriz i j) dist-min)
+          ;Si es el mismo mínimo agrega al cluster
+          (setq cluster (append cluster (list i j)))
+        );when
+
       );loop
     );loop
   (list dist-min cluster)
@@ -223,8 +230,7 @@
 );defun
 
 (defun linkage(datos ind-obs1 ind-obs2)
-  "
-  Calcula la función de distancia promedio entre grupos
+  "Calcula la función de distancia promedio entre grupos
   ENTRADA:
   datos:tabla de datos (arreglo)
   ind-obs1-2: Listas con los índices en la tabla de datos
@@ -255,5 +261,33 @@
     (setq promedio (/ suma (* card1 card2)))
     (setq promedio (float promedio))
     promedio
+  );let
+);defun
+
+(defun actualiza-distancias(datos)
+  "Actualiza la matriz de distancias
+  ENTRADA:
+  datos: Tabla de datos después de actualizar las etiquetas
+  SALIDA:
+  mat-dist:Matriz de distancias utilizando la función de distancias
+  entre grupos (sólo la porción triangular inferior)
+  "
+  (let((ind-obs1 '()) (ind-obs2 '()) (nreng 0) (ncol 0) (mat-dist nil))
+    (setq nreng (array-dimension datos 0));número renglones
+    (setq ncol (array-dimension datos 1)) ;número columnas
+    (setq mat-dist (make-array (list nreng nreng) :initial-element 0 :adjustable t));matriz
+
+    (loop for i from 1 to (1- nreng) do
+      (setq ind-obs1 (aref datos i (1- ncol)))
+      (loop for j from 0 to (1- i) do
+        (setq ind-obs2 (aref datos j (1- ncol)))
+        (when
+          ;cuando no son del mismo grupo
+          (not (or (subsetp ind-obs1 ind-obs2) (subsetp ind-obs2 ind-obs1)))
+          (setf (aref mat-dist i j) (linkage datos ind-obs1 ind-obs2))
+        );when
+      );loop
+    );loop
+  mat-dist
   );let
 );defun
