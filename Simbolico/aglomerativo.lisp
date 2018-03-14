@@ -1,6 +1,9 @@
 ;David R. Montalván Hernández
 ;Agrupamiento jerárquico aglomerativo
 
+;USO
+;(defvar list (main-aglomerativo ruta-archivo-de-datos))
+
 ;Algoritmo
 ;1.Leer los datos (arreglo)
 ;2.Calcular la matriz de distancias inicial
@@ -384,5 +387,46 @@
       ;actualiza matriz de distancias
       (setq mat-dist (actualiza-distancias datos))
     );loop
+  );let
+);defun
+
+(defun obten-corte(dendro dist-corte)
+  "Función para obtener los cortes del dendrograma
+  ENTRADA:
+  dendro:dendrograma (después de limpia-dendro)
+  dist-corte:distancia de corte
+  (second (first (nth i dendro))) para la lista de observaciones
+  (first (first (nth i dendro))) para la distancia
+  "
+  (let ((corte nil) (n 0) (dist-aux 0))
+    (setq n (length dendro))
+    (loop for i from 0 to (1- n) do
+      (setq dist-aux (first (first (nth i dendro))))
+      (when (<= dist-aux dist-corte)
+        (setq corte (append corte (second (first (nth i dendro)))))
+      );when
+    );loop
+    corte
+  );let
+);defun
+
+(defun main-aglomerativo(ruta-datos)
+  "Para no perder la tradición
+  la función principal main
+  ENTRADA
+  ruta-datos: ruta del archivo con los datos de UCI
+  SALIDA
+  una lista con first = dendrograma
+  rest = corte en la distancia corte
+  "
+  (let ((dendro nil) (dist-corte) (corte nil))
+    (load "lee-separado.lisp")
+    (setq dendro (aglomerativo ruta-datos))
+    (setq dendro (limpia-dendro dendro))
+    ;Usuario pide la distancia de corte
+    (format t "Dame la distancia de corte~%")
+    (setq dist-corte (read))
+    (setq corte (obten-corte dendro dist-corte))
+    (list dendro corte)
   );let
 );defun
