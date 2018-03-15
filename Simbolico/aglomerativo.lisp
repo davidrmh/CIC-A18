@@ -128,15 +128,15 @@
     (setq ncol (1- ncol)) ;este 1- es para no contar la última columna
     (setq mat-dist (make-array (list nreng nreng) :initial-element 0 :adjustable t)) ;dimensiona matriz de distancias
 
-    (loop for i from 0 to (1- nreng) do
+    (loop for i from 1 to (1- nreng) do
       (setq obs1 (make-array ncol))
       ;extrae observación en el renglón i
       (loop for k from 0 to (1- ncol) do
         (setf (aref obs1 k) (aref datos i k)));loop
 
-      (loop for j from 0 to i do
+      (loop for j from 0 to (1- i) do
         (setq obs2 (make-array ncol))
-        ;extrae la observación de los renglones abajo del renglón j
+        ;extrae la observación del renglón j
         (loop for k from 0 to (1- ncol) do
           (setf (aref obs2 k) (aref datos j k)));loop
         ;calcula la distancia sintáctica
@@ -168,17 +168,17 @@
   una lista con first = distancia mínima
   rest = una lista con los índices de las observaciones que se deben agrupar
   "
-  (let ((n-reng 0) (dist-min 0) (cluster '()))
+  (let ((n-reng 0) (dist-min 0) (cluster '()) (curr-min 10000000))
     (setq n-reng (array-dimension matriz 0));renglones (y columnas)
 
     (loop for i from 1 to (1- n-reng) do
-      (setq dist-min (aref matriz 1 0)) ;arbitrario
       (loop for j from 0 to (1- i) do
 
-        (when (and (< (aref matriz i j) dist-min) (/= (aref matriz i j) 0))
+        (when (and (< (aref matriz i j) curr-min) (/= (aref matriz i j) 0))
           ;Si es un nuevo mínimo
           ;reinicia el cluster
             (setq dist-min (aref matriz i j))
+            (setq curr-min dist-min)
             (setq cluster (list i j))
         );when
 
@@ -267,27 +267,37 @@
   );let
 );defun
 
-(defun actualiza-distancias(datos)
+(defun actualiza-distancias(datos mat-dist indices)
   "Actualiza la matriz de distancias
   ENTRADA:
   datos: Tabla de datos después de actualizar las etiquetas
+  mat-dist: Matriz de distancias
+  indices: indices a modificar
   SALIDA:
   mat-dist:Matriz de distancias utilizando la función de distancias
   entre grupos (sólo la porción triangular inferior)
   "
-  (let((ind-obs1 '()) (ind-obs2 '()) (nreng 0) (ncol 0) (mat-dist nil))
+  (let((ind-obs1 '()) (ind-obs2 '()) (nreng 0) (ncol 0) (ind-min 0))
     (setq nreng (array-dimension datos 0));número renglones
     (setq ncol (array-dimension datos 1)) ;número columnas
-    (setq mat-dist (make-array (list nreng nreng) :initial-element 0 :adjustable t));matriz
+    (setq ind-min (reduce #'min indices));Este renglón contendrá la información del grupo
+    ;Cancela los renglones distintos a ind-main
+    ;pone un cero para que la función
+    (loop for i in indices do
+      (when (/= i ind-min)
+        (loop for j from 0 to i do
+          (setf (aref mat-dist i j) 0));loop
+      );when
+    ) ;loop
 
-    (loop for i from 1 to (1- nreng) do
-      (setq ind-obs1 (aref datos i (1- ncol)))
-      (loop for j from 0 to (1- i) do
-        (setq ind-obs2 (aref datos j (1- ncol)))
+    (loop for i in indices do
+      (setq ind-obs1 (aref datos i (1- ncol))) ;Grupo del renglón i
+      (loop for j from 0 to (1- nreng) do
+        (setq ind-obs2 (aref datos j (1- ncol))) ;Grupo del renglón j
         (when
           ;cuando no son del mismo grupo
           (not (or (subsetp ind-obs1 ind-obs2) (subsetp ind-obs2 ind-obs1)))
-          (setf (aref mat-dist i j) (linkage datos ind-obs1 ind-obs2))
+          (setf (aref mat-dist ind-min j) (linkage datos ind-obs1 ind-obs2))
         );when
       );loop
     );loop
@@ -367,7 +377,7 @@
        (lista-min nil);lista que contiene la distancia mínima
        (dendrograma nil) ;lista que representa al dendrograma
         (lista-paro nil)) ;auxiliar para la condición de paro
-    ;(load "lee-separado.lisp")
+
     (setq datos (lee-separado ruta-datos));lee datos
     ;matriz de distancias (inicial)
     (setq mat-dist (matriz-distancias-inicial datos))
@@ -376,16 +386,17 @@
     ;auxiliar para la condición de paro
     (setq lista-paro (aux-paro datos))
     (loop
-      ;revisa condición de paro
-      (when (condicion-paro? datos lista-paro) (return-from aglomerativo dendrograma))
       ;encuentra mínimo
       (setq lista-min (encuentra-min mat-dist))
       ;actualiza dendrograma
       (setq dendrograma (actualiza-dendro dendrograma lista-min))
       ;actualiza etiquetas
       (setq datos (actualiza-etiquetas datos (rest lista-min)))
+      ;revisa condición de paro
+      (when (condicion-paro? datos lista-paro) (return-from aglomerativo dendrograma))
+      ;(format t "~a~%" (write-to-string datos))
       ;actualiza matriz de distancias
-      (setq mat-dist (actualiza-distancias datos))
+      (setq mat-dist (actualiza-distancias datos mat-dist (first (rest lista-min))))
     );loop
   );let
 );defun
