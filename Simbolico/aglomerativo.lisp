@@ -26,65 +26,65 @@
     ((or (and (equal atr1 "vhigh") (equal atr2 "high"))
         (and (equal atr2 "vhigh") (equal atr1 "high"))) 0.5)
     ((or (and (equal atr1 "vhigh") (equal atr2 "med"))
-        (and (equal atr2 "vhigh") (equal atr1 "med"))) 2)
+        (and (equal atr2 "vhigh") (equal atr1 "med"))) 2.5)
     ((or (and (equal atr1 "med") (equal atr2 "low"))
-        (and (equal atr2 "med") (equal atr1 "low"))) 2)
+        (and (equal atr2 "med") (equal atr1 "low"))) 2.5)
     ((or (and (equal atr1 "vhigh") (equal atr2 "low"))
-        (and (equal atr2 "vhigh") (equal atr1 "low"))) 10)
+        (and (equal atr2 "vhigh") (equal atr1 "low"))) 10.5)
     ((or (and (equal atr1 "high") (equal atr2 "med"))
-        (and (equal atr2 "high") (equal atr1 "med"))) 2)
+        (and (equal atr2 "high") (equal atr1 "med"))) 2.5)
     ((or (and (equal atr1 "high") (equal atr2 "low"))
-        (and (equal atr2 "high") (equal atr1 "low"))) 5)
+        (and (equal atr2 "high") (equal atr1 "low"))) 5.5)
     (t 0)));defun
 
 ;Distancia para el atributo doors
 (defun dist-doors(atr1 atr2)
   (cond
     ((or (and (equal atr1 2) (equal atr2 3))
-        (and (equal atr2 2) (equal atr1 3))) 1)
+        (and (equal atr2 2) (equal atr1 3))) 1.5)
     ((or (and (equal atr1 2) (equal atr2 4))
-        (and (equal atr2 2) (equal atr1 4))) 2)
+        (and (equal atr2 2) (equal atr1 4))) 2.5)
     ((or (and (equal atr1 2) (equal atr2 "5more"))
-        (and (equal atr2 2) (equal atr1 "5more"))) 5)
+        (and (equal atr2 2) (equal atr1 "5more"))) 5.5)
     ((or (and (equal atr1 3) (equal atr2 4))
-        (and (equal atr2 3) (equal atr1 4))) 1)
+        (and (equal atr2 3) (equal atr1 4))) 1.5)
     ((or (and (equal atr1 3) (equal atr2 "5more"))
-        (and (equal atr2 3) (equal atr1 "5more"))) 5)
+        (and (equal atr2 3) (equal atr1 "5more"))) 5.5)
     ((or (and (equal atr1 4) (equal atr2 "5more"))
-        (and (equal atr2 4) (equal atr1 "5more"))) 1)
+        (and (equal atr2 4) (equal atr1 "5more"))) 1.5)
     (t 0)));defun
 
 ;Distancia para el atributo persons
 (defun dist-pers(atr1 atr2)
   (cond
     ((or (and (equal atr1 2) (equal atr2 4))
-        (and (equal atr2 2) (equal atr1 4))) 2)
+        (and (equal atr2 2) (equal atr1 4))) 2.5)
     ((or (and (equal atr1 2) (equal atr2 "more"))
-        (and (equal atr2 2) (equal atr1 "more"))) 5)
+        (and (equal atr2 2) (equal atr1 "more"))) 5.5)
     ((or (and (equal atr1 4) (equal atr2 "more"))
-        (and (equal atr2 4) (equal atr1 "more"))) 2)
+        (and (equal atr2 4) (equal atr1 "more"))) 2.5)
     (t 0)));defun
 
 ;Distancia para el atributo lug_boot
 (defun dist-lug(atr1 atr2)
   (cond
     ((or (and (equal atr1 "small") (equal atr2 "med"))
-        (and (equal atr2 "small") (equal atr1 "med"))) 2)
+        (and (equal atr2 "small") (equal atr1 "med"))) 2.5)
     ((or (and (equal atr1 "small") (equal atr2 "big"))
-        (and (equal atr2 "small") (equal atr1 "big"))) 5)
+        (and (equal atr2 "small") (equal atr1 "big"))) 5.5)
     ((or (and (equal atr1 "med") (equal atr2 "big"))
-        (and (equal atr2 "med") (equal atr1 "big"))) 2)
+        (and (equal atr2 "med") (equal atr1 "big"))) 2.5)
     (t 0)));defun
 
 ;Distancia para el atributo safety
 (defun dist-safe(atr1 atr2)
   (cond
     ((or (and (equal atr1 "low") (equal atr2 "med"))
-        (and (equal atr2 "low") (equal atr1 "med"))) 2)
+        (and (equal atr2 "low") (equal atr1 "med"))) 2.5)
     ((or (and (equal atr1 "low") (equal atr2 "high"))
-        (and (equal atr2 "low") (equal atr1 "high"))) 5)
+        (and (equal atr2 "low") (equal atr1 "high"))) 5.5)
     ((or (and (equal atr1 "med") (equal atr2 "high"))
-        (and (equal atr2 "med") (equal atr1 "high"))) 2)
+        (and (equal atr2 "med") (equal atr1 "high"))) 2.5)
     (t 0)));defun
 
 ;Calcula la distanacia sintáctica
@@ -173,20 +173,18 @@
 
     (loop for i from 1 to (1- n-reng) do
       (loop for j from 0 to (1- i) do
-
-        (when (and (< (aref matriz i j) curr-min) (/= (aref matriz i j) 0))
-          ;Si es un nuevo mínimo
-          ;reinicia el cluster
-            (setq dist-min (aref matriz i j))
-            (setq curr-min dist-min)
-            (setq cluster (list i j))
-        );when
-
-        (when (= (aref matriz i j) dist-min)
-          ;Si es el mismo mínimo agrega al cluster
-          (setq cluster (append cluster (list i j)))
-        );when
-
+        ;(when (/= (aref matriz i 0) 0) ;cuando no es un renglón cancelado
+          (when (and (< (aref matriz i j) curr-min) (/= (aref matriz i j) 0))
+            ;Si es un nuevo mínimo
+            ;reinicia el cluster
+              (setq dist-min (aref matriz i j))
+              (setq curr-min dist-min)
+              (setq cluster (list i j))
+          );when
+          (when (= (aref matriz i j) dist-min)
+            ;Si es el mismo mínimo agrega al cluster
+            (setq cluster (append cluster (list i j))));when
+        ;);when
       );loop
     );loop
     (setq cluster (unicos cluster))
@@ -200,7 +198,7 @@
   ((dist1 (Obs1-Obs2)) (dist2 (Obs3-Obs4))...)
   Cada elemento de la lista se obtiene con la función encuentra-min
   "
-  (append  dendro (list lista))
+  (append  dendro (list (unicos lista)))
 )
 
 
@@ -277,30 +275,35 @@
   mat-dist:Matriz de distancias utilizando la función de distancias
   entre grupos (sólo la porción triangular inferior)
   "
-  (let((ind-obs1 '()) (ind-obs2 '()) (nreng 0) (ncol 0) (ind-min 0))
+  (let((ind-obs1 '()) (ind-obs2 '()) (nreng 0) (ncol 0) (ind-min 0) (aux 0)
+    (memoria '()))
     (setq nreng (array-dimension datos 0));número renglones
     (setq ncol (array-dimension datos 1)) ;número columnas
     (setq ind-min (reduce #'min indices));Este renglón contendrá la información del grupo
     ;Cancela los renglones distintos a ind-main
-    ;pone un cero para que la función
+    ;pone un cero para que la función encuentra-min no lo considere
     (loop for i in indices do
       (when (/= i ind-min)
-        (loop for j from 0 to i do
-          (setf (aref mat-dist i j) 0));loop
+        (loop for j from 0 to (1- i) do
+          (setf (aref mat-dist i j) 0))
       );when
     ) ;loop
 
-    (loop for i in indices do
-      (setq ind-obs1 (aref datos i (1- ncol))) ;Grupo del renglón i
-      (loop for j from 0 to (1- nreng) do
-        (setq ind-obs2 (aref datos j (1- ncol))) ;Grupo del renglón j
-        (when
-          ;cuando no son del mismo grupo
-          (not (or (subsetp ind-obs1 ind-obs2) (subsetp ind-obs2 ind-obs1)))
-          (setf (aref mat-dist ind-min j) (linkage datos ind-obs1 ind-obs2))
+    ;(loop for i in indices do
+      (setq ind-obs1 (aref datos ind-min (1- ncol))) ;Grupo del renglón i
+      (loop for j from 1 to (1- nreng) do
+        (setq aux (reduce #'min (aref datos j (1- ncol))))
+        (push aux memoria)
+        (when (not (member aux memoria :test 'equal)) ;cuando no se a revisado
+          (setq ind-obs2 (aref datos aux (1- ncol)));Grupo del renglón j
+            (when
+              ;cuando no son del mismo grupo
+              (not (or (subsetp ind-obs1 ind-obs2) (subsetp ind-obs2 ind-obs1)))
+              (setf (aref mat-dist ind-min j) (linkage datos ind-obs1 ind-obs2))
+            );when
         );when
       );loop
-    );loop
+    ;);loop
   mat-dist
   );let
 );defun
@@ -422,8 +425,7 @@
 );defun
 
 (defun main-aglomerativo(ruta-datos)
-  "Para no perder la tradición
-  la función principal main
+  "
   ENTRADA
   ruta-datos: ruta del archivo con los datos de UCI
   SALIDA
@@ -437,7 +439,7 @@
     ;Usuario pide la distancia de corte
     (format t "Dame la distancia de corte~%")
     (setq dist-corte (read))
-    (setq corte (obten-corte dendro dist-corte))
+    (setq corte (unicos (obten-corte dendro dist-corte)))
     (list dendro corte)
   );let
 );defun
