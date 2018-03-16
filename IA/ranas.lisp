@@ -147,7 +147,7 @@
 ;;=======================================================================
 (defun apply-operator(op estado)
 "Aplica la operación op al estado"
-  (let ((indice nil)) (movimiento nil) (copia-estado nil)
+  (let ((indice nil) (movimiento nil) (copia-estado nil))
     (setq indice (first (second op))) ;índice de la posición de la rana
     (setq movimiento (second (second op))) ;Dirección y magnitud del salto
     (setq copia-estado (copy-seq estado));Copia el estado para evitar modificarlo
