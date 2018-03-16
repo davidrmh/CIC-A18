@@ -15,6 +15,8 @@
 ;8.Ir al paso 4
 ;Repetir hasta condición de paro
 
+(load "lee-separado.lisp")
+
 ;Distancia para atributos buying y maint
 (defun dist-buy(atr1 atr2)
   "Calcula la distancia para los atributos
@@ -159,6 +161,18 @@
   datos
 );defun
 
+(defun unicos(lista)
+  "Elimina elementos repetidos de una lista"
+  (let ((nueva-lista '()))
+    (loop for elem in lista do
+      (when (not (find elem nueva-lista))
+        (setq nueva-lista (append nueva-lista (list elem))));when
+    );loop
+  nueva-lista
+  );let
+);defun
+
+
 (defun encuentra-min(matriz)
   "Encuentra el valor de la distancia mínima en la matriz de
   distancias así como las observaciones que se deben de agrupar
@@ -201,17 +215,6 @@
   (append  dendro (list (unicos lista)))
 )
 
-
-(defun unicos(lista)
-  "Elimina elementos repetidos de una lista"
-  (let ((nueva-lista '()))
-    (loop for elem in lista do
-      (when (not (find elem nueva-lista))
-        (setq nueva-lista (append nueva-lista (list elem))));when
-    );loop
-  nueva-lista
-  );let
-);defun
 
 (defun actualiza-etiquetas(datos cluster)
   "Actualiza las etiquetas de la tabla de datos
@@ -433,7 +436,6 @@
   rest = corte en la distancia corte
   "
   (let ((dendro nil) (dist-corte) (corte nil))
-    (load "lee-separado.lisp")
     (setq dendro (aglomerativo ruta-datos))
     (setq dendro (limpia-dendro dendro))
     ;Usuario pide la distancia de corte
