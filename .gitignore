@@ -3,5 +3,6 @@
 *.txt
 *.pyc
 *.ods
+IA/GLOL.lisp
 
 patrones/machinelearninginaction/
