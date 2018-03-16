@@ -153,7 +153,8 @@
     (setq copia-estado (copy-seq estado));Copia el estado para evitar modificarlo
     ;Intercambia el nil con la rana
     (setf (nth (+ indice movimiento) copia-estado) (nth indice copia-estado))
-    (setf (nth indice copia-estado) nil)))
+    (setf (nth indice copia-estado) nil)
+    copia-estado))
 
 ;;=======================================================================
 ;;  EXPAND [ estado]
