@@ -121,7 +121,7 @@
     (pop  *Open*))
 
 ;;=======================================================================
-;; VALIDA-OPERADOR
+;; VALID-OPERATOR?
 ;; Función para validar si un operador es aplicable a cierto estado
 ;; recibe una lista representando un operador y una lista representando
 ;; el estado.
@@ -131,6 +131,7 @@
 ;; y además
 ;; 2. La posición destino es nil (no hay rana)
 ;;=======================================================================
+
 (defun valid-operator?(op estado)
   (let ((indice nil) ;índice del elemento a mover
       (movimiento nil)); dirección y magnitud del desplazamiento
@@ -138,8 +139,21 @@
     (setq movimiento (second (second op)))
     (cond
       ((and (not (eql (nth indice estado) nil)) (eql (nth (+ indice movimiento) estado) nil)) t)
-      (t nil)));let
-)
+      (t nil))))
+
+;;=======================================================================
+;;  APPLY-OPERATOR [op, estado]
+;;        Solución simbólica del problema
+;;=======================================================================
+(defun apply-operator(op estado)
+"Aplica la operación op al estado"
+  (let ((indice nil)) (movimiento nil) (copia-estado nil)
+    (setq indice (first (second op))) ;índice de la posición de la rana
+    (setq movimiento (second (second op))) ;Dirección y magnitud del salto
+    (setq copia-estado (copy-seq estado));Copia el estado para evitar modificarlo
+    ;Intercambia el nil con la rana
+    (setf (nth (+ indice movimiento) copia-estado) (nth indice copia-estado))
+    (setf (nth indice copia-estado) nil)))
 
 ;;=======================================================================
 ;;  EXPAND [ estado]
