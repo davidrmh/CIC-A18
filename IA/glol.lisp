@@ -169,9 +169,30 @@
 ;; FUNCIÓN PARA VALIDAR EL ESTADO
 ;; valida-estado
 ;; Un estado es válido si
-;; 1. La oveja y el lobo no están solos en alguna orilla
+;; 1. La oveja y el lobo no están solos en alguna orilla y no está el hombre
 ;; o
-;; 2. La oveja y la comida no están solos en alguna orilla
+;; 2. La oveja y la comida no están solos en alguna orilla y no está el hombre
+
+(defun valida-estado(estado)
+  (let ((orilla-izq nil) (orilla-der nil) (flag-olh nil) (flag-och nil))
+    (setq orilla-izq (first estado));orilla izquierda
+    (setq orilla-der (second estado));orilla derecha
+
+    ;determina el caso oveja-lobo-hombre
+    (setq flag-olh (or
+      (and (member 'O orilla-izq) (member 'L orilla-izq) (not (member 'H orilla-izq)))
+      (and (member 'O orilla-der) (member 'L orilla-der) (not (member 'H orilla-der))) ))
+
+    ;determina el caso oveja-comida-hombre
+    (setq flag-och (or
+      (and (member 'O orilla-izq) (member 'C orilla-izq) (not (member 'H orilla-izq)))
+      (and (member 'O orilla-der) (member 'C orilla-der) (not (member 'H orilla-der))) ))
+
+    (cond
+      ((or flag-olh flag-och) nil)
+      (t t))
+  );let
+);defun
 
 ;;=======================================================================
 ;;  EXPAND [ estado]
@@ -184,7 +205,7 @@
 
        (dolist  (op  *Ops*  descendientes)
 	        (setq  nuevo-estado  (apply-operator  op estado))
-		     (when (valid-operator?  op  estado)
+		     (when ( and (valid-operator?  op  estado) (valida-estado nuevo-estado))
          (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
 
 ;;=======================================================================
