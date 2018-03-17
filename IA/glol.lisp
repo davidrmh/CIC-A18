@@ -7,7 +7,7 @@
 ;;==============================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
 ;; Se utilizará una lista de la siguiente forma
-;; (('H 'L 'O 'C 1) (nil nil nil nil 0))
+;; '(('H 'L 'O 'C 1) (nil nil nil nil 0))
 ;; El valor de NIL representa un espacio libre
 ;; en donde 'H es hombre, L es lobo, O es oveja, C es comida
 ;; y 1 quiere decir que el bote está en esa orilla.
@@ -16,9 +16,9 @@
 
 ;;======================================
 ;; ESTADO INICIAL
-;; (('H 'L 'O 'C 1) (nil nil nil nil 0))
+;; '(('H 'L 'O 'C 1) (nil nil nil nil 0))
 ;; ESTADO META
-;; ((nil nil nil nil 0) ('H 'L 'O 'C 1))
+;; '((nil nil nil nil 0) ('H 'L 'O 'C 1))
 ;;=======================================
 
 ;;==================================================================
@@ -111,17 +111,59 @@
 ;;=======================================================================
 ;;  APPLY-OPERATOR [op, estado]
 ;;        Solución simbólica del problema
+;;(:Hombre-solo ('H nil))
+;;(:Hombre-oveja ('H 'O))
+;;(:Hombre-comida ('H 'C))
+;;(:Hombre-lobo ('H 'L))
 ;;=======================================================================
 (defun apply-operator(op estado)
 "Aplica la operación op al estado"
-  (let ((indice nil) (movimiento nil) (copia-estado nil))
-    (setq indice (first (second op))) ;índice de la posición de la rana
-    (setq movimiento (second (second op))) ;Dirección y magnitud del salto
-    (setq copia-estado (copy-seq estado));Copia el estado para evitar modificarlo
-    ;Intercambia el nil con la rana
-    (setf (nth (+ indice movimiento) copia-estado) (nth indice copia-estado))
-    (setf (nth indice copia-estado) nil)
-    copia-estado))
+  (let ((etiqueta nil)  (copia-estado nil) (bote-izq? nil))
+    (setq etiqueta (first op));etiqueta humana
+    (setq copia-estado (copy-tree estado));copia estado
+    (setq bote-izq? (if (= (nth 4 (first copia-estado)) 1) t nil)) ;Está el bote en el lado izquierdo?
+
+    (case etiqueta
+      (:Hombre-solo (cond
+        (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
+         (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)  ) ;pasa a la derecha
+
+        ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
+          (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasa a la izquierda
+        ))
+      (:Hombre-oveja (cond
+        (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
+          (setf (nth 2 (first copia-estado)) nil) (setf (nth 2 (second copia-estado)) 'O)
+          (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)) ;pasan a la derecha
+
+        ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
+          (setf (nth 2 (second copia-estado)) nil) (setf (nth 2 (first copia-estado)) 'O)
+          (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasan a la izquierda
+        ))
+
+        (:Hombre-comida (cond
+          (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
+            (setf (nth 3 (first copia-estado)) nil) (setf (nth 3 (second copia-estado)) 'C)
+            (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)) ;pasan a la derecha
+
+          ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
+            (setf (nth 3 (second copia-estado)) nil) (setf (nth 3 (first copia-estado)) 'C)
+            (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasan a la izquierda
+          ))
+
+          (:Hombre-lobo (cond
+            (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
+              (setf (nth 1 (first copia-estado)) nil) (setf (nth 1 (second copia-estado)) 'L)
+              (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)) ;pasan a la derecha
+
+            ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
+              (setf (nth 1 (second copia-estado)) nil) (setf (nth 1 (first copia-estado)) 'L)
+              (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasan a la izquierda
+            ))
+          (t "ERROR"));case
+    copia-estado
+  );let
+);defun
 
 ;;=======================================================================
 ;;  EXPAND [ estado]
@@ -131,10 +173,11 @@
 "Obtiene todos los descendientes válidos de un estado, aplicando todos los operadores en *ops* en ese mismo órden"
      (let ((descendientes  nil)
 	     (nuevo-estado  nil))
-           (dolist  (op  *Ops*  descendientes)
-	         (setq  nuevo-estado  (apply-operator  op estado))
-		 (when (valid-operator?  op  estado)
-      (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
+
+       (dolist  (op  *Ops*  descendientes)
+	        (setq  nuevo-estado  (apply-operator  op estado))
+		     (when (valid-operator?  op  estado)
+         (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
 
 ;;=======================================================================
 ;;  REMEMBER-STATE?  y  FILTER-MEMORIES
@@ -143,7 +186,7 @@
 (defun  remember-state?  (estado  lista-memoria)
 "RECURSIVA:
 Busca un estado en una lista de nodos que sirve como memoria de intentos previos
-el estado tiene estructura:  ('C1 'C2 'C3 'C4 NIL 'V1 'V2 'V3 'V4),
+el estado tiene estructura:  '(('H 'L 'O 'C 1) (nil nil nil nil 0)),
 el nodo tiene estructura : [<Id> <estado> <id-ancestro> <operador> ]
 la memoria es una lista que contiene nodos"
      (cond ((null  lista-memoria)  Nil)
@@ -161,7 +204,7 @@ esta lista resulta de aplicar la función expand a un estado"
 
 
 ;;=======================================================================
-;;  EXTRACT-SOLUTION  y  DISPLAY-SOLUTION
+;;  EXTRACT-SOLUTION  y  DISPLAY-SOLU(setq  sucesores  (expand estado))TION
 ;;       Recuperan y despliegan la secuencia de solucion del problema...
 ;;       extract-solution   recibe un nodo (el que contiene al estado meta) que ya se encuentra en la memoria y
 ;;                                    rastrea todos sus ancestros hasta llegar  al  nodo que contiene al estado inicial...
@@ -200,7 +243,7 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 
 ;;==============================================================================
 ;; FUNCIÓN PARA INICIALIZAR VARIABLES GLOBALES
-(defun reset-all ()
+((main-glol '(('H 'L 'O 'C 1) (nil nil nil nil 0)) '((nil nil nil nil 0) ('H 'L 'O 'C 1)) :depth-first)defun reset-all ()
 "Reinicia todas las variables globales para iniciar una nueva búsqueda..."
      (setq  *open*  nil)
      (setq  *memory*  nil)
@@ -212,11 +255,12 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 ;;==============================================================================
 ;; FUNCIÓN PRINCIPAL
 
-(defun  main-ranas (edo-inicial  edo-meta  metodo)
+(defun  main-glol (edo-inicial  edo-meta  metodo)
 ";; ESTADO INICIAL
-;; '('C 'C 'C 'C NIL 'V 'V 'V 'V)
+;; '(('H 'L 'O 'C 1) (nil nil nil nil 0))
 ;; ESTADO META
-;; '('V 'V 'V 'V NIL 'C 'C 'C 'C)
+;; '((nil nil nil nil 0) ('H 'L 'O 'C 1))
+;; (main-glol '(('H 'L 'O 'C 1) (nil nil nil nil 0)) '((nil nil nil nil 0) ('H 'L 'O 'C 1)) :depth-first)
 Realiza una búsqueda ciega, por el método especificado y
 desde un estado inicial hasta un estado meta.
 Los métodos posibles son:  :depth-first - búsqueda en profundidad
