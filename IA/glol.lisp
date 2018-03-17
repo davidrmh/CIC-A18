@@ -45,10 +45,10 @@
 ;(defparameter *stream* nil)
 
 ;Operadores
-(defparameter *ops* '((:Hombre-solo ('H nil))
-                      (:Hombre-oveja ('H 'O))
-                      (:Hombre-comida ('H 'C))
-                      (:Hombre-lobo ('H 'L))
+(defparameter *ops* '((:Hombre-solo (H H))
+                      (:Hombre-oveja (H O))
+                      (:Hombre-comida (H C))
+                      (:Hombre-lobo (H L))
                        ))
 
 ;;=======================================================================
@@ -125,40 +125,40 @@
 
     (case etiqueta
       (:Hombre-solo (cond
-        (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
-         (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)  ) ;pasa a la derecha
+        (bote-izq? (setf (car (car copia-estado)) nil) (setf (car (cadr copia-estado)) 'H)
+         (setf (fifth (car copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1)  ) ;pasa a la derecha
 
-        ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
-          (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasa a la izquierda
+        ((not bote-izq?) (setf (first (cadr copia-estado)) nil) (setf (first (car copia-estado)) 'H)
+          (setf (fifth (cadr copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1) ) ;pasa a la izquierda
         ))
       (:Hombre-oveja (cond
-        (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
-          (setf (nth 2 (first copia-estado)) nil) (setf (nth 2 (second copia-estado)) 'O)
-          (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)) ;pasan a la derecha
+        (bote-izq? (setf (first (car copia-estado)) nil) (setf (first (cadr copia-estado)) 'H)
+          (setf (third (car copia-estado)) nil) (setf (third (cadr copia-estado)) 'O)
+          (setf (fifth (car copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1)) ;pasan a la derecha
 
-        ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
-          (setf (nth 2 (second copia-estado)) nil) (setf (nth 2 (first copia-estado)) 'O)
-          (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasan a la izquierda
+        ((not bote-izq?) (setf (first (cadr copia-estado)) nil) (setf (first (car copia-estado)) 'H)
+          (setf (third (cadr copia-estado)) nil) (setf (third (car copia-estado)) 'O)
+          (setf (fifth (cadr copia-estado)) 0) (setf (fifth (car copia-estado)) 1) ) ;pasan a la izquierda
         ))
 
         (:Hombre-comida (cond
-          (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
-            (setf (nth 3 (first copia-estado)) nil) (setf (nth 3 (second copia-estado)) 'C)
-            (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)) ;pasan a la derecha
+          (bote-izq? (setf (first (car copia-estado)) nil) (setf (first (cadr copia-estado)) 'H)
+            (setf (fourth (car copia-estado)) nil) (setf (fourth (cadr copia-estado)) 'C)
+            (setf (fifth (car copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1)) ;pasan a la derecha
 
-          ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
-            (setf (nth 3 (second copia-estado)) nil) (setf (nth 3 (first copia-estado)) 'C)
-            (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasan a la izquierda
+          ((not bote-izq?) (setf (first (cadr copia-estado)) nil) (setf (first (car copia-estado)) 'H)
+            (setf (fourth (cadr copia-estado)) nil) (setf (fourth (car copia-estado)) 'C)
+            (setf (fifth (cadr copia-estado)) 0) (setf (fifth (car copia-estado)) 1) ) ;pasan a la izquierda
           ))
 
           (:Hombre-lobo (cond
-            (bote-izq? (setf (nth 0 (first copia-estado)) nil) (setf (nth 0 (second copia-estado)) 'H)
-              (setf (nth 1 (first copia-estado)) nil) (setf (nth 1 (second copia-estado)) 'L)
-              (setf (nth 4 (first copia-estado)) 0) (setf (nth 4 (second copia-estado)) 1)) ;pasan a la derecha
+            (bote-izq? (setf (first (car copia-estado)) nil) (setf (first (cadr copia-estado)) 'H)
+              (setf (second (car copia-estado)) nil) (setf (second (cadr copia-estado)) 'L)
+              (setf (fifth (car copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1)) ;pasan a la derecha
 
-            ((not bote-izq?) (setf (nth 0 (second copia-estado)) nil) (setf (nth 0 (first copia-estado)) 'H)
-              (setf (nth 1 (second copia-estado)) nil) (setf (nth 1 (first copia-estado)) 'L)
-              (setf (nth 4 (second copia-estado)) 0) (setf (nth 4 (first copia-estado)) 1) ) ;pasan a la izquierda
+            ((not bote-izq?) (setf (first (cadr copia-estado)) nil) (setf (first (car copia-estado)) 'H)
+              (setf (second (cadr copia-estado)) nil) (setf (second (car copia-estado)) 'L)
+              (setf (fifth (cadr copia-estado)) 0) (setf (fifth (car copia-estado)) 1) ) ;pasan a la izquierda
             ))
           (t "ERROR"));case
     copia-estado
@@ -243,7 +243,7 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 
 ;;==============================================================================
 ;; FUNCIÓN PARA INICIALIZAR VARIABLES GLOBALES
-((main-glol '(('H 'L 'O 'C 1) (nil nil nil nil 0)) '((nil nil nil nil 0) ('H 'L 'O 'C 1)) :depth-first)defun reset-all ()
+(defun reset-all ()
 "Reinicia todas las variables globales para iniciar una nueva búsqueda..."
      (setq  *open*  nil)
      (setq  *memory*  nil)
@@ -257,10 +257,10 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 
 (defun  main-glol (edo-inicial  edo-meta  metodo)
 ";; ESTADO INICIAL
-;; '(('H 'L 'O 'C 1) (nil nil nil nil 0))
+;; '((H L O C 1) (nil nil nil nil 0))
 ;; ESTADO META
-;; '((nil nil nil nil 0) ('H 'L 'O 'C 1))
-;; (main-glol '(('H 'L 'O 'C 1) (nil nil nil nil 0)) '((nil nil nil nil 0) ('H 'L 'O 'C 1)) :depth-first)
+;; '((nil nil nil nil 0) (H L O C 1))
+;; (main-glol '((H L O C 1) (nil nil nil nil 0)) '((nil nil nil nil 0) (H L O C 1)) :depth-first)
 Realiza una búsqueda ciega, por el método especificado y
 desde un estado inicial hasta un estado meta.
 Los métodos posibles son:  :depth-first - búsqueda en profundidad
@@ -285,10 +285,11 @@ Los métodos posibles son:  :depth-first - búsqueda en profundidad
          ;(close *stream*)
          (setq  meta-encontrada  T))
          (t (setq  *current-ancestor*  (first  nodo))
+         (format t "~a~%" estado)
   	      (setq  sucesores  (expand estado))
    			  (setq  sucesores  (filter-memories  sucesores))
    			  (loop for  element  in  sucesores  do
-   				(insert-to-open  (first element)  (second element)  metodo))))))  )
+   				(insert-to-open  (first element)  (second element)  metodo)))))))
 
 ;;=======================================================================
 ;;=======================================================================
