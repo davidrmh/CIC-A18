@@ -129,7 +129,7 @@
          (setf (fifth (car copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1)  ) ;pasa a la derecha
 
         ((not bote-izq?) (setf (first (cadr copia-estado)) nil) (setf (first (car copia-estado)) 'H)
-          (setf (fifth (cadr copia-estado)) 0) (setf (fifth (cadr copia-estado)) 1) ) ;pasa a la izquierda
+          (setf (fifth (cadr copia-estado)) 0) (setf (fifth (car copia-estado)) 1) ) ;pasa a la izquierda
         ))
       (:Hombre-oveja (cond
         (bote-izq? (setf (first (car copia-estado)) nil) (setf (first (cadr copia-estado)) 'H)
@@ -164,6 +164,14 @@
     copia-estado
   );let
 );defun
+
+;;=================================================================
+;; FUNCIÓN PARA VALIDAR EL ESTADO
+;; valida-estado
+;; Un estado es válido si
+;; 1. La oveja y el lobo no están solos en alguna orilla
+;; o
+;; 2. La oveja y la comida no están solos en alguna orilla
 
 ;;=======================================================================
 ;;  EXPAND [ estado]
