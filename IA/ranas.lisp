@@ -38,9 +38,13 @@
 ;;===================================================================
 ;; DEFINE VARIABLES GLOBALES
 
+(defparameter *tiempo-inicio* 0)
+(defparameter *tiempo-fin* 0)
+(defparameter *longitud-frontera* 0) ;;Longitud máxima de frontera de búsqueda
+(defparameter *nodos-expandidos* 0) ;;Contador de nodos expandidos
 (defparameter  *open* '())       ;; Frontera de busqueda...
 (defparameter  *memory* '())   ;; Memoria de intentos previos
-(defparameter  *id*  -1)  ;; Identificador del ultimo nodo creado
+(defparameter  *id*  -1)  ;; Identificador del ultimo nodo creado (cuenta los nodos creados)
 (defparameter  *current-ancestor*  nil)  ;;Id del ancestro común a todos los descendientes que se generen
 (defparameter  *solucion*  nil)  ;;lista donde se almacenará la solución recuperada de la memoria
 ;Archivo en donde se guardarán los resultados
@@ -222,6 +226,15 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 (defun  display-solution (lista-nodos)
 "Despliega la solución en forma conveniente y numerando los pasos"
 
+  ;Estadísticas de la solución
+  (format t "Nodos creados ~a~%" *id*)
+  (format t "Nodos expandidos ~a~%" *nodos-expandidos*)
+  (format t "Longitud máxima de la frontera de búsqueda ~a~%" *longitud-frontera*)
+  (format t "Longitud de la solución ~a~%" (1- (length *solucion*)))
+  (format t "Tiempo (segundos) para encontrar la solución ~a~%" (float (/ (- *tiempo-fin* *tiempo-inicio*) internal-time-units-per-second)))
+  (format t "Presiona enter para desplegar la solución~%")
+  (read-line)
+
     (format  t  "Solución con ~A  pasos:~%~%" (1- (length  lista-nodos)))
     (let  ((nodo  nil))
          (dotimes  (i (length  lista-nodos))
@@ -232,7 +245,6 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
         ;; imprimir el número de paso, operador y estado...
 		   (format t "\(~2A\)  aplicando ~20A se llega a ~A~%"  i (fourth  nodo)  (second  nodo)))))  )
 
-
 ;;==============================================================================
 ;; FUNCIÓN PARA INICIALIZAR VARIABLES GLOBALES
 (defun reset-all ()
@@ -242,6 +254,8 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
      (setq  *id*  0)
      (setq  *current-ancestor*  nil)
      (setq  *solucion*  nil)
+     (setq *nodos-expandidos* 0)
+     (setq *longitud-frontera* 0)
      ;(setq *stream* (open "resultados-ranas.txt" :direction :output :if-exists :overwrite :if-does-not-exist :create))
 )
 ;;==============================================================================
@@ -252,6 +266,7 @@ los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 ;; '('C 'C 'C 'C NIL 'V 'V 'V 'V)
 ;; ESTADO META
 ;; '('V 'V 'V 'V NIL 'C 'C 'C 'C)
+;;(main-ranas '('C 'C 'C 'C NIL 'V 'V 'V 'V) '('V 'V 'V 'V NIL 'C 'C 'C 'C) :depth-first )
 Realiza una búsqueda ciega, por el método especificado y
 desde un estado inicial hasta un estado meta.
 Los métodos posibles son:  :depth-first - búsqueda en profundidad
@@ -263,20 +278,24 @@ Los métodos posibles son:  :depth-first - búsqueda en profundidad
  (operador  nil)
  (meta-encontrada  nil))
 
+  (setq *tiempo-inicio* (get-internal-run-time)) ;Tiempo de inicio
   (insert-to-open   edo-inicial  nil  metodo)
   (loop until  (or  meta-encontrada
   (null *open*))  do
+    (if (< *longitud-frontera* (length *open*)) (setq *longitud-frontera* (length *open*))) ;Registra la longitud máxima de la frontera de búsqueda
     (setq  nodo    (get-from-open)
     estado  (second  nodo)
     operador  (third  nodo))
     (push  nodo  *memory*)
     (cond ((equal  edo-meta  estado)
+          (setq *tiempo-fin* (get-internal-run-time)) ;Tiempo fin (no se cuenta el despliegue de la solución)
          (format  t  "Éxito. Meta encontrada en ~A  intentos~%" (first  nodo))
          (display-solution  (extract-solution  nodo))
          ;(close *stream*)
          (setq  meta-encontrada  T))
          (t (setq  *current-ancestor*  (first  nodo))
   	      (setq  sucesores  (expand estado))
+          (if sucesores (incf *nodos-expandidos*));Cuenta nodos expandidos
    			  (setq  sucesores  (filter-memories  sucesores))
    			  (loop for  element  in  sucesores  do
    				(insert-to-open  (first element)  (second element)  metodo))))))  )
