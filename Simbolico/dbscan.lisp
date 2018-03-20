@@ -16,10 +16,10 @@
 ;;Patrón central en su e-vecindad tiene nmin elementos
 
 ;;=========================================================
-;; Función para leer los datos y organizarlos en un arreglo
+;; Función para leer los datos y organizarlos en una lista
 ;; Los datos originales vienen en un archivo .lisp
 ;;=========================================================
-(defun crea-arreglo(ruta-archivo)
+(defun crea-lista(ruta-archivo)
 "Función para leer el archivo de UCI
 ENTRADA
 ruta-archivo: cadena con la ruta del archivo de UCI (chorales.lisp)
@@ -47,4 +47,16 @@ arreglo: una lista de listas conteniendo la información arreglada.
 ;;================================================
 (defun manhattan(obs1 obs2)
   (reduce #'+ (mapcar #'abs (mapcar #'- obs1 obs2)))
+);defun
+
+;;===============================================
+;; Calcula la matriz de distancias
+;; como esta matriz se calcula sólo una ve
+;; elegí crearla de forma completa.
+;;================================================
+(defun matriz-distancias(lista)
+  "Crea la matriz de distancias
+  ENTRADA:
+  lista: lista creada con la función
+  "
 );defun
