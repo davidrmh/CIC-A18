@@ -39,3 +39,12 @@ arreglo: una lista de listas conteniendo la información arreglada.
     );loop i
   (close archivo)
   arreglo));defun
+
+;;===============================================
+;; Función de distancia
+;; Dada la naturaleza de los datos
+;; utilizar la métrica manhattan resulta apropiado
+;;================================================
+(defun manhattan(obs1 obs2)
+  (reduce #'+ (mapcar #'abs (mapcar #'- obs1 obs2)))
+);defun
