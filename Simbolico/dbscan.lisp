@@ -51,12 +51,25 @@ arreglo: una lista de listas conteniendo la información arreglada.
 
 ;;===============================================
 ;; Calcula la matriz de distancias
-;; como esta matriz se calcula sólo una ve
-;; elegí crearla de forma completa.
+;; Sólo calcula la matriz triangular inferior
 ;;================================================
 (defun matriz-distancias(lista)
   "Crea la matriz de distancias
   ENTRADA:
-  lista: lista creada con la función
+  lista: lista creada con la función crea-lista
+  SALIDA:
+  mat-dist: arreglo que representa la matriz de distancias
   "
+  (let ((mat-dist nil) (dimension 0) (obs1 nil) (obs2 nil))
+    (setq dimension (length lista))
+    (setq mat-dist (make-array (list dimension dimension) :initial-element 0))
+    (loop for i from 1 to (1- dimension) do
+      (setq obs1 (nth i lista))
+      (loop for j from 0 to (1- i) do
+        (setq obs2 (nth j lista))
+        (setf (aref mat-dist i j) (manhattan obs1 obs2))
+        );loop j
+      );loop i
+      mat-dist
+    );let
 );defun
