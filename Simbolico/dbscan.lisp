@@ -16,6 +16,17 @@
 ;;Patrón central en su e-vecindad tiene nmin elementos
 
 ;;=========================================================
+;; Variables globales auxiliares
+;;=========================================================
+
+(defparameter *con-grupo* nil) ;lista
+(defparameter *centrales* nil) ;lista
+(defparameter *vecinos* nil) ;lista
+(defparameter *tabla* nil) ;arreglo
+(defparameter *grupo* 1) ;número
+(defparameter *dist-max* 0);número  
+
+;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
 ;; Los datos originales vienen en un archivo .lisp
 ;;=========================================================
@@ -72,4 +83,53 @@ arreglo: una lista de listas conteniendo la información arreglada.
       );loop i
       mat-dist
     );let
+);defun
+
+;;==================================================
+;; Función para obtener los elementos de la matriz
+;; de distancias
+;;==================================================
+(defun get-element(renglon columna matriz)
+  (cond
+    ((= renglon columna) 0)
+    ((< renglon columna) (aref matriz columna renglon ))
+    (t (aref matriz renglon columna ))));defun
+
+;;===================================================
+;; Función para generar números aleatorios
+;; entre 0 y un límite
+;; estos número serán los índices de las observaciones
+;; que serán ignoradas (conjunto de prueba)
+;;===================================================
+(defun genera-aleatorios(cantidad limite)
+  (let ((lista nil))
+    (loop for i from 1 to cantidad do
+      (setq lista (append lista (list (random limite)))));loop
+    lista));defun
+;;====================================================
+;; Función para encontrar los patrones centrales
+;;====================================================
+(defun encuentra-centrales(matriz eps mu)
+"Función para encontrar los patrones centrales
+ENTRADA:
+matriz:Matriz de distancias
+eps:epsilon
+mu:mi
+SALIDA:
+lista:Una lista con los índices de los patrones centrales
+"
+  (let ((conteo 0) (dim 0) (lista nil))
+    (setq dim (array-dimension matriz 0))
+    (loop for i from 0 to (1- dim) do
+      (loop for j from 0 to (1- dim) do
+        (when (and (< (get-element i j matriz) eps) (/= i j)) ;cuando la distancia es menor a epsilon y no son el mismo elemento
+          (setq conteo (1+ conteo))
+          (format t "~a~%" conteo)
+        );when
+      );loop j
+      (if (>= conteo mu) (setq lista (append lista (list i))))
+      (setq conteo 0)
+    );loop i
+    lista
+  );let
 );defun
