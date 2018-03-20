@@ -113,6 +113,8 @@ arreglo: una lista de listas conteniendo la información arreglada.
     lista));defun
 ;;====================================================
 ;; Función para encontrar los patrones centrales
+;; (encuentra-centrales mat-dist 10 100)
+;; (encuentra-centrales mat-dist 10 200)
 ;;====================================================
 (defun encuentra-centrales(matriz eps mu)
 "Función para encontrar los patrones centrales
@@ -127,7 +129,7 @@ lista:Una lista con los índices de los patrones centrales
     (setq dim (array-dimension matriz 0))
     (loop for i from 0 to (1- dim) do
       (loop for j from 0 to (1- dim) do
-        (when (and (< (get-element i j matriz) eps) (/= i j)) ;cuando la distancia es menor a epsilon y no son el mismo elemento
+        (when (and (<= (get-element i j matriz) eps) (/= i j)) ;cuando la distancia es menor a epsilon y no son el mismo elemento
           (setq conteo (1+ conteo))
         );when
       );loop j
@@ -135,5 +137,22 @@ lista:Una lista con los índices de los patrones centrales
       (setq conteo 0)
     );loop i
     lista
+  );let
+);defun
+
+;;=======================================================
+;; Actualiza tabla asignando etiquetas
+;; PENDIENTE
+;;=======================================================
+
+;;=======================================================
+;; Función para encontrar los vecinos de un patrón
+;;=======================================================
+(defun encuentra-vecinos(matriz renglon eps)
+  (let ((dim 0) (resultado nil))
+    (setq dim (array-dimension matriz 0))
+    (loop for col from 0 to (1- dim) do
+      (when (<= (get-element renglon col matriz) eps)
+        (setq resultado (append resultado (list col)))))
   );let
 );defun
