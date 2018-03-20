@@ -24,7 +24,8 @@
 (defparameter *vecinos* nil) ;lista
 (defparameter *tabla* nil) ;arreglo
 (defparameter *grupo* 1) ;número
-(defparameter *dist-max* 0);número
+(defparameter *dist-max* 0);número (máximo fue 465)
+(defparameter *dist-min* 1000000000);número (mínimo fue 1)
 
 ;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
@@ -79,6 +80,10 @@ arreglo: una lista de listas conteniendo la información arreglada.
       (loop for j from 0 to (1- i) do
         (setq obs2 (nth j lista))
         (setf (aref mat-dist i j) (manhattan obs1 obs2))
+        ;Auxiliar para la distancia máxima
+        (if (> (manhattan obs1 obs2) *dist-max*) (setq *dist-max* (manhattan obs1 obs2)) )
+        ;Auxiliar para la distancia mínima
+        (if (and (< (manhattan obs1 obs2) *dist-min*) (/= (manhattan obs1 obs2) 0)) (setq *dist-min* (manhattan obs1 obs2)) )
         );loop j
       );loop i
       mat-dist
