@@ -24,7 +24,7 @@
 (defparameter *vecinos* nil) ;lista
 (defparameter *tabla* nil) ;arreglo
 (defparameter *grupo* 1) ;número
-(defparameter *dist-max* 0);número  
+(defparameter *dist-max* 0);número
 
 ;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
@@ -124,7 +124,6 @@ lista:Una lista con los índices de los patrones centrales
       (loop for j from 0 to (1- dim) do
         (when (and (< (get-element i j matriz) eps) (/= i j)) ;cuando la distancia es menor a epsilon y no son el mismo elemento
           (setq conteo (1+ conteo))
-          (format t "~a~%" conteo)
         );when
       );loop j
       (if (>= conteo mu) (setq lista (append lista (list i))))
