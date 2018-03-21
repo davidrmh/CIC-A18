@@ -59,13 +59,17 @@ SALIDA:
 Esta función inicializa la variable global *tabla* que será
 un arreglo con cuatro columnas
 1.Índice del patrón.
-2.Clase a la que pertenece.
+2.Clase a la que pertenece de acuerdo al archivo UCI
 3.Tipo de patrón (central,frontera,ruido).
 4.Grupo al que pertenece de acuerdo el algoritmo dbscan.
 "
 (let ((nobs 0))
   (setq nobs (length clases));número de observaciones
-  (setq *tabla* (make-array (list nobs 4))))
+  (setq *tabla* (make-array (list nobs 4) :initial-element nil))
+  ;Llena columnas 1 y 2
+  (loop for i from 0 to (1- nobs) do
+    (setf (aref *tabla* i 0) i);columna 1
+    (setf (aref *tabla* i 1) (nth i clases))))
 );defun
 
 ;;=========================================================
@@ -189,8 +193,10 @@ lista:Una lista con los índices de los patrones centrales
 
 ;;=======================================================
 ;; Actualiza tabla asignando etiquetas
-;; PENDIENTE
 ;;=======================================================
+;(defun actualiza-tabla(puntos etiqueta)
+
+;);defun
 
 ;;=======================================================
 ;; Función para encontrar los vecinos de un patrón
@@ -207,7 +213,6 @@ lista:Una lista con los índices de los patrones centrales
 
 ;;========================================================
 ;; Función para asignar grupos a vecinos
-;; PENDIENTE ACTUALIZAR TABLA
 ;;========================================================
 (defun asigna-grupos(vecinos)
   (loop for elem in vecinos do
