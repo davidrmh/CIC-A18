@@ -42,7 +42,7 @@
   (setq *grupo* 1)
   (setq *ignorar* ;Esto es lo que obtuve con la función genera-aleatorios
     '(5 4065 3002 2347 2147 1573 224 3354 3423 2791 3929 1203 311 1194
-      1618 3676 2524 3121 1198 2055 2987 2440 3258 1679)) 
+      1618 3676 2524 3121 1198 2055 2987 2440 3258 1679))
   (setq *ruido* nil)
   (setq *todas-obs* nil)
 );defun
@@ -57,19 +57,25 @@ ENTRADA
 ruta-archivo: cadena con la ruta del archivo de UCI (chorales.lisp)
 SALIDA:
 arreglo: una lista de listas conteniendo la información arreglada.
+(first (first arreglo)) contiene la clase a la que pertenece cada observación
+(first (first (rest arreglo))) ;contiene los datos numéricos  
 "
-  (let ((linea nil) (arreglo nil) (archivo nil) (nobs nil))
+  (let ((linea nil) (arreglo nil) (archivo nil) (nobs nil)
+    (clases nil) (aux nil))
     (setq archivo (open ruta-archivo))
     (loop for i from 1 to 100 do
-      (setq linea (rest (read archivo)))
+      (setq aux (read archivo))
+      (setq linea (rest aux))
       (setq nobs (length linea));número de observaciones en la línea
       ;modifica la observación j
       (loop for j from 0 to (1- nobs) do
+        (setq clases (append clases (list (first aux))))
         (loop for k from 0 to 5 do
           (setf (nth k (nth j linea)) (second (nth k (nth j linea))) ));loop k
         (setq arreglo (append arreglo (list (nth j linea)))));loop j
     );loop i
   (close archivo)
+  (setq arreglo (list (list clases) (list arreglo)))
   arreglo));defun
 
 ;;===============================================
