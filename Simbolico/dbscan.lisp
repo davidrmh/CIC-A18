@@ -40,7 +40,9 @@
   (setq *vecinos* nil)
   (setq *tabla* nil)
   (setq *grupo* 1)
-  (setq *ignorar* nil)
+  (setq *ignorar* ;Esto es lo que obtuve con la función genera-aleatorios
+    '(5 4065 3002 2347 2147 1573 224 3354 3423 2791 3929 1203 311 1194
+      1618 3676 2524 3121 1198 2055 2987 2440 3258 1679)) 
   (setq *ruido* nil)
   (setq *todas-obs* nil)
 );defun
