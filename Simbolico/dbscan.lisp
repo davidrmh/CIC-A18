@@ -48,6 +48,27 @@
 );defun
 
 ;;=========================================================
+;; Función para inicializar la tabla de resultados
+;;=========================================================
+(defun inicializa-tabla(clases)
+"Función para inicializar la tabla que contiene la información
+de los patrones
+ENTRADA:
+clases: lista que contiene el total de observaciones y su clase
+SALIDA:
+Esta función inicializa la variable global *tabla* que será
+un arreglo con cuatro columnas
+1.Índice del patrón.
+2.Clase a la que pertenece.
+3.Tipo de patrón (central,frontera,ruido).
+4.Grupo al que pertenece de acuerdo el algoritmo dbscan.
+"
+(let ((nobs 0))
+  (setq nobs (length clases));número de observaciones
+  (setq *tabla* (make-array (list nobs 4))))
+);defun
+
+;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
 ;; Los datos originales vienen en un archivo .lisp
 ;;=========================================================
@@ -58,7 +79,7 @@ ruta-archivo: cadena con la ruta del archivo de UCI (chorales.lisp)
 SALIDA:
 arreglo: una lista de listas conteniendo la información arreglada.
 (first (first arreglo)) contiene la clase a la que pertenece cada observación
-(first (first (rest arreglo))) ;contiene los datos numéricos  
+(first (first (rest arreglo))) ;contiene los datos numéricos
 "
   (let ((linea nil) (arreglo nil) (archivo nil) (nobs nil)
     (clases nil) (aux nil))
