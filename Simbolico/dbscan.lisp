@@ -30,6 +30,21 @@
 (defparameter *ruido* nil)
 (defparameter *todas-obs* nil)
 
+
+;;=========================================================
+;; Función para reiniciar variables globales
+;;=========================================================
+(defun reset-all()
+  (setq *con-grupo* nil)
+  (setq *centrales* nil)
+  (setq *vecinos* nil)
+  (setq *tabla* nil)
+  (setq *grupo* 1)
+  (setq *ignorar* nil)
+  (setq *ruido* nil)
+  (setq *todas-obs* nil)
+);defun
+
 ;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
 ;; Los datos originales vienen en un archivo .lisp
