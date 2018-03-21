@@ -178,7 +178,7 @@ lista:Una lista con los índices de los patrones centrales
 ;; patrones (0,1,2.....,N)
 ;;=======================================================
 (defun indices(matriz)
-  (loop for i from 0 to (array-dimension matriz 0) do
+  (loop for i from 0 to (1- (array-dimension matriz 0)) do
     (setq *todas-obs* (append *todas-obs* (list i))))
 );defun
 
@@ -195,16 +195,18 @@ lista:Una lista con los índices de los patrones centrales
        (push ind-cent *con-grupo*)
        (setq *vecinos* (encuentra-vecinos matriz ind-cent eps))
        (asigna-grupos *vecinos*)
-       ;actualiza tabla
+       ;actualiza tabla falta determinar que tipo de punto son (centrales,frontera,ruido)
        (loop until (null *vecinos*) do
          (setq ind-vec (pop *vecinos*))
-         (loop for i from 0 to (1- dim) do
-           (when (and (<= (get-element ind-vec i matriz) eps) (not (member i *con-grupo*)))
-            (push i *vecinos*)
-            (push i *con-grupo*)
-            ;actualiza tabla
-           );when
-          );loop
+         (when (member ind-vec *centrales*) ;cuando es directamente alcanzable
+           (loop for i from 0 to (1- dim) do
+             (when (and (<= (get-element ind-vec i matriz) eps) (not (member i *con-grupo*)))
+                (push i *vecinos*)
+                (push i *con-grupo*)
+              ;actualiza tabla falta determinar que tipo de punto son (centrales,frontera,ruido)
+             );when
+           );loop
+         );when
         );loop
      );when
     (incf *grupo*)
