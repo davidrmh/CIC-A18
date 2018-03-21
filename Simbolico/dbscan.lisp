@@ -21,13 +21,15 @@
 
 (defparameter *con-grupo* nil) ;lista
 (defparameter *centrales* nil) ;lista
+(defparameter *centrales-permanentes* nil) ;lista
+(defparameter *frontera* nil);lista
+(defparameter *ruido* nil) ;list
 (defparameter *vecinos* nil) ;lista
 (defparameter *tabla* nil) ;arreglo
 (defparameter *grupo* 1) ;número
 (defparameter *dist-max* 0);número (máximo fue 465)
 (defparameter *dist-min* 1000000000);número (mínimo fue 1)
 (defparameter *ignorar* nil) ;Los 25 que se ignoran
-(defparameter *ruido* nil)
 (defparameter *todas-obs* nil)
 
 
@@ -194,9 +196,9 @@ lista:Una lista con los índices de los patrones centrales
 ;;=======================================================
 ;; Actualiza tabla asignando etiquetas
 ;;=======================================================
-;(defun actualiza-tabla(puntos etiqueta)
+(defun actualiza-tabla(puntos etiqueta)
 
-;);defun
+);defun
 
 ;;=======================================================
 ;; Función para encontrar los vecinos de un patrón
@@ -206,7 +208,7 @@ lista:Una lista con los índices de los patrones centrales
     (setq dim (array-dimension matriz 0))
     (loop for col from 0 to (1- dim) do
       (when (and (<= (get-element renglon col matriz) eps)
-                 (not (member col *ignorar*)))
+                 (not (member col *ignorar*)) (/= renglon col))
         (setq resultado (append resultado (list col)))))
   );let
 );defun
@@ -238,6 +240,7 @@ lista:Una lista con los índices de los patrones centrales
   (let ((ind-cent nil) (ind-vec nil) (dim 0))
     (setq dim (array-dimension matriz 0))
     (setq *centrales* (encuentra-centrales matriz eps mu))
+    (setq *centrales-permanentes* (copy-seq *centrales*))
    (loop until (null *centrales*) do
      (setq ind-cent (pop *centrales*))
      (when (not (member ind-cent *con-grupo*))
@@ -247,7 +250,7 @@ lista:Una lista con los índices de los patrones centrales
        ;actualiza tabla falta determinar que tipo de punto son (centrales,frontera,ruido)
        (loop until (null *vecinos*) do
          (setq ind-vec (pop *vecinos*))
-         (when (member ind-vec *centrales*) ;cuando es directamente alcanzable
+         (when (member ind-vec *centrales-permanentes*) ;cuando es directamente alcanzable
            (loop for i from 0 to (1- dim) do
              (when (and (<= (get-element ind-vec i matriz) eps) (not (member i *con-grupo*)))
                 (push i *vecinos*)
