@@ -26,6 +26,7 @@
 (defparameter *grupo* 1) ;número
 (defparameter *dist-max* 0);número (máximo fue 465)
 (defparameter *dist-min* 1000000000);número (mínimo fue 1)
+(defparameter *ignorar* nil) ;Los 25 que se ignoran
 
 ;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
@@ -128,11 +129,11 @@ lista:Una lista con los índices de los patrones centrales
   (let ((conteo 0) (dim 0) (lista nil))
     (setq dim (array-dimension matriz 0))
     (loop for i from 0 to (1- dim) do
-      (loop for j from 0 to (1- dim) do
-        (when (and (<= (get-element i j matriz) eps) (/= i j)) ;cuando la distancia es menor a epsilon y no son el mismo elemento
-          (setq conteo (1+ conteo))
-        );when
-      );loop j
+      (when (not (member i *ignorar*))
+        (loop for j from 0 to (1- dim) do
+          (when (and (<= (get-element i j matriz) eps) (/= i j)) ;cuando la distancia es menor a epsilon y no son el mismo elemento
+            (setq conteo (1+ conteo)));when
+        ));when
       (if (>= conteo mu) (setq lista (append lista (list i))))
       (setq conteo 0)
     );loop i
@@ -152,7 +153,49 @@ lista:Una lista con los índices de los patrones centrales
   (let ((dim 0) (resultado nil))
     (setq dim (array-dimension matriz 0))
     (loop for col from 0 to (1- dim) do
-      (when (<= (get-element renglon col matriz) eps)
+      (when (and (<= (get-element renglon col matriz) eps)
+                 (not (member col *ignorar*)))
         (setq resultado (append resultado (list col)))))
+  );let
+);defun
+
+;;========================================================
+;; Función para asignar grupos a vecinos
+;; PENDIENTE ACTUALIZAR TABLA
+;;========================================================
+(defun asigna-grupos(vecinos)
+  (loop for elem in vecinos do
+    (if (not (member elem *con-grupo*))
+      (setq *con-grupo* (append *con-grupo* (list elem))) )
+  );loop
+);defun
+
+;;========================================================
+;; Algoritmo dbscan
+;;========================================================
+(defun dbscan(matriz eps mu)
+  (let ((ind-cent nil) (ind-vec nil) (dim 0))
+    (setq dim (array-dimension matriz 0))
+    (setq *centrales* (encuentra-centrales matriz eps mu))
+   (loop until (null *centrales*) do
+     (setq ind-cent (pop *centrales*))
+     (when (not (member ind-cent *con-grupo*))
+       (push ind-cent *con-grupo*)
+       (setq *vecinos* (encuentra-vecinos matriz ind-cent eps))
+       (asigna-grupos *vecinos*)
+       ;actualiza tabla
+       (loop until (null *vecinos*) do
+         (setq ind-vec (pop *vecinos*))
+         (loop for i from 0 to (1- dim) do
+           (when (and (<= (get-element ind-vec i matriz) eps) (not (member i *con-grupo*)))
+            (push i *vecinos*)
+            (push i *con-grupo*)
+            ;actualiza tabla
+           );when
+          );loop
+        );loop
+     );when
+    (incf *grupo*) 
+   );loop
   );let
 );defun
