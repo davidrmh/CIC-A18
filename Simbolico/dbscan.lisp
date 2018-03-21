@@ -27,6 +27,8 @@
 (defparameter *dist-max* 0);número (máximo fue 465)
 (defparameter *dist-min* 1000000000);número (mínimo fue 1)
 (defparameter *ignorar* nil) ;Los 25 que se ignoran
+(defparameter *ruido* nil)
+(defparameter *todas-obs* nil)
 
 ;;=========================================================
 ;; Función para leer los datos y organizarlos en una lista
@@ -170,6 +172,16 @@ lista:Una lista con los índices de los patrones centrales
   );loop
 );defun
 
+
+;;=======================================================
+;; Auxiliar que contiene los índices de todas los
+;; patrones (0,1,2.....,N)
+;;=======================================================
+(defun indices(matriz)
+  (loop for i from 0 to (array-dimension matriz 0) do
+    (setq *todas-obs* (append *todas-obs* (list i))))
+);defun
+
 ;;========================================================
 ;; Algoritmo dbscan
 ;;========================================================
@@ -195,7 +207,8 @@ lista:Una lista con los índices de los patrones centrales
           );loop
         );loop
      );when
-    (incf *grupo*) 
+    (incf *grupo*)
    );loop
+   (setq *ruido* (set-difference *todas-obs* *con-grupo*))
   );let
 );defun
