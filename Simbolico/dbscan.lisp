@@ -273,7 +273,7 @@ lista:Una lista con los índices de los patrones centrales
             (loop for i from 0 to (1- dim) do
               ;los puntos que cumplen las condiciones
               ;son density-reachables (indirectamente alcanzables)
-              (when (and (<= (get-element ind-vec i matriz) eps) (not (member i *con-grupo*)))
+              (when (and (<= (get-element ind-vec i matriz) eps) (not (member i *con-grupo*)) (not (member i *ignorar*)))
                   (push i *vecinos*)
                   (push i *con-grupo*)
               );when
@@ -285,6 +285,7 @@ lista:Una lista con los índices de los patrones centrales
     (incf *grupo*)
    );loop *centrales
    (setq *ruido* (set-difference *todas-obs* *con-grupo*))
+   (setq *ruido* (set-difference *ruido* *ignorar*))
    ;Actualiza la tabla con los patrones ruido
    (loop for i in *ruido* do
      (setf (aref *tabla* i 2) :ruido)
