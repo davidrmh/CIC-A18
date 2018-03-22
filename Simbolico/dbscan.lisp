@@ -257,7 +257,8 @@ lista:Una lista con los índices de los patrones centrales
 
          ;El vecino es un patrón frontera?
          (when (not (member ind-vec *centrales-permanentes*))
-           (push ind-vec *frontera*)
+
+          (if (not (member ind-vec *frontera*)) (push ind-vec *frontera*))
           ;actualiza tabla
           (setf (aref *tabla* ind-vec 2) :frontera)
           (setf (aref *tabla* ind-vec 3) *grupo*));when
