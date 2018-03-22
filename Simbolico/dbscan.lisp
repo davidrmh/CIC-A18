@@ -1,20 +1,3 @@
-;;Necesito una variable global *vecinos* para ir agregando
-;;las observaciones que estén a distancia menor a epsilon de la
-;;observación actual.
-;;Cuando se examina un renglón completo, hacer pop de *vecinos* para saber
-;;que vecino toca revisar.
-;;Cuando *vecinos* sea null, entonces iniciar con otro grupo (incf *grupo*)
-;;Necesito una *memoria* para no agregar observaciones que ya se agregaron a
-;;*vecinos* en algún momento.
-
-;;Si *vecinos* es null y además *memoria* contiene todas las observaciones
-;; (sus índices), entonces terminar. En otro caso buscar el siguiente cluster
-;; iniciando con una observación que no esté en *memoria*
-
-;;Detectar patrones centrales
-
-;;Patrón central en su e-vecindad tiene nmin elementos
-
 ;;=========================================================
 ;; Variables globales auxiliares
 ;;=========================================================
@@ -109,11 +92,12 @@ arreglo: una lista de listas conteniendo la información arreglada.
 
 ;;===============================================
 ;; Función de distancia
-;; Dada la naturaleza de los datos
-;; utilizar la métrica manhattan resulta apropiado
 ;;================================================
-(defun manhattan(obs1 obs2)
-  (reduce #'+ (mapcar #'abs (mapcar #'- obs1 obs2)))
+(defun funcion-distancia(obs1 obs2)
+  ;manhattan
+  ;(reduce #'+ (mapcar #'abs (mapcar #'- obs1 obs2)))
+  ;Euclidiana
+  (sqrt (reduce #'+ (mapcar #'* (mapcar #'- obs1 obs2) (mapcar #'- obs1 obs2))))
 );defun
 
 ;;===============================================
@@ -134,11 +118,11 @@ arreglo: una lista de listas conteniendo la información arreglada.
       (setq obs1 (nth i lista))
       (loop for j from 0 to (1- i) do
         (setq obs2 (nth j lista))
-        (setf (aref mat-dist i j) (manhattan obs1 obs2))
+        (setf (aref mat-dist i j) (funcion-distancia obs1 obs2))
         ;Auxiliar para la distancia máxima
-        (if (> (manhattan obs1 obs2) *dist-max*) (setq *dist-max* (manhattan obs1 obs2)) )
+        (if (> (funcion-distancia obs1 obs2) *dist-max*) (setq *dist-max* (funcion-distancia obs1 obs2)) )
         ;Auxiliar para la distancia mínima
-        (if (and (< (manhattan obs1 obs2) *dist-min*) (/= (manhattan obs1 obs2) 0)) (setq *dist-min* (manhattan obs1 obs2)) )
+        (if (and (< (funcion-distancia obs1 obs2) *dist-min*) (/= (funcion-distancia obs1 obs2) 0)) (setq *dist-min* (funcion-distancia obs1 obs2)) )
         );loop j
       );loop i
       mat-dist
@@ -298,8 +282,7 @@ lista:Una lista con los índices de los patrones centrales
 
 ;;=============================================================
 ;; Función principal
-;; (encuentra-centrales mat-dist 10 100)
-;; (encuentra-centrales mat-dist 10 200)
+;; (main-dbscan s 2 10)
 ;;=============================================================
 
 (defun main-dbscan(ruta-datos eps mu)
