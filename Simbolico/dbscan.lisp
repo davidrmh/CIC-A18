@@ -168,8 +168,6 @@ arreglo: una lista de listas conteniendo la información arreglada.
     lista));defun
 ;;====================================================
 ;; Función para encontrar los patrones centrales
-;; (encuentra-centrales mat-dist 10 100)
-;; (encuentra-centrales mat-dist 10 200)
 ;;====================================================
 (defun encuentra-centrales(matriz eps mu)
 "Función para encontrar los patrones centrales
@@ -287,12 +285,18 @@ lista:Una lista con los índices de los patrones centrales
     (incf *grupo*)
    );loop *centrales
    (setq *ruido* (set-difference *todas-obs* *con-grupo*))
+   ;Actualiza la tabla con los patrones ruido
+   (loop for i in *ruido* do
+     (setf (aref *tabla* i 2) :ruido)
+     (setf (aref *tabla* i 3) :ruido))
   );let
 );defun
 
 
 ;;=============================================================
 ;; Función principal
+;; (encuentra-centrales mat-dist 10 100)
+;; (encuentra-centrales mat-dist 10 200)
 ;;=============================================================
 
 (defun main-dbscan(ruta-datos eps mu)
