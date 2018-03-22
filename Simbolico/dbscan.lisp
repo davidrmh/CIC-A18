@@ -26,7 +26,7 @@
 (defparameter *ruido* nil) ;list
 (defparameter *vecinos* nil) ;lista
 (defparameter *tabla* nil) ;arreglo
-(defparameter *grupo* 1) ;número
+(defparameter *grupo* 0) ;número
 (defparameter *dist-max* 0);número (máximo fue 465)
 (defparameter *dist-min* 1000000000);número (mínimo fue 1)
 (defparameter *ignorar* nil) ;Los 25 que se ignoran
@@ -42,7 +42,7 @@
   (setq *centrales-permanentes* nil)
   (setq *vecinos* nil)
   (setq *tabla* nil)
-  (setq *grupo* 1)
+  (setq *grupo* 0)
   (setq *ignorar* ;Esto es lo que obtuve con la función genera-aleatorios
     '(5 4065 3002 2347 2147 1573 224 3354 3423 2791 3929 1203 311 1194
       1618 3676 2524 3121 1198 2055 2987 2440 3258 1679))
@@ -240,6 +240,7 @@ lista:Una lista con los índices de los patrones centrales
      (setq ind-cent (pop *centrales*)) ;Elige un patrón central
 
      (when (not (member ind-cent *con-grupo*)) ;Si no se ha clasificado
+       (incf *grupo*)
        (push ind-cent *con-grupo*) ;Agrega a la lista de los que ya tienen un grupo
 
        ;actualiza tabla
@@ -282,7 +283,7 @@ lista:Una lista con los índices de los patrones centrales
 
        );loop *vecinos*
      );when patrón central no se ha clasificado
-    (incf *grupo*)
+    ;(incf *grupo*)
    );loop *centrales
    (setq *ruido* (set-difference *todas-obs* *con-grupo*))
    (setq *ruido* (set-difference *ruido* *ignorar*))
