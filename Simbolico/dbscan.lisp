@@ -315,5 +315,11 @@ lista:Una lista con los índices de los patrones centrales
     (indices matriz)
     (inicializa-tabla clases)
     (dbscan matriz eps mu)
-    )
+    ;Escribe resultados
+    (with-open-file
+      (stream "resultados-dbscan.txt"
+        :direction :output :if-does-not-exist :create
+        :if-exists :supersede)
+      (format stream "~a" (write-to-string *tabla*)));with-open-file
+  );let
 );defun
