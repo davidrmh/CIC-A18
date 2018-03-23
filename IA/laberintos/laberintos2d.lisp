@@ -89,6 +89,55 @@ binario: lista
     (15 '(1 1 1 1)));case
 );defun
 
+
+;;=======================================================================
+;; VALIDA OPERADOR
+;; Función para validar un operador
+;;=======================================================================
+(defun valida-op(op pos-actual)
+"Valida si la aplicación de un operador es válido para la
+posición actual
+ENTRADA
+op: Elemento de la lista *ops*
+pos-actua: Arreglo de la forma #(i j) representando la posición actual
+dentro del laberinto.
+SALIDA
+t: si es válido aplicar op a pos-actual
+nil en otro caso.
+"
+  (let ((reng-pos-act 0) ;renglón de la posición actual
+        (col-pos-act 0) ;Columna de la posición actual
+        (reng-nva-pos 0) ;Renglón nueva posición
+        (col-nva-pos 0);Columna nueva posición
+        (rep-pos-act nil) ;Reprenstación binaria de la posición actual
+        (rep-nva-pos nil) ;Representación binaria de la nueva posición
+        (etiqueta nil)) ;Etiqueta de la operación
+
+    ;Extrae información
+    (setq etiqueta (first op))
+    (setq reng-pos-act (aref pos-actual 0))
+    (setq col-pos-act (aref pos-actual 1))
+    (setq reng-nva-pos (+ (aref pos-actual 0) (first (second op))))
+    (setq col-nva-pos (+ (aref pos-actual 1) (second (second op))))
+    (setq rep-pos-act (aref *data-maze* reng-pos-act col-pos-act))
+    (setq rep-nva-pos (aref *data-maze* reng-nva-pos col-nva-pos))
+
+    ;Revisa el operador caso por caso de acuerdo a la etiqueta
+    (case etiqueta
+      (:diag-arriba-der
+        (if (and (>= reng-nva-pos 0 ) (<= col-nva-pos *maze-cols*) (or (and (= (nth 2 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) (and (= (nth 3 rep-pos-act) 0) (= (nth 0 rep-nva-pos) 0)) )  ) t))
+      (:diag-abajo-der
+        (if (and (<= reng-nva-pos *maze-rows* ) (<= col-nva-pos *maze-cols*) (or (and (= (nth 1 rep-pos-act) 0) (= (nth 0 rep-nva-pos) 0)) (and (= (nth 2 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
+      (:diag-abajo-izq
+        (if (and (<= reng-nva-pos *maze-rows* ) (>= col-nva-pos 0) (or (and (= (nth 1 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
+      (:diag-arriba-izq
+        (if (and (>= reng-nva-pos 0 ) (>= col-nva-pos 0) (or (and (= (nth 3 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) )  ) t) )
+
+
+    );case
+  );let
+);defun
+
 ;;=======================================================================
 ;; APPLY-OPERATOR (op pos-actual)
 ;; Aplica el operador op a las posición actual pos-actual
