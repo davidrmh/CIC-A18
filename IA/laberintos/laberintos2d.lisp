@@ -26,25 +26,28 @@
 ;;======================================================================
 ;; VARIABLES GLOBALES
 ;;======================================================================
-(defparameter *data-maze* (slot-value *maze* 'data)) ;Datos del laberinto
-(defparameter *maze-rows* (1- (get-maze-rows))) ;Renglones (índices) laberinto
-(defparameter *maze-cols* (1- (get-maze-cols))) ;Columnas (índices) laberinto
+(defparameter *data-maze* nil) ;Datos del laberinto
+(defparameter *maze-rows* nil) ;Renglones (índices) laberinto
+(defparameter *maze-cols* nil) ;Columnas (índices) laberinto
 (defparameter  *open* '()) ;; Frontera de busqueda...
 (defparameter  *memory* '())   ;; Memoria de intentos previos
 (defparameter  *id*  -1)  ;; Identificador del ultimo nodo creado
 (defparameter  *current-ancestor*  nil) ;;Id del ancestro común a todos los descendientes que se generen
-(defparameter  *solucion*  nil)  ;;lista donde se almacenará la solución recuperada de la memoria
+(defparameter  *solution*  nil)  ;;lista donde se almacenará la solución recuperada de la memoria
 
 
 ;;=======================================================================
 ;; FUNCIÓN PARA REINICIAR VARIABLES GLOBALES
 ;;=======================================================================
-(defun reset-all()
+(defun reset-all ()
+  (setq *data-maze* (slot-value *maze* 'data)) ;Datos del laberinto
+  (setq *maze-rows* (1- (get-maze-rows))) ;Renglones (índices) laberinto
+  (setq *maze-cols* (1- (get-maze-cols))) ;Columnas (índices) laberinto
   (setq *open* nil)
   (setq *memory* nil)
   (setq *id* 0)
   (setq *current-ancestor* nil)
-  (setq *solucion* nil)
+  (setq *solution* nil)
 );defun
 ;;========================================================================
 ;; OPERADORES
@@ -78,7 +81,7 @@
 ;; Función para representar una casilla del laberinto con un número
 ;; binario de 4 bits
 ;;=======================================================================
-(defun representa-binario(numero)
+(defun representa-binario (numero)
 "Representa un número entre el 0 y el 15 utilizando una codificación
 binaria
 ENTRADA
@@ -108,7 +111,7 @@ binario: lista
 ;;=======================================================================
 ;; HUMANO-MAQUINA  y CODIFICA SOLUCIÓN
 ;;=======================================================================
-(defun humano-maquina(etiqueta)
+(defun humano-maquina (etiqueta)
 "Función para codificar una etiqueta humana de un operador en una
 etiqueta de máquina"
   (case etiqueta
@@ -122,22 +125,22 @@ etiqueta de máquina"
     (:arriba 0))
 );defun
 
-(defun codifica-solucion()
+(defun codifica-solucion ()
 "Codifica la solución para que tenga la forma que utiliza el servidor
-esta función se ejecuta después de actualizar la variable *solucion* con
+esta función se ejecuta después de actualizar la variable *solution* con
 la función extract-solution"
   (let ((aux nil))
-    (loop for i from 1 to (1- (length *solucion*)) do
-      (setq aux (append aux (list (humano-maquina (fourth (nth i *solucion*))))))
+    (loop for i from 1 to (1- (length *solution*)) do
+      (setq aux (append aux (list (humano-maquina (fourth (nth i *solution*))))))
       );loop
-    (setq *solucion* aux)
+  aux
   );let
 );defun
 ;;=======================================================================
 ;; VALIDA OPERADOR
 ;; Función para validar un operador
 ;;=======================================================================
-(defun valid-operator?(op pos-actual)
+(defun valid-operator? (op pos-actual)
 "Valida si la aplicación de un operador es válido para la
 posición actual
 ENTRADA
@@ -196,7 +199,7 @@ nil en otro caso.
 ;; Aplica el operador op a las posición actual pos-actual
 ;; No verifica si la aplicación del operador es válida
 ;;=======================================================================
-(defun apply-operator(op pos-actual)
+(defun apply-operator (op pos-actual)
 "
 ENTRADA
 op: un elemento de la lista *ops*
@@ -301,18 +304,19 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 
 	  (let ((current  (locate-node  (first  nodo)  *memory*))) ;current es un nodo
 	     (loop  while  (not (null  current))  do  ;Memoria de intentos previos...
-		 (push  current  *solucion*)     ;; agregar a la solución el nodo actual
+		 (push  current  *solution*)     ;; agregar a la solución el nodo actual
 		 (setq  current  (locate-node  (third  current) *memory*))))  ;; y luego cambiar a su antecesor ("va subiendo en la memoria")
-	     *solucion*))
+	     *solution*))
 
 ;;=========================================================================
 ;; BÚSQUEDA POR AMPLITUD (BREADTH-FIRST)
 ;;=========================================================================
 
-(defun breadth-first()
+(defun breadth-first ()
 
   (reset-all)
   (let ((nodo nil)
+  (aux-sol nil)
   (estado nil)
   (sucesores  '())
   (operador  nil)
@@ -331,8 +335,9 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
        ;Si encontró el estado meta
         ((equalp  *goal*  estado)
            (extract-solution  nodo)
-           (codifica-solucion)
-           (format t "Solución encontrada~%")
+           (setq aux-sol (codifica-solucion))
+           (setq *solution* aux-sol)
+           (format t "Solución encontrada ~a~% " aux-sol)
           (setq  meta-encontrada  T))
 
       ;Si todavía no se encuentra el estado meta
@@ -341,4 +346,7 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
     			  (setq  sucesores  (filter-memories  sucesores))
     			  (loop for  element  in  sucesores  do
     				(insert-to-open  (first element)  (second element)  metodo))))))
+
 );defun
+
+(start-maze)
