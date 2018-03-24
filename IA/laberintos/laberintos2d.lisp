@@ -5,6 +5,7 @@
 ;;==================================
 
 (load "maze_lib.lisp")
+(add-algorithm 'breadth-first)
 ;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
 ;; Se utilizará un arreglo de la forma #(i j)
@@ -104,7 +105,34 @@ binario: lista
     (15 '(1 1 1 1)));case
 );defun
 
+;;=======================================================================
+;; HUMANO-MAQUINA  y CODIFICA SOLUCIÓN
+;;=======================================================================
+(defun humano-maquina(etiqueta)
+"Función para codificar una etiqueta humana de un operador en una
+etiqueta de máquina"
+  (case etiqueta
+    (:diag-arriba-der 1)
+    (:diag-abajo-der 3)
+    (:diag-abajo-izq 5)
+    (:diag-arriba-izq 7)
+    (:derecha 2)
+    (:abajo 4)
+    (:izquierda 6)
+    (:arriba 0))
+);defun
 
+(defun codifica-solucion()
+"Codifica la solución para que tenga la forma que utiliza el servidor
+esta función se ejecuta después de actualizar la variable *solucion* con
+la función extract-solution"
+  (let ((aux nil))
+    (loop for i from 1 to (1- (length *solucion*)) do
+      (setq aux (append aux (list (humano-maquina (fourth (nth i *solucion*))))))
+      );loop
+    (setq *solucion* aux)
+  );let
+);defun
 ;;=======================================================================
 ;; VALIDA OPERADOR
 ;; Función para validar un operador
@@ -303,6 +331,7 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
        ;Si encontró el estado meta
         ((equalp  *goal*  estado)
            (extract-solution  nodo)
+           (codifica-solucion)
            (format t "Solución encontrada~%")
           (setq  meta-encontrada  T))
 
