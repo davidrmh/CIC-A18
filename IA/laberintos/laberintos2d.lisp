@@ -23,9 +23,9 @@
 ;; para compara el estado meta con la posición actual utilizar equalp
 ;;====================================================================
 
-;;===================================================
+;;======================================================================
 ;; VARIABLES GLOBALES
-;;===================================================
+;;======================================================================
 (defparameter *data-maze* (slot-value *maze* 'data)) ;Datos del laberinto
 (defparameter *maze-rows* (1- (get-maze-rows))) ;Renglones (índices) laberinto
 (defparameter *maze-cols* (1- (get-maze-cols))) ;Columnas (índices) laberinto
@@ -119,8 +119,11 @@ nil en otro caso.
     (setq col-pos-act (aref pos-actual 1))
     (setq reng-nva-pos (+ (aref pos-actual 0) (first (second op))))
     (setq col-nva-pos (+ (aref pos-actual 1) (second (second op))))
-    (setq rep-pos-act (aref *data-maze* reng-pos-act col-pos-act))
-    (setq rep-nva-pos (aref *data-maze* reng-nva-pos col-nva-pos))
+    (setq rep-pos-act (representa-binario (aref *data-maze* reng-pos-act col-pos-act)))
+    (if (and (>= reng-nva-pos 0) (<= reng-nva-pos *maze-rows*) (>= col-nva-pos 0) (<= col-nva-pos *maze-cols*) )
+      (setq rep-nva-pos (representa-binario (aref *data-maze* reng-nva-pos col-nva-pos)))
+      (return-from valida-op nil));if
+
 
     ;Revisa el operador caso por caso de acuerdo a la etiqueta
     (case etiqueta
@@ -132,8 +135,15 @@ nil en otro caso.
         (if (and (<= reng-nva-pos *maze-rows* ) (>= col-nva-pos 0) (or (and (= (nth 1 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
       (:diag-arriba-izq
         (if (and (>= reng-nva-pos 0 ) (>= col-nva-pos 0) (or (and (= (nth 3 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) )  ) t) )
-
-
+      (:arriba
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0)) t ) )
+      (:derecha
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0)) t ) )
+      (:abajo
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0)) t ) )
+      (:izquierda
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0)) t ) )
+    (otherwise nil)
     );case
   );let
 );defun
@@ -151,7 +161,8 @@ pos-actual: arreglo de la forma #(i j)
 SALIDA
 nueva-pos: arreglo de la forma #(i j) con la nueva posición
 "
-  (let ((nueva-pos #(0 0)) (mov-reng 0) (mov-col 0) )
+  (let ((nueva-pos nil) (mov-reng 0) (mov-col 0) )
+    (setq nueva-pos (make-array 2))
     (setq mov-reng (first (second op))) ;moviento en renglón
     (setq mov-col (second (second op))) ;moviento en columna
     (setf (aref nueva-pos 0) (+ (aref pos-actual 0) mov-reng)) ;nuevo renglón
