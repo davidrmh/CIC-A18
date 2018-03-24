@@ -276,3 +276,40 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 		 (push  current  *solucion*)     ;; agregar a la solución el nodo actual
 		 (setq  current  (locate-node  (third  current) *memory*))))  ;; y luego cambiar a su antecesor ("va subiendo en la memoria")
 	     *solucion*))
+
+;;=========================================================================
+;; BÚSQUEDA POR AMPLITUD (BREADTH-FIRST)
+;;=========================================================================
+
+(defun breadth-first()
+
+  (reset-all)
+  (let ((nodo nil)
+  (estado nil)
+  (sucesores  '())
+  (operador  nil)
+  (meta-encontrada  nil)
+  (pos-actual *start*)
+  (metodo :breadth-first))
+
+   (insert-to-open   pos-actual  nil  metodo)
+   (loop until  (or  meta-encontrada
+   (null *open*))  do
+     (setq  nodo    (get-from-open)
+     estado  (second  nodo)
+     operador  (third  nodo))
+     (push  nodo  *memory*)
+     (cond
+       ;Si encontró el estado meta
+        ((equalp  *goal*  estado)
+           (extract-solution  nodo)
+           (format t "Solución encontrada~%")
+          (setq  meta-encontrada  T))
+
+      ;Si todavía no se encuentra el estado meta
+          (t (setq  *current-ancestor*  (first  nodo))
+   	      (setq  sucesores  (expand estado))
+    			  (setq  sucesores  (filter-memories  sucesores))
+    			  (loop for  element  in  sucesores  do
+    				(insert-to-open  (first element)  (second element)  metodo))))))
+);defun
