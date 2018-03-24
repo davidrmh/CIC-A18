@@ -5,15 +5,14 @@
 ;;==================================
 
 (load "maze_lib.lisp")
-;;=================================================
+;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
 ;; Se utilizará un arreglo de la forma #(i j)
 ;; (aref pos-actual 0) => renglón
 ;; (aref pos-actual 1) => columna
-;; (setf (aref pos-actual 0) (aref *start* 0))
 ;;  #(i j) representa la posición en el arreglo *maze*
 ;; del archivo maze_lib.lisp
-;;=================================================
+;;====================================================================
 
 ;;====================================================================
 ;; ESTADO INICIAL
@@ -29,7 +28,23 @@
 (defparameter *data-maze* (slot-value *maze* 'data)) ;Datos del laberinto
 (defparameter *maze-rows* (1- (get-maze-rows))) ;Renglones (índices) laberinto
 (defparameter *maze-cols* (1- (get-maze-cols))) ;Columnas (índices) laberinto
+(defparameter  *open* '()) ;; Frontera de busqueda...
+(defparameter  *memory* '())   ;; Memoria de intentos previos
+(defparameter  *id*  -1)  ;; Identificador del ultimo nodo creado
+(defparameter  *current-ancestor*  nil) ;;Id del ancestro común a todos los descendientes que se generen
+(defparameter  *solucion*  nil)  ;;lista donde se almacenará la solución recuperada de la memoria
 
+
+;;=======================================================================
+;; FUNCIÓN PARA REINICIAR VARIABLES GLOBALES
+;;=======================================================================
+(defun reset-all()
+  (setq *open* nil)
+  (setq *memory* nil)
+  (setq *id* 0)
+  (setq *current-ancestor* nil)
+  (setq *solucion* nil)
+);defun
 ;;========================================================================
 ;; OPERADORES
 ;; Se representarán con una lista de la forma (a b)
@@ -94,7 +109,7 @@ binario: lista
 ;; VALIDA OPERADOR
 ;; Función para validar un operador
 ;;=======================================================================
-(defun valida-op(op pos-actual)
+(defun valid-operator?(op pos-actual)
 "Valida si la aplicación de un operador es válido para la
 posición actual
 ENTRADA
@@ -122,7 +137,7 @@ nil en otro caso.
     (setq rep-pos-act (representa-binario (aref *data-maze* reng-pos-act col-pos-act)))
     (if (and (>= reng-nva-pos 0) (<= reng-nva-pos *maze-rows*) (>= col-nva-pos 0) (<= col-nva-pos *maze-cols*) )
       (setq rep-nva-pos (representa-binario (aref *data-maze* reng-nva-pos col-nva-pos)))
-      (return-from valida-op nil));if
+      (return-from valid-operator? nil));if
 
 
     ;Revisa el operador caso por caso de acuerdo a la etiqueta
@@ -170,3 +185,94 @@ nueva-pos: arreglo de la forma #(i j) con la nueva posición
   nueva-pos
   );let
 );defun
+
+;;=======================================================================
+;;  CREATE-NODE [estado  op]
+;;      estado - Un estado del problema a resolver (sistema)...
+;;          op - El operador cuya aplicación generó el [estado]...
+;;=======================================================================
+(defun  create-node (estado  op)
+"Construye y regresa un nuevo nodo de búsqueda que contiene
+al estado y operador recibidos como parámetro "
+ ;;incrementamos primero para que lo último en procesarse sea la respuesta
+  (incf  *id*)
+  ;;los nodos generados son descendientes de *current-ancestor*
+  (list  *id*  estado  *current-ancestor*  (first op)) )
+
+;;=======================================================================
+;; INSERT TO OPEN Y GET FROM OPEN
+;;=======================================================================
+(defun insert-to-open (estado  op  metodo)
+"Permite insertar nodos de la frontera de busqueda *open*
+de forma apta para buscar a lo profundo y a lo ancho"
+(let ((nodo  (create-node  estado  op)))
+     (cond ((eql  metodo :depth-first)
+     (push  nodo  *open*))
+     ((eql  metodo :breadth-first)
+     (setq *open*  (append  *open*  (list nodo))))
+     (T  Nil)))  )
+
+(defun get-from-open ()
+"Recupera el siguiente elemento a revisar de  frontera de busqueda *open*"
+  (pop  *Open*))
+
+;;=============================================================================
+;;EXPAND [ estado]
+;;Construye y regresa una lista con todos los descendientes validos de [estado]
+;;=============================================================================
+(defun expand (estado)
+"Obtiene todos los descendientes válidos de un estado,
+aplicando todos los operadores en *ops* en ese mismo órden"
+  (let ((descendientes  nil)
+	   (nuevo-estado  nil))
+     (dolist  (op  *ops*  descendientes)
+	      (setq  nuevo-estado  (apply-operator  op estado))
+	    (when (valid-operator?  op  estado)
+     (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
+
+;;============================================================================
+;; REMEMBER-STATE? y FILTER-MEMORIES
+;;============================================================================
+(defun  remember-state?  (estado  lista-memoria)
+"RECURSIVA:
+Busca un estado en una lista de nodos que sirve como memoria de intentos previos
+el estado tiene estructura: #(i j),
+el nodo tiene estructura : [<Id> <estado> <id-ancestro> <operador> ]
+la memoria es una lista que contiene nodos"
+
+     (cond ((null  lista-memoria)  Nil)
+	        ((equalp  estado  (second (first  lista-memoria)))  T)  ;;el estado es igual al que se encuentra en el primer nodo de la memoria?
+		(T  (remember-state?  estado  (rest  lista-memoria))))  ) ;;Busca en el resto de la memoria
+
+(defun  filter-memories (lista-estados-y-ops)
+"Filtra una lista de estados-y-operadores quitando aquellos elementos cuyo
+estado está en la memoria *memory*
+la lista de estados y operadores tiene estructura:
+[(<estado> <op>) (<estado> <op>) ... ]
+esta lista resulta de aplicar la función expand a un estado"
+
+     (cond ((null  lista-estados-y-ops)  Nil)
+	       ((remember-state? (first (first  lista-estados-y-ops)) *memory*);; si se recuerda el primer elemento de la lista, filtrarlo...
+	       (filter-memories  (rest  lista-estados-y-ops)))
+		(T  (cons  (first lista-estados-y-ops) (filter-memories  (rest  lista-estados-y-ops))))) )  ;; de lo contrario, incluirlo en la respuesta
+
+;;==========================================================================
+;; EXTRACT-SOLUTION
+;;==========================================================================
+
+(defun extract-solution (nodo)
+"Rastrea en *memory* todos los descendientes de [nodo] hasta llegar
+al estado inicial.
+Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
+(first op) es la etiqueta huma de la operación
+"
+     (labels ((locate-node  (id  lista);; función local que busca un nodo por Id  y si lo encuentra regresa el nodo completo
+		  (cond ((null  lista)  Nil)
+		        ((eql  id  (first (first  lista))) (first  lista)) ;el  id del nodo es el id del primer elemento de la memoria?
+		        (T  (locate-node  id (rest  lista)))))) ;Busca en el resto de la memoria
+
+	  (let ((current  (locate-node  (first  nodo)  *memory*))) ;current es un nodo
+	     (loop  while  (not (null  current))  do  ;Memoria de intentos previos...
+		 (push  current  *solucion*)     ;; agregar a la solución el nodo actual
+		 (setq  current  (locate-node  (third  current) *memory*))))  ;; y luego cambiar a su antecesor ("va subiendo en la memoria")
+	     *solucion*))
