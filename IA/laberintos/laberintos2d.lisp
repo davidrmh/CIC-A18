@@ -7,6 +7,7 @@
 (load "maze_lib.lisp")
 (add-algorithm 'breadth-first)
 (add-algorithm 'depth-first)
+(add-algorithm 'bestfs)
 ;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
 ;; Se utilizará un arreglo de la forma #(i j [k])
@@ -259,35 +260,34 @@ al estado y operador recibidos como parámetro "
   (list  *id*  estado  *current-ancestor*  (first op)) )
 
 ;;=======================================================================
-;; INSERT TO OPEN Y GET FROM OPEN
+;; REORDENA-OPEN
+;; Reordena *open* de acuerdo a la aptitud de cada estado
 ;;=======================================================================
-(defun insert-to-open (estado  op  metodo)
-"Permite insertar nodos de la frontera de busqueda *open*
-de forma apta para buscar a lo profundo y a lo ancho"
-(let ((nodo  (create-node  estado  op)))
-     (cond ((eql  metodo :depth-first)
-     (push  nodo  *open*))
-     ((eql  metodo :breadth-first)
-     (setq *open*  (append  *open*  (list nodo))))
-     (T  Nil)))  )
 
-(defun get-from-open ()
-"Recupera el siguiente elemento a revisar de  frontera de busqueda *open*"
-  (pop  *Open*))
+(defun reordena-open ()
+  (let ((open-aux nil) (aptitudes nil) (aux nil))
 
-;;=============================================================================
-;;EXPAND [ estado]
-;;Construye y regresa una lista con todos los descendientes validos de [estado]
-;;=============================================================================
-(defun expand (estado)
-"Obtiene todos los descendientes válidos de un estado,
-aplicando todos los operadores en *ops* en ese mismo órden"
-  (let ((descendientes  nil)
-	   (nuevo-estado  nil))
-     (dolist  (op  *ops*  descendientes)
-	      (setq  nuevo-estado  (apply-operator  op estado))
-	    (when (valid-operator?  op  estado)
-     (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
+    ;Extrae las aptitudes
+    (loop for nodo in *open* do
+      (setq aptitudes (append aptitudes (list (aref (second nodo) 2) ) ) ))
+
+    ;Ordena la aptitudes de menor a mayor
+    (setq aptitudes (sort aptitudes #'<))
+
+    ;Acomoda los estados de acuerdo a su aptitud
+    (loop for aptitud in aptitudes do
+      (loop for nodo in *open* do
+        (when (and (equal aptitud (aref (second nodo) 2)) (not (member aptitud aux)))
+            (setq open-aux (append open-aux (list nodo)) ) )
+      );loop nodo
+      (setq aux (append aux (list aptitud)))
+    );loop aptitud
+    (setq *open* open-aux)
+  );let
+
+);defun
+
+
 
 ;;============================================================================
 ;; REMEMBER-STATE? y FILTER-MEMORIES
@@ -314,6 +314,42 @@ esta lista resulta de aplicar la función expand a un estado"
 	       ((remember-state? (first (first  lista-estados-y-ops)) *memory*);; si se recuerda el primer elemento de la lista, filtrarlo...
 	       (filter-memories  (rest  lista-estados-y-ops)))
 		(T  (cons  (first lista-estados-y-ops) (filter-memories  (rest  lista-estados-y-ops))))) )  ;; de lo contrario, incluirlo en la respuesta
+
+;;=======================================================================
+;; INSERT TO OPEN Y GET FROM OPEN
+;;=======================================================================
+(defun insert-to-open (estado  op  metodo)
+"Permite insertar nodos de la frontera de busqueda *open*
+de forma apta para buscar a lo profundo y a lo ancho"
+(let ((nodo  (create-node  estado  op)))
+     (cond ((eql  metodo :depth-first)
+     (push  nodo  *open*))
+     ((eql  metodo :breadth-first)
+     (setq *open*  (append  *open*  (list nodo))))
+     ((eql metodo :bestfs)
+      ;Revisa primero que el estado no esté ni en *open* ni en *memory*
+      (when (and  (not (remember-state? estado *open*))  (not (remember-state? estado *memory*)) )
+        (push nodo *open*) (reordena-open)) )
+     (T  Nil)))  )
+
+(defun get-from-open ()
+"Recupera el siguiente elemento a revisar de  frontera de busqueda *open*"
+  (pop  *Open*))
+
+;;=============================================================================
+;;EXPAND [ estado]
+;;Construye y regresa una lista con todos los descendientes validos de [estado]
+;;=============================================================================
+(defun expand (estado)
+"Obtiene todos los descendientes válidos de un estado,
+aplicando todos los operadores en *ops* en ese mismo órden"
+  (let ((descendientes  nil)
+	   (nuevo-estado  nil))
+     (dolist  (op  *ops*  descendientes)
+	      (setq  nuevo-estado  (apply-operator  op estado))
+	    (when (valid-operator?  op  estado)
+     (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
+
 
 ;;==========================================================================
 ;; EXTRACT-SOLUTION
@@ -418,5 +454,54 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 
 );defun
 
+;;========================================================================
+;; BÚSQUEDA BEST FIRST
+;;========================================================================
 
-;(start-maze)
+(defun bestfs ()
+
+  (reset-all)
+  (let ((nodo nil)
+  (aux-sol nil)
+  (estado nil)
+  (estado-aux nil)
+  (meta-aux (make-array 2)) ;;auxiliar para revisar si ya se llegó a la meta
+  (sucesores  '())
+  (operador  nil)
+  (meta-encontrada  nil)
+  (pos-actual (make-array 3))
+  (metodo :bestfs))
+
+  (setf (aref pos-actual 0) (aref *start* 0))
+  (setf (aref pos-actual 1) (aref *start* 1))
+  (setf (aref pos-actual 2) (aptitud pos-actual))
+
+   (insert-to-open   pos-actual  nil  metodo)
+   (loop until  (or  meta-encontrada
+   (null *open*))  do
+
+     (setq  nodo    (get-from-open)
+     estado  (second  nodo)
+     operador  (third  nodo))
+     (setf (aref meta-aux 0) (aref estado 0))
+     (setf (aref meta-aux 1) (aref estado 1))
+     (push  nodo  *memory*)
+     (cond
+       ;Si encontró el estado meta
+        ((equalp  *goal*  meta-aux)
+           (extract-solution  nodo)
+           (setq aux-sol (codifica-solucion))
+           (setq *solution* aux-sol)
+           (format t "Solución encontrada ~a~% " aux-sol)
+          (setq  meta-encontrada  T))
+
+      ;Si todavía no se encuentra el estado meta
+          (t (setq  *current-ancestor*  (first  nodo))
+   	      (setq  sucesores  (expand estado))
+    			  (setq  sucesores  (filter-memories  sucesores))
+    			  (loop for  element  in  sucesores  do
+    				  (insert-to-open  (first element)  (second element)  metodo))))))
+
+);defun
+
+(start-maze)
