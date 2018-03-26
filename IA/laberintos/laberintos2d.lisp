@@ -9,9 +9,10 @@
 (add-algorithm 'depth-first)
 ;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
-;; Se utilizará un arreglo de la forma #(i j)
+;; Se utilizará un arreglo de la forma #(i j [k])
 ;; (aref pos-actual 0) => renglón
 ;; (aref pos-actual 1) => columna
+;; (aref pos-actual 2) => Valor de la función de aptitud (Sólo bestFS y A*)
 ;;  #(i j) representa la posición en el arreglo *maze*
 ;; del archivo maze_lib.lisp
 ;;====================================================================
@@ -196,6 +197,24 @@ nil en otro caso.
 );defun
 
 ;;=======================================================================
+;; FUNCIÓN DE APTITUD (BESTFS)
+;; Se utiliza la distancia Manhattan, por lo tanto entre más
+;; pequeño sea el valor de la aptitud más prioridad tendrás ese estado
+;;=======================================================================
+(defun aptitud (posicion)
+  "Función de aptitud para el algoritmo BestFS
+  ENTRADA:
+  posicion: arreglo #(i j k)
+  SALIDA:
+  aptitud: número
+  "
+  (let ((aptitud 0))
+    (setq aptitud (+ (abs (- (aref posicion 0) (aref *goal* 0) ) )
+     (abs (- (aref posicion 1) (aref *goal* 1))) ) )
+     aptitud);let
+);defun
+
+;;=======================================================================
 ;; APPLY-OPERATOR (op pos-actual)
 ;; Aplica el operador op a las posición actual pos-actual
 ;; No verifica si la aplicación del operador es válida
@@ -209,11 +228,19 @@ SALIDA
 nueva-pos: arreglo de la forma #(i j) con la nueva posición
 "
   (let ((nueva-pos nil) (mov-reng 0) (mov-col 0) )
-    (setq nueva-pos (make-array 2))
+
+    (if (= (first (array-dimensions pos-actual)) 3 ) (setq nueva-pos (make-array 3))
+    (setq nueva-pos (make-array 2)) )
+
     (setq mov-reng (first (second op))) ;moviento en renglón
     (setq mov-col (second (second op))) ;moviento en columna
     (setf (aref nueva-pos 0) (+ (aref pos-actual 0) mov-reng)) ;nuevo renglón
     (setf (aref nueva-pos 1) (+ (aref pos-actual 1) mov-col)) ;nueva columna
+
+    ;Calcula aptitud
+    (if (= (first (array-dimensions pos-actual)) 3 )
+      (setf (aref nueva-pos 2) (aptitud nueva-pos)))
+
   nueva-pos
   );let
 );defun
@@ -392,4 +419,4 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
 );defun
 
 
-(start-maze)
+;(start-maze)
