@@ -8,6 +8,7 @@
 (add-algorithm 'breadth-first)
 (add-algorithm 'depth-first)
 (add-algorithm 'bestfs)
+(add-algorithm 'a-estrella)
 ;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
 ;; Se utilizará un arreglo de la forma #(i j [k])
@@ -37,6 +38,7 @@
 (defparameter  *id*  -1)  ;; Identificador del ultimo nodo creado
 (defparameter  *current-ancestor*  nil) ;;Id del ancestro común a todos los descendientes que se generen
 (defparameter  *solution*  nil)  ;;lista donde se almacenará la solución recuperada de la memoria
+(defparameter *altura* 0)
 
 
 ;;=======================================================================
@@ -51,6 +53,7 @@
   (setq *id* 0)
   (setq *current-ancestor* nil)
   (setq *solution* nil)
+  (setq *altura* 0)
 );defun
 ;;========================================================================
 ;; OPERADORES
@@ -198,12 +201,21 @@ nil en otro caso.
 );defun
 
 ;;=======================================================================
-;; FUNCIÓN DE APTITUD
+;; FUNCIÓNES DE APTITUD Y COSTO
 ;; Se utiliza la distancia Manhattan, por lo tanto entre más
 ;; pequeño sea el valor de la aptitud más prioridad tendrás ese estado
-;; Para el costo se utiliza la altura del árbol (*current-ancestor*)
+;; Para el costo se utiliza la distancia entre el nodo-padre y el nodo-hijo
 ;;=======================================================================
-(defun aptitud (posicion &optional (star nil))
+
+(defun costo (new-pos old-pos)
+  (let ((costo 0))
+    (setq costo (+ (abs (- (aref new-pos 0) (aref old-pos 0) ) )
+    (abs (- (aref new-pos 1) (aref old-pos 1))) ) )
+    costo
+  )
+);defun
+
+(defun aptitud (posicion &optional (star nil) (old-pos nil))
   "Función de aptitud para el algoritmo BestFS
   ENTRADA:
   posicion: arreglo #(i j k)
@@ -213,7 +225,7 @@ nil en otro caso.
   (let ((aptitud 0))
     (setq aptitud (+ (abs (- (aref posicion 0) (aref *goal* 0) ) )
      (abs (- (aref posicion 1) (aref *goal* 1))) ) )
-     (if star (setq aptitud (+ aptitud *current-ancestor*))) ;A-estrella
+     (if star (setq aptitud (+ aptitud (costo posicion old-pos)))) ;A-estrella
      aptitud);let
 );defun
 
@@ -243,7 +255,7 @@ nueva-pos: arreglo de la forma #(i j) con la nueva posición
 
     ;Calcula aptitud
     (if (= (first (array-dimensions pos-actual)) 3 )
-      (setf (aref nueva-pos 2) (aptitud nueva-pos star)))
+      (setf (aref nueva-pos 2) (aptitud nueva-pos star pos-actual)))
 
   nueva-pos
   );let
@@ -290,7 +302,39 @@ al estado y operador recibidos como parámetro "
 
 );defun
 
+;;===========================================================================
+;; ACTUALIZA-OPEN
+;; Función para actualizar *open* de acuerdo al algoritmo A*
+;;===========================================================================
+(defun actualiza-open (nodo)
+  "ENTRADA:
+  nodo: elemento de la lista sucesores ([estado op] [estado op]...)
+  SALIDA:
+  Función destructiva que actualiza la variable *open*
+  "
+  (let ((edo-nodo nil) (costo-nodo nil) (edo-open nil) (costo-open nil) (flag nil))
 
+    (when (null *open*) (push nodo *open*) (return-from actualiza-open nil) )
+    (setq edo-nodo (second nodo)) ;Estado
+    (setq costo-nodo (aref (second nodo) 2)) ;Costo
+
+    ;Busca si el estado del sucesor ya se encontraba en open y
+    ;actualiza de acuerdo al costo.
+    (loop for i from 0 to (1- (length *open*)) do
+      (setq edo-open (second (nth i *open*)))
+      (setq costo-open (aref (second (nth i *open*)) 2))
+
+      (cond
+
+        ((and (equalp edo-nodo edo-open) (< costo-nodo costo-open) )
+          (setf (nth i *open*) nodo) (setq flag t)) ;Si el nodo tiene un mejor costo
+
+        ( (and (equalp edo-nodo edo-open) (>= costo-nodo costo-open)) (setq flag t)) ;Si el estado ya estaba pero el nodo no tiene mejor costo
+      );cond
+    );loop
+    (if (not flag) (push nodo *open*)) ;Si el estado no estaba, se agrega el nodo
+  );let
+);defun
 
 ;;============================================================================
 ;; REMEMBER-STATE? y FILTER-MEMORIES
@@ -333,6 +377,10 @@ de forma apta para buscar a lo profundo y a lo ancho"
       ;Revisa primero que el estado no esté ni en *open* ni en *memory*
       (when (and  (not (remember-state? estado *open*))  (not (remember-state? estado *memory*)) )
         (push nodo *open*) (reordena-open)) )
+      ((eql metodo :star)
+      ;Revisa primero que no esté en memoria
+        (when (not (remember-state? estado *memory*))
+          (actualiza-open nodo) (reordena-open)))
      (T  Nil)))  )
 
 (defun get-from-open ()
@@ -343,13 +391,13 @@ de forma apta para buscar a lo profundo y a lo ancho"
 ;;EXPAND [ estado]
 ;;Construye y regresa una lista con todos los descendientes validos de [estado]
 ;;=============================================================================
-(defun expand (estado)
+(defun expand (estado &optional (star nil))
 "Obtiene todos los descendientes válidos de un estado,
 aplicando todos los operadores en *ops* en ese mismo órden"
   (let ((descendientes  nil)
 	   (nuevo-estado  nil))
      (dolist  (op  *ops*  descendientes)
-	      (setq  nuevo-estado  (apply-operator  op estado))
+	      (setq  nuevo-estado  (apply-operator  op estado star))
 	    (when (valid-operator?  op  estado)
      (setq  descendientes  (cons  (list nuevo-estado op) descendientes))))))
 
@@ -467,7 +515,6 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
   (let ((nodo nil)
   (aux-sol nil)
   (estado nil)
-  (estado-aux nil)
   (meta-aux (make-array 2)) ;;auxiliar para revisar si ya se llegó a la meta
   (sucesores  '())
   (operador  nil)
@@ -501,6 +548,57 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
       ;Si todavía no se encuentra el estado meta
           (t (setq  *current-ancestor*  (first  nodo))
    	      (setq  sucesores  (expand estado))
+    			  (setq  sucesores  (filter-memories  sucesores))
+    			  (loop for  element  in  sucesores  do
+    				  (insert-to-open  (first element)  (second element)  metodo))))))
+
+);defun
+
+
+;;========================================================================
+;; ALGORITMO A-ESTRELLA
+;;========================================================================
+
+(defun a-estrella ()
+
+  (reset-all)
+  (let ((nodo nil)
+  (aux-sol nil)
+  (estado nil)
+  (meta-aux (make-array 2)) ;;auxiliar para revisar si ya se llegó a la meta
+  (sucesores  '())
+  (operador  nil)
+  (meta-encontrada  nil)
+  (pos-actual (make-array 3))
+  (metodo :star))
+
+  (setf (aref pos-actual 0) (aref *start* 0))
+  (setf (aref pos-actual 1) (aref *start* 1))
+  (setf (aref pos-actual 2) (aptitud pos-actual))
+
+   (insert-to-open   pos-actual  nil  metodo)
+   (loop until  (or  meta-encontrada
+   (null *open*))  do
+
+     (setq  nodo    (get-from-open)
+     estado  (second  nodo)
+     operador  (third  nodo))
+     (setf (aref meta-aux 0) (aref estado 0))
+     (setf (aref meta-aux 1) (aref estado 1))
+     (push  nodo  *memory*)
+     (incf *altura*)
+     (cond
+       ;Si encontró el estado meta
+        ((equalp  *goal*  meta-aux)
+           (extract-solution  nodo)
+           (setq aux-sol (codifica-solucion))
+           (setq *solution* aux-sol)
+           (format t "Solución encontrada ~a~% " aux-sol)
+          (setq  meta-encontrada  T))
+
+      ;Si todavía no se encuentra el estado meta
+          (t (setq  *current-ancestor*  (first  nodo))
+   	      (setq  sucesores  (expand estado t))
     			  (setq  sucesores  (filter-memories  sucesores))
     			  (loop for  element  in  sucesores  do
     				  (insert-to-open  (first element)  (second element)  metodo))))))
