@@ -198,11 +198,12 @@ nil en otro caso.
 );defun
 
 ;;=======================================================================
-;; FUNCIÓN DE APTITUD (BESTFS)
+;; FUNCIÓN DE APTITUD
 ;; Se utiliza la distancia Manhattan, por lo tanto entre más
 ;; pequeño sea el valor de la aptitud más prioridad tendrás ese estado
+;; Para el costo se utiliza la altura del árbol (*current-ancestor*)
 ;;=======================================================================
-(defun aptitud (posicion)
+(defun aptitud (posicion &optional (star nil))
   "Función de aptitud para el algoritmo BestFS
   ENTRADA:
   posicion: arreglo #(i j k)
@@ -212,6 +213,7 @@ nil en otro caso.
   (let ((aptitud 0))
     (setq aptitud (+ (abs (- (aref posicion 0) (aref *goal* 0) ) )
      (abs (- (aref posicion 1) (aref *goal* 1))) ) )
+     (if star (setq aptitud (+ aptitud *current-ancestor*))) ;A-estrella
      aptitud);let
 );defun
 
@@ -220,11 +222,12 @@ nil en otro caso.
 ;; Aplica el operador op a las posición actual pos-actual
 ;; No verifica si la aplicación del operador es válida
 ;;=======================================================================
-(defun apply-operator (op pos-actual)
+(defun apply-operator (op pos-actual &optional (star nil))
 "
 ENTRADA
 op: un elemento de la lista *ops*
 pos-actual: arreglo de la forma #(i j)
+star: boolean para indicar si es o no el algoritmo estrella
 SALIDA
 nueva-pos: arreglo de la forma #(i j) con la nueva posición
 "
@@ -240,7 +243,7 @@ nueva-pos: arreglo de la forma #(i j) con la nueva posición
 
     ;Calcula aptitud
     (if (= (first (array-dimensions pos-actual)) 3 )
-      (setf (aref nueva-pos 2) (aptitud nueva-pos)))
+      (setf (aref nueva-pos 2) (aptitud nueva-pos star)))
 
   nueva-pos
   );let
