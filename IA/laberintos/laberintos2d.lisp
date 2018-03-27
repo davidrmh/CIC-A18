@@ -202,15 +202,16 @@ nil en otro caso.
 
 ;;=======================================================================
 ;; FUNCIÓNES DE APTITUD Y COSTO
-;; Se utiliza la distancia Manhattan, por lo tanto entre más
+;; Se utiliza la distancia euclidiana ya que se adminten
+;; movimientos en diagonal. Entre más
 ;; pequeño sea el valor de la aptitud más prioridad tendrás ese estado
 ;; Para el costo se utiliza la distancia entre el nodo-padre y el nodo-hijo
 ;;=======================================================================
 
 (defun costo (new-pos old-pos)
   (let ((costo 0))
-    (setq costo (+ (abs (- (aref new-pos 0) (aref old-pos 0) ) )
-    (abs (- (aref new-pos 1) (aref old-pos 1))) ) )
+    (setq costo (+ (* (- (aref new-pos 0) (aref old-pos 0) ) (- (aref new-pos 0) (aref old-pos 0) ) )
+    (* (- (aref new-pos 1) (aref old-pos 1)) (- (aref new-pos 1) (aref old-pos 1)) ) ) )
     costo
   )
 );defun
@@ -223,8 +224,8 @@ nil en otro caso.
   aptitud: número
   "
   (let ((aptitud 0))
-    (setq aptitud (+ (abs (- (aref posicion 0) (aref *goal* 0) ) )
-     (abs (- (aref posicion 1) (aref *goal* 1))) ) )
+    (setq aptitud (+ (* (- (aref posicion 0) (aref *goal* 0) ) (- (aref posicion 0) (aref *goal* 0) ) )
+     (* (- (aref posicion 1) (aref *goal* 1)) (- (aref posicion 1) (aref *goal* 1)) ) ) )
      (if star (setq aptitud (+ aptitud (costo posicion old-pos)))) ;A-estrella
      aptitud);let
 );defun
