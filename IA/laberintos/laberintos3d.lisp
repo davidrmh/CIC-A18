@@ -11,10 +11,11 @@
 (add-algorithm 'a-estrella)
 ;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
-;; Se utilizará un arreglo de la forma #(i j [k])
+;; Se utilizará un arreglo de la forma #(i j [k] l)
 ;; (aref pos-actual 0) => renglón
 ;; (aref pos-actual 1) => columna
 ;; (aref pos-actual 2) => Valor de la función de aptitud (Sólo bestFS y A*)
+;;
 ;;  #(i j) representa la posición en el arreglo *maze*
 ;; del archivo maze_lib.lisp
 ;;====================================================================
@@ -111,7 +112,9 @@ binario: lista
     (12 '(1 1 0 0))
     (13 '(1 1 0 1))
     (14 '(1 1 1 0))
-    (15 '(1 1 1 1)));case
+    (15 '(1 1 1 1))
+    (16 '(1 0 0 0 0)) ;puente izquierda-derecha
+    (17 '(1 0 0 0 1)));puente arriba-abajo
 );defun
 
 ;;=======================================================================
@@ -146,6 +149,29 @@ la función extract-solution"
 ;; VALIDA OPERADOR
 ;; Función para validar un operador
 ;;=======================================================================
+
+(defun es-puente17? (renglon columna)
+  (if (= 17 (aref *data-maze* renglon columna))
+    (return-from es-puente17? t)
+    (return-from es-puente17? nil))
+);defun
+
+(defun es-puente16? (renglon columna)
+"Función para determinar si una casilla es un puente"
+
+(if (= 16 (aref *data-maze* renglon columna))
+    (return-from es-puente16? t)
+    (return-from es-puente16? nil))
+
+);defun
+
+(defun es-puente? (renglon columna)
+"Función para determinar si una casilla es un puente"
+  (if (or (= 16 (aref *data-maze* renglon columna))
+      (= 17 (aref *data-maze* renglon columna)))
+      (return-from es-puente? t) (return-from es-puente? nil))
+);defun
+
 (defun valid-operator? (op pos-actual)
 "Valida si la aplicación de un operador es válido para la
 posición actual
@@ -172,21 +198,33 @@ nil en otro caso.
     (setq reng-nva-pos (+ (aref pos-actual 0) (first (second op))))
     (setq col-nva-pos (+ (aref pos-actual 1) (second (second op))))
     (setq rep-pos-act (representa-binario (aref *data-maze* reng-pos-act col-pos-act)))
+
+    ;Si alguna posición está fuera del laberinto regresa nil
     (if (and (>= reng-nva-pos 0) (<= reng-nva-pos *maze-rows*) (>= col-nva-pos 0) (<= col-nva-pos *maze-cols*) )
       (setq rep-nva-pos (representa-binario (aref *data-maze* reng-nva-pos col-nva-pos)))
       (return-from valid-operator? nil));if
 
 
     ;Revisa el operador caso por caso de acuerdo a la etiqueta
+    ;Para el caso de las diagonales ahora se revisa que la nueva posición
+    ;no sea un puente o que se "salte" uno.
     (case etiqueta
       (:diag-arriba-der
-        (if (and (>= reng-nva-pos 0 ) (<= col-nva-pos *maze-cols*) (or (and (= (nth 2 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) (and (= (nth 3 rep-pos-act) 0) (= (nth 0 rep-nva-pos) 0)) )  ) t))
+        (if (and (>= reng-nva-pos 0 ) (<= col-nva-pos *maze-cols*) (not (es-puente? reng-pos-act col-pos-act)) (not (es-puente? reng-pos-act col-nva-pos)) (not (es-puente? reng-nva-pos col-pos-act)) (not (es-puente? reng-nva-pos col-nva-pos))
+         (or (and (= (nth 2 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) (and (= (nth 3 rep-pos-act) 0) (= (nth 0 rep-nva-pos) 0)) )  ) t))
+
       (:diag-abajo-der
-        (if (and (<= reng-nva-pos *maze-rows* ) (<= col-nva-pos *maze-cols*) (or (and (= (nth 1 rep-pos-act) 0) (= (nth 0 rep-nva-pos) 0)) (and (= (nth 2 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
+        (if (and (<= reng-nva-pos *maze-rows* ) (<= col-nva-pos *maze-cols*) (not (es-puente? reng-pos-act col-pos-act)) (not (es-puente? reng-pos-act col-nva-pos)) (not (es-puente? reng-nva-pos col-pos-act)) (not (es-puente? reng-nva-pos col-nva-pos))
+        (or (and (= (nth 1 rep-pos-act) 0) (= (nth 0 rep-nva-pos) 0)) (and (= (nth 2 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
+
       (:diag-abajo-izq
-        (if (and (<= reng-nva-pos *maze-rows* ) (>= col-nva-pos 0) (or (and (= (nth 1 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
+        (if (and (<= reng-nva-pos *maze-rows* ) (>= col-nva-pos 0) (not (es-puente? reng-pos-act col-pos-act)) (not (es-puente? reng-pos-act col-nva-pos)) (not (es-puente? reng-nva-pos col-pos-act)) (not (es-puente? reng-nva-pos col-nva-pos))
+        (or (and (= (nth 1 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 3 rep-nva-pos) 0)) )  ) t) )
+
       (:diag-arriba-izq
-        (if (and (>= reng-nva-pos 0 ) (>= col-nva-pos 0) (or (and (= (nth 3 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) )  ) t) )
+        (if (and (>= reng-nva-pos 0 ) (>= col-nva-pos 0) (not (es-puente? reng-pos-act col-pos-act)) (not (es-puente? reng-pos-act col-nva-pos)) (not (es-puente? reng-nva-pos col-pos-act)) (not (es-puente? reng-nva-pos col-nva-pos))
+        (or (and (= (nth 3 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) )  ) t) )
+        
       (:arriba
         (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0)) t ) )
       (:derecha
