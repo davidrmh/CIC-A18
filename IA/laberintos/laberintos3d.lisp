@@ -345,9 +345,9 @@ nueva-pos: arreglo de la forma #(i j) con la nueva posición
 
     (cond
       ((and (>= (aref nueva-pos 0) 0) (<= (aref nueva-pos 0) *maze-rows*) (>= (aref nueva-pos 1) 0) (<= (aref nueva-pos 1) *maze-cols*) (es-puente16? (aref nueva-pos 0) (aref nueva-pos 1))
-        (or (eql etiqueta :derecha) (eql etiqueta :izquierda) (eql etiqueta :derecha-sobre-puente) (eql etiqueta :izquierda-sobre-puente) ) ) (setf (aref nueva-pos 3) 1) )
+        (or (eql etiqueta :derecha) (eql etiqueta :izquierda) (eql etiqueta :derecha-sobre-puente) (eql etiqueta :derecha-bajo-puente) (eql etiqueta :izquierda-sobre-puente) (eql etiqueta :izquierda-bajo-puente) ) ) (setf (aref nueva-pos 3) 1) )
       ((and (>= (aref nueva-pos 0) 0) (<= (aref nueva-pos 0) *maze-rows*) (>= (aref nueva-pos 1) 0) (<= (aref nueva-pos 1) *maze-cols*) (es-puente17? (aref nueva-pos 0) (aref nueva-pos 1))
-        (or (eql etiqueta :arriba) (eql etiqueta :abajo) (eql etiqueta :arriba-sobre-puente) (eql etiqueta :abajo-sobre-puente) ) ) (setf (aref nueva-pos 3) 1) )
+        (or (eql etiqueta :arriba) (eql etiqueta :abajo) (eql etiqueta :arriba-sobre-puente) (eql etiqueta :arriba-bajo-puente) (eql etiqueta :abajo-sobre-puente) (eql etiqueta :abajo-bajo-puente) ) ) (setf (aref nueva-pos 3) 1) )
     )
 
   nueva-pos
