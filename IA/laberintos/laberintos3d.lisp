@@ -245,30 +245,30 @@ nil en otro caso.
       (:arriba
         (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (not (es-puente16? reng-pos-act col-pos-act)) ) t ) )
       (:arriba-bajo-puente
-        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) ) t ) )
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
       (:arriba-sobre-puente
-        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) ) t ) )
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
 
       (:derecha
         (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (not (es-puente17? reng-pos-act col-pos-act)) ) t ) )
       (:derecha-bajo-puente
-        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) ) t ) )
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
       (:derecha-sobre-puente
-        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) ) t ) )
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
 
       (:abajo
         (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (not (es-puente16? reng-pos-act col-pos-act))) t ) )
       (:abajo-bajo-puente
-        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) ) t ) )
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
       (:abajo-sobre-puente
-        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) ) t ) )
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
 
       (:izquierda
         (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (not (es-puente17? reng-pos-act col-pos-act))) t ) )
       (:izquierda-bajo-puente
-        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act)) t ) )
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
       (:izquierda-sobre-puente
-        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act)) t ) )
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
     (otherwise nil)
     );case
   );let
