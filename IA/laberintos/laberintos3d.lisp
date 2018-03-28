@@ -11,11 +11,11 @@
 (add-algorithm 'a-estrella)
 ;;===================================================================
 ;; REPRESENTACIÓN DE LOS ESTADOS
-;; Se utilizará un arreglo de la forma #(i j [k] l)
+;; Se utilizará un arreglo de la forma #(i j k l)
 ;; (aref pos-actual 0) => renglón
 ;; (aref pos-actual 1) => columna
 ;; (aref pos-actual 2) => Valor de la función de aptitud (Sólo bestFS y A*)
-;;
+;; (aref pos-actual 3) => Se está sobre un puente (1) o debajo de el (0)
 ;;  #(i j) representa la posición en el arreglo *maze*
 ;; del archivo maze_lib.lisp
 ;;====================================================================
@@ -79,9 +79,17 @@
                       (:diag-abajo-izq (1 -1))
                       (:diag-arriba-izq (-1 -1))
                       (:derecha (0 1))
+                      (:derecha-bajo-puente (0 1))
+                      (:derecha-sobre-puente (0 1))
                       (:abajo (1 0))
+                      (:abajo-bajo-puente (1 0))
+                      (:abajo-sobre-puente (1 0))
                       (:izquierda (0 -1))
-                      (:arriba (-1 0))  ))
+                      (:izquierda-bajo-puente (0 -1))
+                      (:izquierda-sobre-puente (0 -1))
+                      (:arriba (-1 0))
+                      (:arriba-bajo-puente (-1 0))
+                      (:arriba-sobre-puente (-1 0))  ))
 
 ;;=======================================================================
 ;; REPRESENTA BINARIO
@@ -151,13 +159,14 @@ la función extract-solution"
 ;;=======================================================================
 
 (defun es-puente17? (renglon columna)
+"Función para determinar si una casilla es un puente arriba-abajo"
   (if (= 17 (aref *data-maze* renglon columna))
     (return-from es-puente17? t)
     (return-from es-puente17? nil))
 );defun
 
 (defun es-puente16? (renglon columna)
-"Función para determinar si una casilla es un puente"
+"Función para determinar si una casilla es un puente izquierda-derecha"
 
 (if (= 16 (aref *data-maze* renglon columna))
     (return-from es-puente16? t)
@@ -224,15 +233,34 @@ nil en otro caso.
       (:diag-arriba-izq
         (if (and (>= reng-nva-pos 0 ) (>= col-nva-pos 0) (not (es-puente? reng-pos-act col-pos-act)) (not (es-puente? reng-pos-act col-nva-pos)) (not (es-puente? reng-nva-pos col-pos-act)) (not (es-puente? reng-nva-pos col-nva-pos))
         (or (and (= (nth 3 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) )  ) t) )
-        
+
       (:arriba
-        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0)) t ) )
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (not (es-puente16? reng-pos-act col-pos-act)) ) t ) )
+      (:arriba-bajo-puente
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) ) t ) )
+      (:arriba-sobre-puente
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) ) t ) )
+
       (:derecha
-        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0)) t ) )
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (not (es-puente17? reng-pos-act col-pos-act)) ) t ) )
+      (:derecha-bajo-puente
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) ) t ) )
+      (:derecha-sobre-puente
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) ) t ) )
+
       (:abajo
-        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0)) t ) )
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (not (es-puente16? reng-pos-act col-pos-act))) t ) )
+      (:abajo-bajo-puente
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) ) t ) )
+      (:abajo-sobre-puente
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) ) t ) )
+
       (:izquierda
-        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0)) t ) )
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (not (es-puente17? reng-pos-act col-pos-act))) t ) )
+      (:izquierda-bajo-puente
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act)) t ) )
+      (:izquierda-sobre-puente
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act)) t ) )
     (otherwise nil)
     );case
   );let
@@ -277,15 +305,15 @@ nil en otro caso.
 "
 ENTRADA
 op: un elemento de la lista *ops*
-pos-actual: arreglo de la forma #(i j)
+pos-actual: arreglo de la forma #(i j k l)
 star: boolean para indicar si es o no el algoritmo estrella
 SALIDA
 nueva-pos: arreglo de la forma #(i j) con la nueva posición
 "
-  (let ((nueva-pos nil) (mov-reng 0) (mov-col 0) )
+  (let ((nueva-pos nil) (mov-reng 0) (mov-col 0) (etiqueta nil) )
 
-    (if (= (first (array-dimensions pos-actual)) 3 ) (setq nueva-pos (make-array 3))
-    (setq nueva-pos (make-array 2)) )
+    (setq etiqueta (first op)) ;etiqueta de la operación
+    (setq nueva-pos (make-array 4)) ;Nueva posición
 
     (setq mov-reng (first (second op))) ;moviento en renglón
     (setq mov-col (second (second op))) ;moviento en columna
@@ -293,8 +321,16 @@ nueva-pos: arreglo de la forma #(i j) con la nueva posición
     (setf (aref nueva-pos 1) (+ (aref pos-actual 1) mov-col)) ;nueva columna
 
     ;Calcula aptitud
-    (if (= (first (array-dimensions pos-actual)) 3 )
-      (setf (aref nueva-pos 2) (aptitud nueva-pos star pos-actual)))
+    (setf (aref nueva-pos 2) (aptitud nueva-pos star pos-actual))
+
+    ;Determina si va sobre/bajo el puente
+    (case etiqueta
+      (:derecha-sobre-puente (setf (aref nueva-pos 3) 1))
+      (:abajo-sobre-puente (setf (aref nueva-pos 3) 1))
+      (:izquierda-sobre-puente (setf (aref nueva-pos 3) 1))
+      (:arriba-sobre-puente (setf (aref nueva-pos 3) 1))
+      (otherwise (setf (aref nueva-pos 3) 0))
+    );case
 
   nueva-pos
   );let
