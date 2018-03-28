@@ -156,6 +156,7 @@ esta función se ejecuta después de actualizar la variable *solution* con
 la función extract-solution"
   (let ((aux nil))
     (loop for i from 1 to (1- (length *solution*)) do
+      (format t "~a~%" (fourth (nth i *solution*)))
       (setq aux (append aux (list (humano-maquina (fourth (nth i *solution*))))))
       );loop
   aux
@@ -194,7 +195,7 @@ la función extract-solution"
 posición actual
 ENTRADA
 op: Elemento de la lista *ops*
-pos-actua: Arreglo de la forma #(i j) representando la posición actual
+pos-actual: Arreglo de la forma #(i j k l) representando la posición actual
 dentro del laberinto.
 SALIDA
 t: si es válido aplicar op a pos-actual
@@ -221,7 +222,6 @@ nil en otro caso.
       (setq rep-nva-pos (representa-binario (aref *data-maze* reng-nva-pos col-nva-pos)))
       (return-from valid-operator? nil));if
 
-
     ;Revisa el operador caso por caso de acuerdo a la etiqueta
     ;Para el caso de las diagonales ahora se revisa que la nueva posición
     ;no sea un puente o que se "salte" uno.
@@ -243,32 +243,32 @@ nil en otro caso.
         (or (and (= (nth 3 rep-pos-act) 0) (= (nth 2 rep-nva-pos) 0)) (and (= (nth 0 rep-pos-act) 0) (= (nth 1 rep-nva-pos) 0)) )  ) t) )
 
       (:arriba
-        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (not (es-puente16? reng-pos-act col-pos-act)) ) t ) )
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (not (es-puente? reng-pos-act col-pos-act)) )t))
       (:arriba-bajo-puente
-        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) )t))
       (:arriba-sobre-puente
-        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
+        (if (and (>= reng-nva-pos 0) (= (nth 3 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) )t))
 
       (:derecha
-        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (not (es-puente17? reng-pos-act col-pos-act)) ) t ) )
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (not (es-puente? reng-pos-act col-pos-act)) )t))
       (:derecha-bajo-puente
-        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) )t))
       (:derecha-sobre-puente
-        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
+        (if (and (<= col-nva-pos *maze-cols*) (= (nth 2 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) )t))
 
       (:abajo
-        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (not (es-puente16? reng-pos-act col-pos-act))) t ) )
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (not (es-puente? reng-pos-act col-pos-act)) )t))
       (:abajo-bajo-puente
-        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) )t))
       (:abajo-sobre-puente
-        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
+        (if (and (<= reng-nva-pos *maze-rows*) (= (nth 1 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) )t))
 
       (:izquierda
-        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (not (es-puente17? reng-pos-act col-pos-act))) t ) )
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (not (es-puente? reng-pos-act col-pos-act)))t))
       (:izquierda-bajo-puente
-        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) ) t ) )
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente17? reng-pos-act col-pos-act) (= (aref pos-actual 3) 0) )t))
       (:izquierda-sobre-puente
-        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) ) t ) )
+        (if (and (>= col-nva-pos 0) (= (nth 0 rep-pos-act) 0) (es-puente16? reng-pos-act col-pos-act) (= (aref pos-actual 3) 1) )t))
     (otherwise nil)
     );case
   );let
@@ -332,13 +332,23 @@ nueva-pos: arreglo de la forma #(i j) con la nueva posición
     (setf (aref nueva-pos 2) (aptitud nueva-pos star pos-actual))
 
     ;Determina si va sobre/bajo el puente
-    (case etiqueta
-      (:derecha-sobre-puente (setf (aref nueva-pos 3) 1))
-      (:abajo-sobre-puente (setf (aref nueva-pos 3) 1))
-      (:izquierda-sobre-puente (setf (aref nueva-pos 3) 1))
-      (:arriba-sobre-puente (setf (aref nueva-pos 3) 1))
-      (otherwise (setf (aref nueva-pos 3) 0))
-    );case
+    ;(case etiqueta
+    ;  (:derecha-sobre-puente (setf (aref nueva-pos 3) 1))
+    ;  (:abajo-sobre-puente (setf (aref nueva-pos 3) 1))
+    ;  (:izquierda-sobre-puente (setf (aref nueva-pos 3) 1))
+    ;  (:arriba-sobre-puente (setf (aref nueva-pos 3) 1))
+    ;  (:derecha-bajo-puente (setf (aref nueva-pos 3) 0))
+    ;  (:abajo-bajo-puente (setf (aref nueva-pos 3) 0))
+    ;  (:izquierda-bajo-puente (setf (aref nueva-pos 3) 0))
+    ;  (:abajo-bajo-puente (setf (aref nueva-pos 3) 0))
+    ;);case
+
+    (cond
+      ((and (>= (aref nueva-pos 0) 0) (<= (aref nueva-pos 0) *maze-rows*) (>= (aref nueva-pos 1) 0) (<= (aref nueva-pos 1) *maze-cols*) (es-puente16? (aref nueva-pos 0) (aref nueva-pos 1))
+        (or (eql etiqueta :derecha) (eql etiqueta :izquierda) (eql etiqueta :derecha-sobre-puente) (eql etiqueta :izquierda-sobre-puente) ) ) (setf (aref nueva-pos 3) 1) )
+      ((and (>= (aref nueva-pos 0) 0) (<= (aref nueva-pos 0) *maze-rows*) (>= (aref nueva-pos 1) 0) (<= (aref nueva-pos 1) *maze-cols*) (es-puente17? (aref nueva-pos 0) (aref nueva-pos 1))
+        (or (eql etiqueta :arriba) (eql etiqueta :abajo) (eql etiqueta :arriba-sobre-puente) (eql etiqueta :abajo-sobre-puente) ) ) (setf (aref nueva-pos 3) 1) )
+    )
 
   nueva-pos
   );let
@@ -516,22 +526,29 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
   (let ((nodo nil)
   (aux-sol nil)
   (estado nil)
+  (meta-aux (make-array 2))
   (sucesores  '())
   (operador  nil)
   (meta-encontrada  nil)
-  (pos-actual *start*)
+  (pos-actual (make-array 4))
   (metodo :breadth-first))
+
+  (setf (aref pos-actual 0) (aref *start* 0))
+  (setf (aref pos-actual 1) (aref *start* 1))
 
    (insert-to-open   pos-actual  nil  metodo)
    (loop until  (or  meta-encontrada
    (null *open*))  do
+
      (setq  nodo    (get-from-open)
      estado  (second  nodo)
      operador  (third  nodo))
+     (setf (aref meta-aux 0) (aref estado 0))
+     (setf (aref meta-aux 1) (aref estado 1))
      (push  nodo  *memory*)
      (cond
        ;Si encontró el estado meta
-        ((equalp  *goal*  estado)
+        ((equalp  *goal*  meta-aux)
            (extract-solution  nodo)
            (setq aux-sol (codifica-solucion))
            (setq *solution* aux-sol)
@@ -557,22 +574,29 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
   (let ((nodo nil)
   (aux-sol nil)
   (estado nil)
+  (meta-aux (make-array 2))
   (sucesores  '())
   (operador  nil)
   (meta-encontrada  nil)
-  (pos-actual *start*)
+  (pos-actual (make-array 4))
   (metodo :depth-first))
+
+  (setf (aref pos-actual 0) (aref *start* 0))
+  (setf (aref pos-actual 1) (aref *start* 1))
 
    (insert-to-open   pos-actual  nil  metodo)
    (loop until  (or  meta-encontrada
    (null *open*))  do
+
      (setq  nodo    (get-from-open)
      estado  (second  nodo)
      operador  (third  nodo))
+     (setf (aref meta-aux 0) (aref estado 0))
+     (setf (aref meta-aux 1) (aref estado 1))
      (push  nodo  *memory*)
      (cond
        ;Si encontró el estado meta
-        ((equalp  *goal*  estado)
+        ((equalp  *goal*  meta-aux)
            (extract-solution  nodo)
            (setq aux-sol (codifica-solucion))
            (setq *solution* aux-sol)
@@ -652,7 +676,7 @@ Los nodos son de la forma (list  *id*  estado  *current-ancestor*  (first op))
   (sucesores  '())
   (operador  nil)
   (meta-encontrada  nil)
-  (pos-actual (make-array 3))
+  (pos-actual (make-array 4))
   (metodo :star))
 
   (setf (aref pos-actual 0) (aref *start* 0))
