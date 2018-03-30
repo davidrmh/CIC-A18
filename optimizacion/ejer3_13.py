@@ -81,12 +81,37 @@ def mutacion(x,pmuta):
             y[i]=np.random.uniform(-5,5,1) #muta
         else:
             y[i]=x[i] #queda igual
-    return y        
-
+    return y
 
 
 
 
 ##================================================================
-## Variables globales
+## Funcion para inicializar la poblacion
 ##================================================================
+def inicializaPoblacion(numInd,dimension,limInf,limSup):
+    '''
+    ENTRADA:
+    numInd: Numero de individuos en la poblacion
+    dimension: Dimension del espacio de busqueda
+    limInf: Limite inferior en una dimension del espacio de busqueda
+    limSup: Limite superior en una dimension del espacio de busqueda
+    SALIDA:
+    poblacion: lista cuyas entradas representan a los individuos
+    '''
+
+    poblacion=[]
+    for i in range(0,numInd):
+        poblacion.append(np.random.uniform(limInf,limSup,dimension))
+    return poblacion    
+
+
+##================================================================
+## Parametros
+##================================================================
+generaciones=100 #Numero de generaciones
+numInd=20 #Numero de individuos por generacion
+dimension=20 #Dimension del espacio de busqueda
+limInf=-5 #Limite inferior en una dimension del espacio de busqueda
+limSup=5 #Limite superior en una dimension del espacio de busqueda
+pmuta=0.01 #Probabilidad de mutacion
