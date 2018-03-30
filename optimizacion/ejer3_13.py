@@ -1,4 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
+from copy import deepcopy
 
 ##================================================================
 ## Funcion objetivo
@@ -103,7 +105,7 @@ def inicializaPoblacion(numInd,dimension,limInf,limSup):
     poblacion=[]
     for i in range(0,numInd):
         poblacion.append(np.random.uniform(limInf,limSup,dimension))
-    return poblacion    
+    return poblacion
 
 
 ##================================================================
@@ -115,3 +117,52 @@ dimension=20 #Dimension del espacio de busqueda
 limInf=-5 #Limite inferior en una dimension del espacio de busqueda
 limSup=5 #Limite superior en una dimension del espacio de busqueda
 pmuta=0.01 #Probabilidad de mutacion
+
+##================================================================
+## Pregunta A
+##================================================================
+def preguntaA():
+    nuevaPoblacion=[]
+    fitnessPob=[] #fitness de cada individuo
+    probabilidades=[] #Probabilidades de seleccion
+    costoPob=[] # Costo de cada individuo
+    costoPromedio=[] #Costo promedio de la poblacion por cada generacion
+    costoMejor=[] #Costo del mejor individuo por cada generacion
+
+    #Inicializa poblacion
+    poblacion=inicializaPoblacion(numInd,dimension,limInf,limSup)
+
+    for i in range(0,generaciones):
+
+        #Calcula fitness y costos
+        for ind in poblacion:
+            fitnessPob.append(fitness(ind))
+            costoPob.append(objetivo(ind))
+
+        #Registra el costo promedio y el del mejor individuo de la generacion
+        costoPromedio.append(np.mean(costoPob))
+        costoMejor.append(np.min(costoPob))
+
+        #Probabilidades de seleccion
+        probabilidades=fitnessPob/np.sum(fitnessPob)
+
+        #Genera nueva poblacion
+        while len(nuevaPoblacion)!=len(poblacion):
+            #Primero cruza
+            indices=np.random.choice(range(0,numInd),size=2,p=probabilidades,replace=False)
+            padre1=poblacion[indices[0]]
+            padre2=poblacion[indices[1]]
+            hijo1,hijo2=cruza(padre1,padre2)
+            #Despues muta
+            hijo1=mutacion(hijo1,pmuta)
+            hijo2=mutacion(hijo2,pmuta)
+            nuevaPoblacion.append(hijo1)
+            nuevaPoblacion.append(hijo2)
+
+        #Prepara las variables para la proxima generacion
+        poblacion=deepcopy(nuevaPoblacion)
+        nuevaPoblacion=[]
+        probabilidades=[]
+        fitnessPob=[]
+        costoPob=[]
+    return costoMejor,costoPromedio    
