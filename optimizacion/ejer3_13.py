@@ -59,7 +59,30 @@ def cruza(padre1,padre2):
         hijo1[indice+1:]=padre2[indice+1:]
         hijo2[minimo:(indice+1)]=padre2[minimo:(indice+1)]
         hijo2[indice+1:]=padre1[indice+1:]
-    return hijo1,hijo2    
+    return hijo1,hijo2
+
+##================================================================
+## Funcion de mutacion
+##================================================================
+def mutacion(x,pmuta):
+    '''
+    Muta con probabilidad pmuta el gen de x
+    ENTRADA:
+    pmuta: numero que representa la probabilidad de mutacion
+    x: ndarray (individuo sin mutar)
+    SALIDA:
+    y: ndarray (individuo posiblemente mutado)
+    '''
+    y=np.zeros(len(x))
+
+    for i in range(0,len(x)):
+        u=np.random.uniform(0,1,1)
+        if u<pmuta:
+            y[i]=np.random.uniform(-5,5,1) #muta
+        else:
+            y[i]=x[i] #queda igual
+    return y        
+
 
 
 
