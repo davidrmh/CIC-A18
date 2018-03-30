@@ -165,4 +165,16 @@ def preguntaA():
         probabilidades=[]
         fitnessPob=[]
         costoPob=[]
-    return costoMejor,costoPromedio    
+    return costoMejor,costoPromedio
+
+##===============================================================
+## Pregunta B
+##===============================================================
+def preguntaB():
+    costoMejorGen100=[]
+    nsim=50
+    for i in range(0,nsim):
+        costoMejor,costoPromedio=preguntaA()
+        costoMejorGen100.append(costoMejor[generaciones-1])
+    print "El promedio del mejor costo en la generacion 100 es: " + str(np.mean(costoMejorGen100))
+    return costoMejorGen100        
