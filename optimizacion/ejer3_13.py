@@ -177,4 +177,17 @@ def preguntaB():
         costoMejor,costoPromedio=preguntaA()
         costoMejorGen100.append(costoMejor[generaciones-1])
     print "El promedio del mejor costo en la generacion 100 es: " + str(np.mean(costoMejorGen100))
-    return costoMejorGen100        
+    return costoMejorGen100
+
+##=================================================================
+## Pregunta C
+##=================================================================
+
+def preguntaC():
+    probasMut=[0.01,0.02,0.05,0.06]
+    promedio=[]
+    for p in probasMut:
+        pmuta=p
+        costo=preguntaB()
+        promedio.append(np.mean(costo))
+    return promedio
