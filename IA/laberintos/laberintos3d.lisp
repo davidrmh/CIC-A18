@@ -4,6 +4,14 @@
 ;;Marzo 2018
 ;;==================================
 
+;;=======================================================================
+;; OBSERVACIONES
+;; 1. Al eliminar de *ops* los movimientos en diagonal, todos los métodos
+;; mejoraron en su tiempo, incluso BREADTH-FIRST ya termina.
+;; 2. Debido a la función de costo que estoy utilizando, al eliminar los
+;; movimientos en diagonal, A-estrella y BestFS terminan siendo el mismo.
+;;=======================================================================
+
 (load "maze_lib.lisp")
 (add-algorithm 'breadth-first)
 (add-algorithm 'depth-first)
@@ -74,10 +82,10 @@
 ;; los primeros operadores a revisar son los que involucran este tipo de
 ;; movimientos.
 ;;========================================================================
-(defparameter *ops* '((:diag-arriba-der (-1 1))
-                      (:diag-abajo-der (1 1))
-                      (:diag-abajo-izq (1 -1))
-                      (:diag-arriba-izq (-1 -1))
+(defparameter *ops* '(;(:diag-arriba-der (-1 1))
+                      ;(:diag-abajo-der (1 1))
+                      ;(:diag-abajo-izq (1 -1))
+                      ;(:diag-arriba-izq (-1 -1))
                       (:derecha (0 1))
                       (:derecha-bajo-puente (0 1))
                       (:derecha-sobre-puente (0 1))
