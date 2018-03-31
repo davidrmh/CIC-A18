@@ -77,6 +77,6 @@ https://www.babypips.com/learn/forex/fibonacci-retracement
 |Task|Semester (end of)|
 |----|--------|
 |Define the technique(s)|2|
-|References|2|
+|References|2 & 3|
 |Experiments|3 & 4|
 |Writing|2,3 & 4|
