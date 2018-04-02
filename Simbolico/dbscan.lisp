@@ -280,6 +280,19 @@ lista:Una lista con los índices de los patrones centrales
 );defun
 
 
+;;=================================================================
+;; Función que regresa el argumento en donde se encuentra el máximo
+;; en una lista (primer ocurrencia)
+;;=================================================================
+(defun argmax (lista)
+  (let ((maximo 0) (argumento 0) )
+    (setq maximo (reduce #'max lista))
+    (loop for elem in lista do 
+      (when (= elem maximo)
+        (return-from argmax argumento))
+      (incf argumento) ));let
+);defun
+
 ;;=============================================================
 ;; Función principal
 ;; (main-dbscan s 2 10)
