@@ -281,16 +281,58 @@ lista:Una lista con los índices de los patrones centrales
 
 
 ;;=================================================================
-;; Función que regresa el argumento en donde se encuentra el máximo
+;; Función que regresa el argumento en donde se encuentra el mínimo
 ;; en una lista (primer ocurrencia)
 ;;=================================================================
-(defun argmax (lista)
-  (let ((maximo 0) (argumento 0) )
-    (setq maximo (reduce #'max lista))
-    (loop for elem in lista do 
-      (when (= elem maximo)
-        (return-from argmax argumento))
+(defun argmin (lista)
+  (let ((minimo 0) (argumento 0) )
+    (setq minimo (reduce #'min lista))
+    (loop for elem in lista do
+      (when (= elem minimo)
+        (return-from argmin argumento))
       (incf argumento) ));let
+);defun
+
+;;================================================================
+;; Función para clasificar los patrones omitidos
+;;================================================================
+(defun clasifica (matriz)
+  "Función para clasificar los patrones omitidos
+  ENTRADA
+  matriz: matriz de distancias
+  SALIDA
+  resultado: lista cuya i-ésima entrada es el grupo en el cual
+  se clasifica la i-ésima entranda de la lista *ignorar*
+  "
+  (let ((lista-conteo nil) (lista-dist nil) (lista-dist-prom nil) (grupo nil) (dist 0) (lista-flags nil) (resultado nil))
+    (loop for reng in *ignorar* do
+       ;reinicia listas
+       (setq lista-conteo nil)
+       (setq lista-dist nil)
+       (setq lista-dist-prom nil)
+       (setq lista-flags nil)
+       (loop for i from 0 to (1- *grupo*) do (push 1 lista-conteo) (push 100000 lista-dist) (push t lista-flags))
+
+       (loop for i from 0 to (1- (array-dimension *tabla* 0)) do
+         (when (equal (aref *tabla* i 2) :central)
+            (setq grupo (1- (aref *tabla* i 3)) )
+            (setq dist (get-element reng i matriz))
+            (cond
+              ((nth grupo lista-flags) (setf (nth grupo lista-dist) dist) (setf (nth grupo lista-flags) nil)  )
+              ((not (nth grupo lista-flags)) (setf (nth grupo lista-dist) (+ (nth grupo lista-dist) dist)) (setf (nth grupo lista-conteo) (incf (nth grupo lista-conteo)))  )
+            );cond
+         );when
+       );loop
+       ;Calcula las distancias promedio
+       (setq lista-dist-prom (mapcar #'/ lista-dist lista-conteo))
+
+       ;Encuentra el argumento en donde se encuentra el mínimo
+       ;asigna a reng el grupo  1 + argumento (inicié los grupos en 1 por eso el 1+)
+       (push (1+ (argmin lista-dist-prom)) resultado )
+    );loop
+    (setq resultado (reverse resultado))
+    resultado
+  );let
 );defun
 
 ;;=============================================================
