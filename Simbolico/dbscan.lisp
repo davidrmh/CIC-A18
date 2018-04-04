@@ -421,11 +421,10 @@ lista:Una lista con los índices de los patrones centrales
 ;;=============================================================
 ;; Función principal
 ;; (main-dbscan s 2 10)
-;;(loop for i from 0 to (1- (length omitidos)) do (format t "Omitido es ~a DBSCAN es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
 ;;=============================================================
 
-(defun main-dbscan(ruta-datos eps mu)
-  (let ((matriz nil) (datos nil) (clases nil))
+(defun main-dbscan(ruta-datos eps mu &optional (k 5))
+  (let ((matriz nil) (datos nil) (clases nil) (omitidos nil) (clase-omitidos nil))
 
     (reset-all);reinicia variables globales
 
@@ -434,16 +433,18 @@ lista:Una lista con los índices de los patrones centrales
     (setq datos (first (first (rest datos)))) ;datos numéricos
     (setq matriz (matriz-distancias datos));Obtiene la matriz de distancias
 
-    ;Inicializa variables globales
     ;(setq *ignorar* (genera-aleatorios 25 (1- (array-dimension matriz 0)) ))
+    (setq omitidos (copy-seq *ignorar*))
+    (setq *ignorar* nil)
     (indices matriz)
     (inicializa-tabla clases)
     (dbscan matriz eps mu)
+    (setq *ignorar* (copy-seq omitidos))
+    (setq clase-omitidos (clasifica-knn matriz k))
+
     ;Escribe resultados
-    (with-open-file
-      (stream "resultados-dbscan.txt"
-        :direction :output :if-does-not-exist :create
-        :if-exists :supersede)
-      (format stream "~a" (write-to-string *tabla*)));with-open-file
+    (loop for i from 0 to (1- (length omitidos)) do
+      (format t "Omitido es ~a DBSCAN es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
+
   );let
 );defun
