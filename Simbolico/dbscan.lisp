@@ -281,6 +281,20 @@ lista:Una lista con los índices de los patrones centrales
 
 
 ;;=================================================================
+;; Función que regresa el argumento en donde se encuentra el máximo
+;; en una lista (primer ocurrencia)
+;;=================================================================
+(defun argmax (lista)
+  (let ((maximo 0) (argumento 0) )
+    (setq maximo (reduce #'max lista))
+    (loop for elem in lista do
+      (when (= elem maximo)
+        (return-from argmax argumento))
+      (incf argumento) ));let
+);defun
+
+
+;;=================================================================
 ;; Función que regresa el argumento en donde se encuentra el mínimo
 ;; en una lista (primer ocurrencia)
 ;;=================================================================
@@ -296,7 +310,7 @@ lista:Una lista con los índices de los patrones centrales
 ;;=================================================================
 ;; Encuentra los índices de los k-ésimos menores en una lista
 ;;=================================================================
-(defun k-esimos-menores(lista k)
+(defun k-esimos-menores (lista k)
   (let ((indices nil) (lista-aux nil) (aux 0) (memoria nil))
     (setq lista-aux (copy-seq lista))
     (setq lista-aux (sort lista-aux #'<))
@@ -313,7 +327,28 @@ lista:Una lista con los índices de los patrones centrales
 )
 
 ;;================================================================
+;; Algoritmo KNN
+;;================================================================
+(defun knn (lista)
+  "Algoritmo KNN"
+
+  (let ((lista-clases nil) (lista-conteo nil) (contador 0) (clase nil) )
+    (loop for i in lista do
+      (loop for j in lista do
+        (when (and (equal i j) (not (member j lista-clases)) ) (incf contador) )
+      );loop j
+      (push i lista-clases)
+      (push contador lista-conteo)
+      (setq contador 0)
+    );loop i
+    (setq clase (nth (argmax lista-conteo) lista-clases ))
+    clase
+  );let
+);defun
+
+;;================================================================
 ;; Función para clasificar los patrones omitidos
+;; con base en la distancia promedio mínima a los centroides
 ;;================================================================
 (defun clasifica (matriz)
   "Función para clasificar los patrones omitidos
@@ -355,8 +390,38 @@ lista:Una lista con los índices de los patrones centrales
 );defun
 
 ;;=============================================================
+;; Función para clasificar utilizando KNN
+;;=============================================================
+(defun clasifica-knn (matriz &optional (k 5))
+  "Clasifica las observaciones de prueba utilizando KNN"
+
+  (let ((lista-dist nil) (lista-grupos-min nil) (clases nil) )
+    (loop for i in *ignorar* do
+      (setq lista-dist nil)
+      (setq lista-grupos-min nil)
+
+      ;Obtiene el i-ésimo renglon de la matriz de distancias
+      (loop for j from 0 to (1- (array-dimension matriz 1)) do
+        (when (/= i j) (push (get-element i j matriz) lista-dist ) )
+      );loop j
+      (setq lista-dist (reverse lista-dist))
+
+      ;Calcula los k-ésimos-menores
+      (loop for j in (k-esimos-menores lista-dist k) do
+         (push (aref *tabla* j 3) lista-grupos-min) )
+
+      ;Aplica KNN
+      (push (knn lista-grupos-min) clases )
+    );loop i
+    (setq clases (reverse clases))
+    clases
+  );let
+);defun
+
+;;=============================================================
 ;; Función principal
 ;; (main-dbscan s 2 10)
+;;(loop for i from 0 to (1- (length omitidos)) do (format t "Omitido es ~a DBSCAN es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
 ;;=============================================================
 
 (defun main-dbscan(ruta-datos eps mu)
