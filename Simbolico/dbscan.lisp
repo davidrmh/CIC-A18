@@ -293,6 +293,25 @@ lista:Una lista con los índices de los patrones centrales
       (incf argumento) ));let
 );defun
 
+;;=================================================================
+;; Encuentra los índices de los k-ésimos menores en una lista
+;;=================================================================
+(defun k-esimos-menores(lista k)
+  (let ((indices nil) (lista-aux nil) (aux 0) (memoria nil))
+    (setq lista-aux (copy-seq lista))
+    (setq lista-aux (sort lista-aux #'<))
+    (loop for i from 0 to (- k 1) do
+        (setq aux (nth i lista-aux))
+        (setq memoria nil)
+        (loop for j from 0 to (1- (length lista-aux)) do
+          (when ( and (= aux (nth j lista)) (not (member j indices)) (not (member aux memoria)) )
+            (push j indices)
+            (push aux memoria) )  ) )
+  (setq indices (reverse indices))
+  indices
+  )
+)
+
 ;;================================================================
 ;; Función para clasificar los patrones omitidos
 ;;================================================================
