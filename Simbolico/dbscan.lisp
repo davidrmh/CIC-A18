@@ -436,7 +436,8 @@ lista:Una lista con los índices de los patrones centrales
 
 (defun main-dbscan(ruta-datos eps mu &optional (k 5))
   (let ((matriz nil) (datos nil) (clases nil) (omitidos nil) (clase-omitidos nil)
-        (accuracy 0) (precision 0) (recall 0) (contador 0) (clases-verdaderas nil) (matriz-confusion nil))
+        (accuracy 0) (precision 0) (recall 0) (contador 0) (clases-verdaderas nil) (matriz-confusion nil)
+        (verd-unicas nil) (omit-unicas nil) (aux-verd nil) (aux-omit nil))
 
     (reset-all);reinicia variables globales
 
@@ -458,18 +459,27 @@ lista:Una lista con los índices de los patrones centrales
     (loop for i from 0 to (1- (length omitidos)) do
       (push (aref *tabla* (nth i omitidos) 3) clases-verdaderas )
       (format t "Omitido es ~a DBSCAN es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
+
     (setq clases-verdaderas (reverse clases-verdaderas))
-    (setq matriz-confusion (make-array (list (length omitidos) (length omitidos) ) ))
+    (setq verd-unicas (unicos clases-verdaderas nil))
+    (setq omit-unicas (unicos clase-omitidos nil))
+    (setq matriz-confusion (make-array (list (length verd-unicas) (length omit-unicas) ) ))
 
     ;Calcula la matriz de confusión
-    (loop for reng from 0 to (1- (length omitidos)) do
-      (loop for col from 0 to (1- (length omitidos)) do
+    (loop for reng from 0 to (1- (length verd-unicas)) do
+      (setq aux-verd (nth reng verd-unicas))
+
+      (loop for col from 0 to (1- (length omit-unicas)) do
+        (setq aux-omit (nth col omit-unicas))
         (setq contador 0)
-        (loop for c in omitidos do
-            (when (equal ()))
+
+        (loop for c from 0 to (1- (length omitidos)) do
+            (when (and (equal (nth c clases-verdaderas) aux-verd ) (equal (nth c clase-omitidos) aux-omit ) (incf contador)) )
         );loop c
+
+        (setf (aref matriz-confusion reng col) contador)
       );loop col
     );loop reng
-
+  matriz-confusion
   );let
 );defun
