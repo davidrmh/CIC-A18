@@ -392,7 +392,7 @@ lista:Una lista con los índices de los patrones centrales
 ;;=============================================================
 ;; Función para clasificar utilizando KNN
 ;;=============================================================
-(defun clasifica-knn (matriz &optional (k 5))
+(defun clasifica-knn (matriz &optional (k 3))
   "Clasifica las observaciones de prueba utilizando KNN"
 
   (let ((lista-dist nil) (lista-grupos-min nil) (clases nil) )
@@ -431,10 +431,21 @@ lista:Una lista con los índices de los patrones centrales
 
 ;;=============================================================
 ;; Función principal
-;; (main-dbscan s 2 10)
 ;;=============================================================
 
-(defun main-dbscan(ruta-datos eps mu &optional (k 5))
+(defun main-dbscan (&optional (ruta-datos "chorales.lisp") (eps 2) (mu 10) (k 3))
+"Función principal
+ENTRADA:
+ruta-datos: Cadena con la ruta del archivo de UCI
+eps: Epsilon (radio de la vecindad)
+mu: Mi (número mínimo necesario de puntos para que una vecindad sea considerada densa)
+k: Parámetro del algoritmo KNN
+SALIDA:
+Una lista con:
+first = Matriz de confusión
+second = Clases reales de las 25 observaciones no consideradas en el entrenamiento (la clase que DBSCAN arroja)
+third = Clases determinadas por el modelo de las 25 observaciones no consideradas en el entrenamiento (la clase que KNN arroja)
+"
   (let ((matriz nil) (datos nil) (clases nil) (omitidos nil) (clase-omitidos nil)
          (contador 0) (clases-verdaderas nil) (matriz-confusion nil)
         (verd-unicas nil) (omit-unicas nil) (aux-verd nil) (aux-omit nil))
@@ -458,7 +469,7 @@ lista:Una lista con los índices de los patrones centrales
     ;Escribe resultados
     (loop for i from 0 to (1- (length omitidos)) do
       (push (aref *tabla* (nth i omitidos) 3) clases-verdaderas )
-      (format t "Omitido es ~a DBSCAN es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
+      (format t "La predicción es ~a la real es es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
 
     (setq clases-verdaderas (reverse clases-verdaderas))
     (setq verd-unicas (unicos clases-verdaderas nil))
@@ -480,6 +491,6 @@ lista:Una lista con los índices de los patrones centrales
         (setf (aref matriz-confusion reng col) contador)
       );loop col
     );loop reng
-  (list matriz-confusion verd-unicas omit-unicas)
+  (list matriz-confusion clases-verdaderas clase-omitidos)
   );let
 );defun
