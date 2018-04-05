@@ -419,12 +419,24 @@ lista:Una lista con los índices de los patrones centrales
 );defun
 
 ;;=============================================================
+;; Función para quitar repetidos de una lista
+;;=============================================================
+(defun unicos (lista aux)
+  (cond
+    ((null lista) (reverse  aux))
+    ((member (first lista) aux) (unicos (rest lista) aux))
+    (t (push (first lista) aux) (unicos (rest lista) aux))
+  )
+)
+
+;;=============================================================
 ;; Función principal
 ;; (main-dbscan s 2 10)
 ;;=============================================================
 
 (defun main-dbscan(ruta-datos eps mu &optional (k 5))
-  (let ((matriz nil) (datos nil) (clases nil) (omitidos nil) (clase-omitidos nil))
+  (let ((matriz nil) (datos nil) (clases nil) (omitidos nil) (clase-omitidos nil)
+        (accuracy 0) (precision 0) (recall 0) (contador 0) (clases-verdaderas nil) (matriz-confusion nil))
 
     (reset-all);reinicia variables globales
 
@@ -444,7 +456,20 @@ lista:Una lista con los índices de los patrones centrales
 
     ;Escribe resultados
     (loop for i from 0 to (1- (length omitidos)) do
+      (push (aref *tabla* (nth i omitidos) 3) clases-verdaderas )
       (format t "Omitido es ~a DBSCAN es ~a~%" (nth i clase-omitidos) (aref *tabla* (nth i omitidos) 3)))
+    (setq clases-verdaderas (reverse clases-verdaderas))
+    (setq matriz-confusion (make-array (list (length omitidos) (length omitidos) ) ))
+
+    ;Calcula la matriz de confusión
+    (loop for reng from 0 to (1- (length omitidos)) do
+      (loop for col from 0 to (1- (length omitidos)) do
+        (setq contador 0)
+        (loop for c in omitidos do
+            (when (equal ()))
+        );loop c
+      );loop col
+    );loop reng
 
   );let
 );defun
