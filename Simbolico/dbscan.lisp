@@ -436,7 +436,7 @@ lista:Una lista con los índices de los patrones centrales
 
 (defun main-dbscan(ruta-datos eps mu &optional (k 5))
   (let ((matriz nil) (datos nil) (clases nil) (omitidos nil) (clase-omitidos nil)
-        (accuracy 0) (precision 0) (recall 0) (contador 0) (clases-verdaderas nil) (matriz-confusion nil)
+         (contador 0) (clases-verdaderas nil) (matriz-confusion nil)
         (verd-unicas nil) (omit-unicas nil) (aux-verd nil) (aux-omit nil))
 
     (reset-all);reinicia variables globales
@@ -480,6 +480,6 @@ lista:Una lista con los índices de los patrones centrales
         (setf (aref matriz-confusion reng col) contador)
       );loop col
     );loop reng
-  matriz-confusion
+  (list matriz-confusion verd-unicas omit-unicas)
   );let
 );defun
