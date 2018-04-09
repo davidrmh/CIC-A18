@@ -3,6 +3,10 @@
 *.txt
 *.pyc
 *.ods
+*.png
+*.jpg
+*.jpeg
+*.odp
 IA/GLOL.lisp
 
 patrones/machinelearninginaction/
