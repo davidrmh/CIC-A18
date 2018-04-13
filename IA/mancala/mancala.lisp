@@ -17,10 +17,11 @@
 (defparameter *ops-maquina* '(7 8 9 10 11 12))
 
 ;;================================================================
-;; turno
+;; turno y repite turno
 ;; jugador en turno (1-humano, 2-máquina)
 ;;================================================================
 (defparameter *turno* 1)
+(defparameter *bool-repite* nil)
 
 ;;================================================================
 ;; Calcula puntaje
@@ -67,7 +68,7 @@
   Modifica el tablero repartiendo las fichas en la casilla índice-casilla
   en las casillas vecinas
   "
-  (let ((contenido nil) (aux 0)  (tablero nil))
+  (let ((contenido nil) (aux 0)  (tablero nil) (ultima-casilla 0) )
     (setq tablero (copy-seq *tablero*))
     (setq contenido (copy-seq (nth indice-casilla tablero))) ;Copia el contenido de la casilla
     (setq aux (+ indice-casilla 1)) ;Primer casilla vecina
@@ -81,8 +82,12 @@
 
       ;Actualiza tablero
       (setf (nth aux tablero) (append (nth aux tablero) (list elem)) )
+      (setq ultima-casilla aux)
       (setq aux (mod (1+ aux) 13)) ;Próxima casilla vecina
     );loop
+
+    ;Revisa si se va a repetir turno
+    (if (or (and (= ultima-casilla 6) (= *turno* 1) ) (and (= ultima-casilla 13) (= *turno* 2) ) ) (setq *bool-repite* t) (setq *bool-repite* nil)  )
 
     ;Vacía la casilla de movimiento
     (setf (nth indice-casilla tablero) nil)
