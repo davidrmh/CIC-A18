@@ -23,6 +23,21 @@
 (defparameter *turno* 1)
 
 ;;================================================================
+;; Despliega el tablero en la terminal
+;;================================================================
+(defun despliega-tablero ()
+  (format t "Base-PC     Casilla-12     Casilla-11     Casilla-10     Casilla-9     Casilla-8     Casilla-7")
+  (format t  "~%~a              ~a               ~a               ~a            ~a              ~a            ~a"
+    (length (nth 13 *tablero*)) (length (nth 12 *tablero*)) (length (nth 11 *tablero*)) (length (nth 10 *tablero*)) (length (nth 9 *tablero*))
+  (length (nth 8 *tablero*))  (length (nth 7 *tablero*))  )
+  (format t "~%==================================================================================================")
+  (format t  "~%~a              ~a               ~a               ~a            ~a              ~a            ~a"
+    (length (nth 0 *tablero*)) (length (nth 1 *tablero*)) (length (nth 2 *tablero*)) (length (nth 3 *tablero*)) (length (nth 4 *tablero*))
+  (length (nth 5 *tablero*))  (length (nth 6 *tablero*))  )
+  (format t  "~%Casilla-0   Casilla-1       Casilla-2       Casilla-3   Casilla-4       Casilla-5   Base-humano")
+);defun
+
+;;================================================================
 ;; Aplica la jugada sobre el tablero
 ;;================================================================
 (defun aplica-jugada (indice-casilla)
