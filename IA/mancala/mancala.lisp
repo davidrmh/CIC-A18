@@ -106,3 +106,12 @@
     ((and (= turno-anterior 1) (equal *bool-repite* nil) ) (setq *turno* 2) )
     ((and (= turno-anterior 2) (equal *bool-repite* nil) ) (setq *turno* 1) ) )
 );defun
+
+;;=============================================================================
+;; Revisa si se llegó a un estado terminal
+;;=============================================================================
+(defun es-terminal? (tablero)
+  (if (or
+    (and (equal (nth 0 tablero) nil) (equal (nth 1 tablero) nil) (equal (nth 2 tablero) nil) (equal (nth 3 tablero) nil) (equal (nth 4 tablero) nil) (equal (nth 5 tablero) nil))
+    (and (equal (nth 7 tablero) nil) (equal (nth 8 tablero) nil) (equal (nth 9 tablero) nil) (equal (nth 10 tablero) nil) (equal (nth 11 tablero) nil) (equal (nth 12 tablero) nil)) ) t nil)
+);defun
