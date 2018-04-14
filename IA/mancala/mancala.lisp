@@ -57,7 +57,7 @@
   (format t  "~%~a  ~a   ~a    ~a    ~a   ~a       ~a"
     (first (puntaje (nth 0 *tablero*))) (first (puntaje (nth 1 *tablero*))) (first (puntaje (nth 2 *tablero*))) (first (puntaje (nth 3 *tablero*))) (first (puntaje (nth 4 *tablero*)))
   (first (puntaje  (nth 5 *tablero*)))  (second  (puntaje (nth 6 *tablero*)))  )
-  (format t  "~%Casilla-0    Casilla-1     Casilla-2      Casilla-3      Casilla-4     Casilla-5     Base-humano")
+  (format t  "~%Casilla-0    Casilla-1     Casilla-2      Casilla-3      Casilla-4     Casilla-5     Base-humano~%")
 );defun
 
 ;;================================================================
@@ -83,7 +83,7 @@
       ;Actualiza tablero
       (setf (nth aux tablero) (append (nth aux tablero) (list elem)) )
       (setq ultima-casilla aux)
-      (setq aux (mod (1+ aux) 13)) ;Próxima casilla vecina
+      (setq aux (mod (1+ aux) 14)) ;Próxima casilla vecina
     );loop
 
     ;Revisa si se va a repetir turno
@@ -146,5 +146,45 @@
 ;;============================================================================
 ;; inicia el juego
 ;;============================================================================
-(defun main ()
+(defun main (&optional (jugadores 2))
+  (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) )
+    (setq *turno* 1)
+    (despliega-tablero)
+
+    (loop
+
+      (when (= *turno* 1)
+      (format t "Turno de jugador ~a:" *turno*)
+      (format t "~% Elige la casilla ")
+        (loop
+           (setq jugador1 (read))
+           (if (not (valida-jugada jugador1 *tablero*)) (format t "~%Jugada no válida, elige otra opción "))
+           (when (valida-jugada jugador1 *tablero*) (return t)) );loop
+
+        (setq *tablero* (aplica-jugada jugador1)) ;aplica la jugada
+        (despliega-tablero)
+        (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador1)
+        (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+        (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
+      );when (jugador 1 - humano)
+
+      (when (and (= *turno* 2) (= jugadores 2) )
+      (format t "Turno de jugador ~a:" *turno*)
+      (format t "~% Elige la casilla ")
+        (loop
+           (setq jugador2 (read))
+           (if (not (valida-jugada jugador2 *tablero*)) (format t "~%Jugada no válida, elige otra opción "))
+           (when (valida-jugada jugador2 *tablero*) (return t) ) );loop
+
+        (setq *tablero* (aplica-jugada jugador2)) ;aplica jugada
+        (despliega-tablero)
+        (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
+        (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+        (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
+      );when (jugador 2 - humano)
+
+    (when (es-terminal? *tablero*) (return t))
+  );loop
+  (format t "~%Fin del juego: la puntuación es ~a para jugador 1 y ~a para jugador 2~%" puntaje1 puntaje2)
+  );let
 );defun
