@@ -115,3 +115,36 @@
     (and (equal (nth 0 tablero) nil) (equal (nth 1 tablero) nil) (equal (nth 2 tablero) nil) (equal (nth 3 tablero) nil) (equal (nth 4 tablero) nil) (equal (nth 5 tablero) nil))
     (and (equal (nth 7 tablero) nil) (equal (nth 8 tablero) nil) (equal (nth 9 tablero) nil) (equal (nth 10 tablero) nil) (equal (nth 11 tablero) nil) (equal (nth 12 tablero) nil)) ) t nil)
 );defun
+
+;;============================================================================
+;; Valida jugada
+;; Las validaciones son:
+;; 1. Que no sea el índice de una casilla base (entero entre 0 y 12 excepto 6)
+;; 2. Que la casilla no sea nil (al menos tiene una ficha)
+;; 3. El índice de la casilla seleccionada no sea una casilla del oponente
+;;============================================================================
+(defun valida-jugada (indice-casilla tablero)
+  "
+  Valida una jugada POR HACER
+  indice-casilla: índice de la casilla que se desea jugar
+  tablero: estado del tablero antes de realizar la jugada
+  "
+  (let ((prueba1 nil) (prueba2 nil) (prueba3 nil) )
+    ;prueba 1
+    (if (and (>= indice-casilla 0) (<= indice-casilla 12) (/= indice-casilla 6) (integerp indice-casilla) ) (setq prueba1 t) (return-from valida-jugada nil)  )
+
+    ;prueba 2
+    (if (not (equal (nth indice-casilla tablero) nil)) (setq prueba2 t) (return-from valida-jugada nil)  )
+
+    ;prueba 3
+    (if (or (and (>= indice-casilla 0) (<= indice-casilla 5) (= *turno* 1) )
+      (and (>= indice-casilla 7) (<= indice-casilla 12) (= *turno* 2) ) ) (setq prueba3 t) (return-from valida-jugada nil) )
+    (if (and prueba1 prueba2 prueba3) t nil)
+  );let
+);defun
+
+;;============================================================================
+;; inicia el juego
+;;============================================================================
+(defun main ()
+);defun
