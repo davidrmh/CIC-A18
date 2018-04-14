@@ -94,3 +94,15 @@
     tablero
   );let
 );defun
+
+
+;;=============================================================================
+;; Determina turno
+;;=============================================================================
+(defun determina-turno (turno-anterior)
+  (cond
+    ((and (= turno-anterior 1) (equal *bool-repite* t) ) (setq *turno* 1) )
+    ((and (= turno-anterior 2) (equal *bool-repite* t) ) (setq *turno* 2) )
+    ((and (= turno-anterior 1) (equal *bool-repite* nil) ) (setq *turno* 2) )
+    ((and (= turno-anterior 2) (equal *bool-repite* nil) ) (setq *turno* 1) ) )
+);defun
