@@ -58,7 +58,8 @@
     ;calcula la entropia
     (loop for conteo in conteo-etiquetas do
       (setq probabilidad (/ conteo nreng))
-      (setq entropia (- entropia (* probabilidad (log probabilidad 2))))  )
+      ;Calcula la entropía considerando los casos cuando probabilidad==0
+      (setq entropia (if (/= probabilidad 0) (- entropia (* probabilidad (log probabilidad 2))) entropia ) )  )
     entropia
   );let
 );defun
@@ -99,5 +100,43 @@
     );loop renglon
     (setq nueva-tabla (reverse nueva-tabla))
   nueva-tabla
+  );let
+);defun
+
+;;=============================================================
+;; Función para seleccionar el atributo que tiene la mayor
+;; ganancia en información
+;;=============================================================
+(defun mejor-atributo (tabla lista-etiquetas)
+  (let ((num-atributos 0) (num-obs 0) (entropia-total 0) (ganancia 0) (mejor-ganancia 0)
+   (valores-atributo 0) (mejor-atributo nil) (entropia 0) (sub-tabla nil) (probabilidad 0) )
+
+   ;Número de atributos
+   (setq num-atributos (1- (length (first tabla))))
+
+   ;Número de observaciones en total
+   (setq num-obs (length tabla))
+
+   ;Entropía del la tabla completa
+   (setq entropia-total (calcula-entropia tabla lista-etiquetas))
+
+   (loop for i from 0 to (1- num-atributos) do
+     (setq entropia 0)
+     (setq valores-atributo nil)
+     ;Extrae los posibles valores para el atributo i
+     (loop for renglon in tabla do
+       (if (not (member (nth i renglon) valores-atributo )) (setq valores-atributo (append valores-atributo (list (nth i renglon) )))) ) ;loop renglon
+
+    ;Calcula la entropía para el atributo i
+    (loop for valor in valores-atributo do
+       (setq sub-tabla (split-data tabla i valor))
+       (setq probabilidad (/ (length sub-tabla) num-obs ))
+       (setq entropia (+ entropia (* probabilidad (calcula-entropia sub-tabla lista-etiquetas))))  );loop valor
+    (setq ganancia (- entropia-total entropia))
+
+    ;registra el mejor atributo (mayor ganancia)
+    (when (> ganancia mejor-ganancia) (setq mejor-ganancia ganancia) (setq mejor-atributo i) )
+   );loop i
+   mejor-atributo
   );let
 );defun
