@@ -19,6 +19,11 @@
                   (LL T ALTA SI NO-JUGAR)  ))
 
 ;;=======================================================
+;; Define las etiquetas de los atributos
+;;=======================================================
+(defparameter *etiquetas-atributos* '(pronostico temperatura humedad viento))
+
+;;=======================================================
 ;; Obtiene las etiquetas de la tabla
 ;; La tabla las debe de tener en la última columna
 ;;=======================================================
@@ -156,6 +161,6 @@
             (setq conteo-maximo conteo)
             (setq clase-maximo clase)))
        (push clase revisados))
-    clase-maximo   
+    clase-maximo
   );let
 );defun
