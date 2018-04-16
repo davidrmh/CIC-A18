@@ -3,7 +3,7 @@
 ;; la última columna son las etiquetas
 ;; los elementos son símbolos
 ;;======================================================
-(defvar *tabla* '((S C ALTA NO NO-JUGAR)
+(defparameter *tabla* '((S C ALTA NO NO-JUGAR)
                   (S C ALTA SI NO-JUGAR)
                   (N C ALTA NO JUGAR)
                   (LL T ALTA NO JUGAR)
@@ -30,3 +30,8 @@
     etiquetas
   );let
 );defun
+
+;;=======================================================
+;; Variable global que guarda las etiquetas posibles
+;;=======================================================
+(defparameter *etiquetas* (obtiene-etiquetas *tabla*))
