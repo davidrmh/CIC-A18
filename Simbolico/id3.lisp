@@ -140,3 +140,22 @@
    mejor-atributo
   );let
 );defun
+
+;;===================================================================
+;; Función para contar la etiqueta con mayor número de apariciones
+;;===================================================================
+(defun voto-mayoria (lista)
+  (let ((revisados nil) (num-elementos 0) (clase-maximo 0) (conteo 0) (conteo-maximo 0) (clase nil))
+    (setq num-elementos (length lista))
+
+    (loop for i from 0 to (1- num-elementos) do
+       (setq clase (nth i lista))
+        (when (not (member clase revisados))
+          (setq conteo (count clase lista))
+          (when (> conteo conteo-maximo)
+            (setq conteo-maximo conteo)
+            (setq clase-maximo clase)))
+       (push clase revisados))
+    clase-maximo   
+  );let
+);defun
