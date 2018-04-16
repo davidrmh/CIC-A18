@@ -35,3 +35,30 @@
 ;; Variable global que guarda las etiquetas posibles
 ;;=======================================================
 (defparameter *etiquetas* (obtiene-etiquetas *tabla*))
+
+;;=======================================================
+;; Función para calcular la entropía
+;;=======================================================
+(defun calcula-entropia (tabla lista-etiquetas)
+  (let ((nreng 0 ) (ncol 0) (conteo-etiquetas nil) (etiqueta nil) (pos-etiqueta nil) (entropia 0) (probabilidad 0) )
+    (setq nreng (length tabla));Número de observaciones
+    (setq ncol (length (first tabla))) ;Número de atributos
+
+    ;Inicializa conteo-etiquetas (lista)
+    ;Conteo etiquetas es una lista cuya i-ésima entrada corresponde a
+    ;el conteo de la i-ésima etiqueta en lista-etiquetas
+    (loop for i in lista-etiquetas do (push 0 conteo-etiquetas))
+
+    ;Cuenta el número de veces que se presenta una etiqueta
+    (loop for renglon in tabla do
+      (setq etiqueta (nth (1- ncol) renglon))
+      (setq pos-etiqueta (position etiqueta lista-etiquetas))
+      (setf (nth pos-etiqueta conteo-etiquetas) (1+ (nth pos-etiqueta conteo-etiquetas)))  )
+
+    ;calcula la entropia
+    (loop for conteo in conteo-etiquetas do
+      (setq probabilidad (/ conteo nreng))
+      (setq entropia (- entropia (* probabilidad (log probabilidad 2))))  )
+    entropia  
+  );let
+);defun
