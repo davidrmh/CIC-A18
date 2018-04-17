@@ -41,9 +41,10 @@
 ;;=======================================================
 (defparameter *etiquetas* (obtiene-etiquetas *tabla*))
 
-;;=======================================================
+;;=============================================================
 ;; Función para calcular la entropía
-;;=======================================================
+;; lista-etiquetas son las posibles clases en las observaciones
+;;=============================================================
 (defun calcula-entropia (tabla lista-etiquetas)
   (let ((nreng 0 ) (ncol 0) (conteo-etiquetas nil) (etiqueta nil) (pos-etiqueta nil) (entropia 0) (probabilidad 0) )
     (setq nreng (length tabla));Número de observaciones
@@ -111,6 +112,7 @@
 ;;=============================================================
 ;; Función para seleccionar el atributo que tiene la mayor
 ;; ganancia en información
+;; lista-etiquetas son las clases de las observaciones
 ;;=============================================================
 (defun mejor-atributo (tabla lista-etiquetas)
   (let ((num-atributos 0) (num-obs 0) (entropia-total 0) (ganancia 0) (mejor-ganancia 0)
@@ -162,5 +164,58 @@
             (setq clase-maximo clase)))
        (push clase revisados))
     clase-maximo
+  );let
+);defun
+
+;;=================================================================
+;; Crea el árbol utilizando una función recursiva
+;;=================================================================
+(defun crea-arbol (tabla etiquetas-atributos)
+  "
+  tabla: lista de listas con las observaciones
+  etiquetas-atributos: etiquetas de cada atributo (headers)
+  "
+  (let ((clases nil) (num-col 0) (indice-mejor-atributo nil) (etiqueta-mejor-atributo nil)
+         (arbol nil) (valores-atributo nil) (sub-etiquetas-atributos nil) (aux-etiquetas nil) )
+
+    ;número de columnas
+    (setq num-col (length (first tabla)))
+
+    ;Obtiene la clase de cada observación en la tabla
+    (loop for renglon in tabla do (setq clases (append clases (list (nth (1- num-col) renglon))) ) )
+
+    ;Case base 1
+    ;Cuando todas las observaciones pertenecen a la misma clase
+    (if (= (count (first clases) clases) (length clases) ) (return-from crea-arbol (first clases))  )
+
+    ;Caso base 2
+    ;Cuando ya no hay más atributos que revisar, se regresa la clase mayoritaria
+    (if (= (length clases) 1 ) (return-from crea-arbol (voto-mayoria clases)) )
+
+    ;obtiene el índice del mejor atributo para separar
+    ;y la etiqueta "humana" del atributo
+    (setq indice-mejor-atributo (mejor-atributo tabla *etiquetas*) )
+    (setq etiqueta-mejor-atributo (nth indice-mejor-atributo etiquetas-atributos ) )
+
+    ;el árbol es creado con acons
+    (setq arbol (append arbol (list etiqueta-mejor-atributo)))
+
+    ;actualiza las etiquetas de los atributos
+    (setf (nth indice-mejor-atributo etiquetas-atributos) nil)
+
+    (loop for etiqueta in etiquetas-atributos do
+      (if (not (equal etiqueta nil)) (setq sub-etiquetas-atributos (append sub-etiquetas-atributos (list etiqueta))) ) )
+
+    ;obtiene los valores (sin repeticiones) del mejor atributo
+    (loop for renglon in tabla do
+      (if (not (member (nth indice-mejor-atributo renglon) valores-atributo))
+        (setq valores-atributo (append valores-atributo (list (nth indice-mejor-atributo renglon)))) ) )
+
+    (loop for valor in valores-atributo do
+      ;No quiero que las etiquetas sean modificadas por cada VALOR
+      ;iterado
+       (setq aux-etiquetas (copy-seq sub-etiquetas-atributos ))
+      (setq arbol (append arbol (list valor  (list (crea-arbol (split-data tabla indice-mejor-atributo valor) aux-etiquetas)) )))    )
+   arbol
   );let
 );defun
