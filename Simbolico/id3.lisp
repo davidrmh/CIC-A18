@@ -3,7 +3,7 @@
 ;; la última columna son las etiquetas
 ;; los elementos son símbolos
 ;;======================================================
-(defparameter *tabla* '((S C ALTA NO NO-JUGAR)
+(defvar *tabla* '((S C ALTA NO NO-JUGAR)
                   (S C ALTA SI NO-JUGAR)
                   (N C ALTA NO JUGAR)
                   (LL T ALTA NO JUGAR)
@@ -21,7 +21,29 @@
 ;;=======================================================
 ;; Define las etiquetas de los atributos
 ;;=======================================================
-(defparameter *etiquetas-atributos* '(pronostico temperatura humedad viento))
+(defvar *etiquetas-atributos* '(pronostico temperatura humedad viento))
+
+;;=======================================================
+;; Función para inicializar variables globales
+;;=======================================================
+(defun inicializa ()
+  (setq *tabla* '((S C ALTA NO NO-JUGAR)
+                    (S C ALTA SI NO-JUGAR)
+                    (N C ALTA NO JUGAR)
+                    (LL T ALTA NO JUGAR)
+                    (LL F NULA NO JUGAR)
+                    (LL F NULA SI NO-JUGAR)
+                    (N F NULA SI JUGAR)
+                    (S T ALTA NO NO-JUGAR)
+                    (S F NULA NO JUGAR)
+                    (LL T NULA NO JUGAR)
+                    (S T NULA SI JUGAR)
+                    (N T ALTA SI JUGAR)
+                    (N C NULA NO JUGAR)
+                    (LL T ALTA SI NO-JUGAR)  ))
+
+ (setq *etiquetas-atributos* '(pronostico temperatura humedad viento))
+)
 
 ;;=======================================================
 ;; Obtiene las etiquetas de la tabla
@@ -201,10 +223,8 @@
     (setq arbol (append arbol (list etiqueta-mejor-atributo)))
 
     ;actualiza las etiquetas de los atributos
-    (setf (nth indice-mejor-atributo etiquetas-atributos) nil)
-
     (loop for etiqueta in etiquetas-atributos do
-      (if (not (equal etiqueta nil)) (setq sub-etiquetas-atributos (append sub-etiquetas-atributos (list etiqueta))) ) )
+      (if (not (equal etiqueta etiqueta-mejor-atributo)) (setq sub-etiquetas-atributos (append sub-etiquetas-atributos (list etiqueta))) ) )
 
     ;obtiene los valores (sin repeticiones) del mejor atributo
     (loop for renglon in tabla do
@@ -219,3 +239,11 @@
    arbol
   );let
 );defun
+
+;;======================================================
+;; Main
+;;======================================================
+(defun main ()
+  (inicializa)
+  (crea-arbol *tabla* *etiquetas-atributos*)
+)
