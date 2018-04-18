@@ -62,6 +62,21 @@
   );let
 );defun
 
+(defun puntaje-final (tablero turno)
+  (let ((puntaje1 0) (puntaje2 0) (lista-resultado nil) )
+    (setq puntaje1 (second (puntaje (nth 6 tablero))))
+    (setq puntaje2 (second (puntaje (nth 13 tablero))))
+    (when (= turno 1)
+      (loop for i in '(7 8 9 10 11 12) do
+        (setq puntaje1 (+ puntaje1 (second (puntaje (nth i tablero))))) ) )
+    (when (= turno 2)
+      (loop for i in '(0 1 2 3 4 5) do
+        (setq puntaje2 (+ puntaje2 (second (puntaje (nth i tablero))))) ) )
+  (setq lista-resultado (list puntaje1 puntaje2))
+  lista-resultado
+  );let
+)
+
 ;;================================================================
 ;; Despliega el tablero en la terminal
 ;;================================================================
@@ -193,8 +208,26 @@
     (t (return-from evalua-tablero (similitud tablero)  ) )
   )
 );defun
+
 ;;============================================================================
-;; Negamax
+;; Actualiza el tablero final
+;;============================================================================
+(defun tablero-final (tablero turno-ganador)
+  (when (= turno-ganador 1)
+    (loop for i in '(7 8 9 10 11 12) do
+       (when (nth i tablero)
+         (loop for elem in (nth i tablero) do
+           (setf (nth 6 tablero) (append (nth 6 tablero) (list elem) ) ) ) )  ) )
+
+  (when (= turno-ganador 2)
+   (loop for i in '(0 1 2 3 4 5) do
+      (when (nth i tablero)
+        (loop for elem in (nth i tablero) do
+          (setf (nth 13 tablero) (append (nth 13 tablero) (list elem) ) ) ) )  ) )
+  tablero
+);defun
+;;============================================================================
+;; Negamax alfa beta
 ;;============================================================================
 (defun abnegamax (tablero profundidad turno alfa beta  &optional (profundidad-max *profundidad-max*) )
   "
@@ -255,7 +288,7 @@
 ;; inicia el juego
 ;;============================================================================
 (defun main (&optional (jugadores 2))
-  (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) )
+  (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil) )
     (inicializa)
     (setq *turno* 1)
     (despliega-tablero)
@@ -312,6 +345,12 @@
 
     (when (es-terminal? *tablero*) (return t))
   );loop
+  (if (not *bool-repite*) (setq *turno* (determina-turno *turno* *bool-repite*) )) ;turno ganador
+  (setq lista-puntajes (puntaje-final *tablero* *turno*))
+  (setq puntaje1 (first lista-puntajes))
+  (setq puntaje2 (second lista-puntajes))
+  (setq *tablero* (tablero-final *tablero* *turno*))
+  (despliega-tablero)
   (format t "~%Fin del juego: la puntuación es ~a para jugador 1 y ~a para jugador 2~%" puntaje1 puntaje2)
   );let
 );defun
