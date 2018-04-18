@@ -23,6 +23,23 @@
 (defparameter *turno* 1)
 (defparameter *bool-repite* nil)
 
+
+;;================================================================
+;; profundidad máxima
+;;================================================================
+(defparameter *profundidad-max* 10)
+
+;;================================================================
+;; Función para inicializar las variables globales
+;;================================================================
+(defun inicializa ()
+  (setq *tablero* '((r a v) (r a v) (r a v) (r a v) (r a v) (r a v) () (r a v) (r a v) (r a v) (r a v) (r a v) (r a v) ()))
+  (setq *ops-maquina* '(7 8 9 10 11 12))
+  (setq *turno* 1)
+  (setq *bool-repite* nil)
+  (setq *profundidad-max* 10)
+)
+
 ;;================================================================
 ;; Calcula puntaje
 ;;================================================================
