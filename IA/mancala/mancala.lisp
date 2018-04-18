@@ -290,6 +290,20 @@
         (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
       );when (jugador 2 - humano)
 
+
+    ;Humano-vs-maquina
+    (when (and (= *turno* 2) (= jugadores 1) )
+      (format t "~%Turno de jugador ~a:~%" *turno*)
+      (setq jugador2 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
+      (setq lista-aux (aplica-jugada jugador2 *tablero* *turno*))
+      (setq *tablero* (first lista-aux)) ;aplica jugada
+      (setq *bool-repite* (second lista-aux))
+      (despliega-tablero)
+      (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
+      (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+      (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
+    );when (humano-maquina)
+
     (when (es-terminal? *tablero*) (return t))
   );loop
   (format t "~%Fin del juego: la puntuación es ~a para jugador 1 y ~a para jugador 2~%" puntaje1 puntaje2)
