@@ -27,7 +27,7 @@
 ;;================================================================
 ;; profundidad máxima
 ;;================================================================
-(defparameter *profundidad-max* 100)
+(defparameter *profundidad-max* 15)
 
 ;;================================================================
 ;; Función para inicializar las variables globales
@@ -37,7 +37,7 @@
   (setq *ops-maquina* '(7 8 9 10 11 12))
   (setq *turno* 1)
   (setq *bool-repite* nil)
-  (setq *profundidad-max* 10)
+  (setq *profundidad-max* 11)
 )
 
 ;;================================================================
@@ -167,24 +167,30 @@
 ;; Función para evaluar el tablero
 ;; da prioridad a los movimientos que permiten tener turnos consecutivos
 ;; si no hay casillas que proporcionen una repetición en el turno
-;; se le asigna un número aleatorio :p
+;; se da prioridad al tablero cuya base sea lo más similiar a aquella base
+;; con 192 puntos (total de puntos)
+;; para esto se utiliza la función similitud (medida de similitud)
 ;;===========================================================================
+
+(defun similitud (tablero)
+  (/  (+ (second (puntaje (nth 6 tablero) )) (second (puntaje (nth 13 tablero) )) ) 192  )
+);defun
 (defun evalua-tablero (tablero)
   (if (es-terminal? tablero) (return-from evalua-tablero 100) )
   (cond
-    ((= (second (puntaje (nth 0 tablero))) 6)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 1 tablero))) 5)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 2 tablero))) 4)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 3 tablero))) 3)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 4 tablero))) 2)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 5 tablero))) 1)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 12 tablero))) 1)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 11 tablero))) 2)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 10 tablero))) 3)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 9 tablero))) 4)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 8 tablero))) 5)  (return-from evalua-tablero 10)  )
-    ((= (second (puntaje (nth 7 tablero))) 6)  (return-from evalua-tablero 10)  )
-    (t (return-from evalua-tablero (1+ (random 9) ) ) )
+    ((= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 5 tablero)) 1)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 12 tablero)) 1)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 10)  )
+    (t (return-from evalua-tablero (similitud tablero)  ) )
   )
 );defun
 ;;============================================================================
