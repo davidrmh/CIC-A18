@@ -46,7 +46,7 @@ $$p \wedge [(p \rightarrow q) \vee (s \wedge r)] \rightarrow (\sim q \rightarrow
 
 7. $(q \vee s)$ ya que para que 6 sea cierto se necesita que esto se cumpla.
 
-8. $\sim q \rightarrow s$ equivalencia de la implicación.
+8. $\sim q \rightarrow s$ utilizando 7 y equivalencia de la implicación.
 
 **Forma indirecta por contradicción**
 
