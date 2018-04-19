@@ -251,7 +251,7 @@
    (loop for i in '(0 1 2 3 4 5) do
       (when (nth i tablero)
         (loop for elem in (nth i tablero) do
-          (setf (nth 13 tablero) (append (nth 13 tablero) (list elem) ) ) ) 
+          (setf (nth 13 tablero) (append (nth 13 tablero) (list elem) ) ) )
           (setf (nth i tablero) nil)   )  ) )
   tablero
 );defun
