@@ -56,7 +56,7 @@
         (r (incf rojo) )
         (v (incf verde) )
         (a (incf amarillo) ) )    )
-    (setq lista-resultado (list (concatenate 'string " R:" (write-to-string rojo) " V:" (write-to-string amarillo) " A:" (write-to-string verde)  )
+    (setq lista-resultado (list (concatenate 'string " R:" (write-to-string rojo) " V:" (write-to-string verde) " A:" (write-to-string amarillo)  )
       (reduce #'+ (list (* 10 rojo) (* 5 verde)  (* 1 amarillo) )   )) )
     lista-resultado
   );let
