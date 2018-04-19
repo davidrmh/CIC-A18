@@ -383,7 +383,7 @@
       (when (and (= *turno* 1) (= jugadores 1) (not (es-terminal? *tablero*)) )
       (format t "~%Turno de jugador ~a: " *turno*)
       (setq orden-fichas nil)
-      ;(format t "~%Elige la casilla ")
+      (format t "~%Elige la casilla ")
         ;Valida casilla
         (loop
            (setq jugador1 (read))
