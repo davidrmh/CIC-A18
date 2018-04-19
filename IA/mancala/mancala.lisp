@@ -56,7 +56,7 @@
         (r (incf rojo) )
         (v (incf verde) )
         (a (incf amarillo) ) )    )
-    (setq lista-resultado (list (concatenate 'string " R:" (write-to-string rojo) " V:" (write-to-string verde) " A:" (write-to-string amarillo)  )
+    (setq lista-resultado (list (concatenate 'string "R:" (write-to-string rojo) " V:" (write-to-string verde) " A:" (write-to-string amarillo)  )
       (reduce #'+ (list (* 10 rojo) (* 5 verde)  (* 1 amarillo) )   )) )
     lista-resultado
   );let
@@ -81,15 +81,17 @@
 ;; Despliega el tablero en la terminal
 ;;================================================================
 (defun despliega-tablero ()
+  (format t "~%==================================================================================================~%")
   (format t "Base-PC     Casilla-12     Casilla-11     Casilla-10     Casilla-9     Casilla-8     Casilla-7")
-  (format t  "~%~a           ~a   ~a   ~a   ~a  ~a  ~a"
+  (format t  "~%~a           ~a    ~a    ~a    ~a   ~a   ~a"
     (second (puntaje (nth 13 *tablero*))) (first (puntaje (nth 12 *tablero*))) (first (puntaje (nth 11 *tablero*))) (first (puntaje (nth 10 *tablero*))) (first (puntaje (nth 9 *tablero*)))
   (first (puntaje  (nth 8 *tablero*)))  (first  (puntaje (nth 7 *tablero*)))  )
   (format t "~%==================================================================================================")
-  (format t  "~%~a ~a  ~a   ~a   ~a  ~a      ~a"
+  (format t  "~%~a  ~a   ~a    ~a    ~a   ~a       ~a"
     (first (puntaje (nth 0 *tablero*))) (first (puntaje (nth 1 *tablero*))) (first (puntaje (nth 2 *tablero*))) (first (puntaje (nth 3 *tablero*))) (first (puntaje (nth 4 *tablero*)))
   (first (puntaje  (nth 5 *tablero*)))  (second  (puntaje (nth 6 *tablero*)))  )
-  (format t  "~%Casilla-0    Casilla-1     Casilla-2      Casilla-3      Casilla-4     Casilla-5     Base-humano~%")
+  (format t  "~%Casilla-0    Casilla-1     Casilla-2      Casilla-3      Casilla-4     Casilla-5     Base-humano")
+  (format t "~%==================================================================================================~%")
 );defun
 
 ;;================================================================
@@ -382,8 +384,8 @@
 
       (when (and (= *turno* 1) (= jugadores 1) (not (es-terminal? *tablero*)) )
       (format t "~%Turno de jugador ~a: " *turno*)
+      (format t "~%Elige la casilla~%")
       (setq orden-fichas nil)
-      (format t "~%Elige la casilla ")
         ;Valida casilla
         (loop
            (setq jugador1 (read))
@@ -401,9 +403,11 @@
         (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
         (setq *tablero* (first lista-aux)) ;aplica la jugada
         (setq *bool-repite* (second lista-aux))
+
         (despliega-tablero)
-        (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador1)
-        (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+        (format t "~%El jugador ~a modificó la casilla ~a ~%~%" *turno* jugador1)
+        (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%~%" *turno*))
+
         (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
       );when (jugador 1 - humano)
 
@@ -414,9 +418,11 @@
       (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
       (setq *tablero* (first lista-aux)) ;aplica jugada
       (setq *bool-repite* (second lista-aux))
+
       (despliega-tablero)
       (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador1)
       (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+
       (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
     );when maquina vs maquina
 
@@ -427,9 +433,11 @@
       (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
       (setq *tablero* (first lista-aux)) ;aplica jugada
       (setq *bool-repite* (second lista-aux))
+
       (despliega-tablero)
       (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
       (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+
       (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
     );when (humano-maquina)
 
