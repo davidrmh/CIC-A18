@@ -56,7 +56,7 @@
         (r (incf rojo) )
         (v (incf verde) )
         (a (incf amarillo) ) )    )
-    (setq lista-resultado (list (concatenate 'string "R:" (write-to-string rojo) " A:" (write-to-string amarillo) " V:" (write-to-string verde)  )
+    (setq lista-resultado (list (concatenate 'string " R:" (write-to-string rojo) " V:" (write-to-string amarillo) " A:" (write-to-string verde)  )
       (reduce #'+ (list (* 10 rojo) (* 5 verde)  (* 1 amarillo) )   )) )
     lista-resultado
   );let
@@ -82,11 +82,11 @@
 ;;================================================================
 (defun despliega-tablero ()
   (format t "Base-PC     Casilla-12     Casilla-11     Casilla-10     Casilla-9     Casilla-8     Casilla-7")
-  (format t  "~%~a           ~a    ~a    ~a    ~a   ~a   ~a"
+  (format t  "~%~a           ~a   ~a   ~a   ~a  ~a  ~a"
     (second (puntaje (nth 13 *tablero*))) (first (puntaje (nth 12 *tablero*))) (first (puntaje (nth 11 *tablero*))) (first (puntaje (nth 10 *tablero*))) (first (puntaje (nth 9 *tablero*)))
   (first (puntaje  (nth 8 *tablero*)))  (first  (puntaje (nth 7 *tablero*)))  )
   (format t "~%==================================================================================================")
-  (format t  "~%~a  ~a   ~a    ~a    ~a   ~a       ~a"
+  (format t  "~%~a ~a  ~a   ~a   ~a  ~a      ~a"
     (first (puntaje (nth 0 *tablero*))) (first (puntaje (nth 1 *tablero*))) (first (puntaje (nth 2 *tablero*))) (first (puntaje (nth 3 *tablero*))) (first (puntaje (nth 4 *tablero*)))
   (first (puntaje  (nth 5 *tablero*)))  (second  (puntaje (nth 6 *tablero*)))  )
   (format t  "~%Casilla-0    Casilla-1     Casilla-2      Casilla-3      Casilla-4     Casilla-5     Base-humano~%")
@@ -95,7 +95,7 @@
 ;;================================================================
 ;; Aplica la jugada sobre el tablero
 ;;================================================================
-(defun aplica-jugada (indice-casilla tablero-orig turno)
+(defun aplica-jugada (indice-casilla tablero-orig turno orden-fichas)
   "
   Modifica el tablero repartiendo las fichas en la casilla índice-casilla
   en las casillas vecinas
@@ -105,7 +105,7 @@
   "
   (let ((contenido nil) (aux 0)  (tablero nil) (ultima-casilla 0) (bool-repite nil)  )
     (setq tablero (copy-seq tablero-orig))
-    (setq contenido (copy-seq (nth indice-casilla tablero))) ;Copia el contenido de la casilla
+    (setq contenido orden-fichas) ;Copia el contenido de la casilla
     (setq aux (+ indice-casilla 1)) ;Primer casilla vecina
 
     ;Actualiza las  casillas vecinas
@@ -182,32 +182,59 @@
 ;; Función para evaluar el tablero
 ;; da prioridad a los movimientos que permiten tener turnos consecutivos
 ;; si no hay casillas que proporcionen una repetición en el turno
-;; se da prioridad al tablero cuya base sea lo más similiar a aquella base
-;; con 192 puntos (total de puntos)
+;; se da prioridad al tablero cuyas casillas sean más similares a las casillas
+;; objetivo (las que permiten ganar en un sólo turno)
 ;; para esto se utiliza la función similitud (medida de similitud)
 ;;===========================================================================
 
+;(defun similitud (tablero)
+;  (/  (+ (second (puntaje (nth 6 tablero) )) (second (puntaje (nth 13 tablero) )) ) 192  )
+;);defun
+
 (defun similitud (tablero)
-  (/  (+ (second (puntaje (nth 6 tablero) )) (second (puntaje (nth 13 tablero) )) ) 192  )
+  "
+  Calcula la diferencia entre el estado actual de las casillas y el estado
+  objetivo (aquel que te permitiría ganar en un sólo turno)
+  "
+  (let ((dist-cpu 0) (dist-hum 0) (casillas-cpu nil) (casillas-humano nil)
+           (objetivo '(1 2 3 4 5 6)  ) )
+
+         ;obtiene el estado de las casillas del humano
+         (loop for i in '(5 4 3 2 1 0) do (setq casillas-humano (append casillas-humano (list (length (nth i tablero) ) )))  )
+
+         ;obtiene el estado de las casillas del CPU
+         (loop for i in '(12 11 10 9 8 7) do (setq casillas-cpu (append casillas-cpu (list (length (nth i tablero) ) )))  )
+
+         ;obtiene la distancia entre casillas del humano y casillas objetivo
+         (setq dist-hum (reduce #'+ (mapcar #'abs (mapcar #'- casillas-humano objetivo) ) ))
+
+         ;obtiene la distancia entre casillas de la mánquina y casillas objetivo
+         (setq dist-cpu (reduce #'+ (mapcar #'abs (mapcar #'- casillas-cpu objetivo) ) ))
+
+         (- dist-hum dist-cpu)
+  );let
 );defun
+
 (defun evalua-tablero (tablero)
   (if (es-terminal? tablero) (return-from evalua-tablero 100) )
   (cond
-    ((= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 5)  )
+    ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 6)  )
+    ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 7)  )
+    ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 8)  )
+    ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 9)  )
     ((= (length (nth 5 tablero)) 1)  (return-from evalua-tablero 10)  )
     ((= (length (nth 12 tablero)) 1)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 10)  )
+    ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 9)  )
+    ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 8)  )
+    ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 7)  )
+    ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 6)  )
+    ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 5)  )
     (t (return-from evalua-tablero (similitud tablero)  ) )
   )
 );defun
+
+
 
 ;;============================================================================
 ;; Actualiza el tablero final
@@ -226,6 +253,23 @@
           (setf (nth 13 tablero) (append (nth 13 tablero) (list elem) ) ) ) )  ) )
   tablero
 );defun
+
+;;=============================================================================
+;; Función ordena-fichas
+;; Orden las fichas de una casilla de mayor a menor valor (rojo-verde-amarillo)
+;;=============================================================================
+(defun ordena-fichas (casilla)
+  (let ((conteo-rojo 0) (conteo-verde 0) (conteo-amarillo 0) (resultado nil) )
+    (setq conteo-rojo (count 'R casilla))
+    (setq conteo-verde (count 'V casilla))
+    (setq conteo-amarillo (count 'A casilla))
+    (loop for i from 0 to (1- conteo-rojo) do (setq resultado (append resultado (list 'R))) )
+    (loop for i from 0 to (1- conteo-verde) do (setq resultado (append resultado (list 'V))) )
+    (loop for i from 0 to (1- conteo-amarillo) do (setq resultado (append resultado (list 'A))) )
+  resultado
+  );let
+)
+
 ;;============================================================================
 ;; Negamax alfa beta
 ;;============================================================================
@@ -238,7 +282,7 @@
   "
   (let ((lista-resultado nil) (mejor-movimiento nil) (mejor-puntuacion nil) (nuevo-tablero nil)
         (puntaje-actual nil) (lista-movimientos nil)
-        (lista-aux nil) (nuevo-turno nil) (bool-repite nil) )
+        (lista-aux nil) (nuevo-turno nil) (bool-repite nil) (orden-fichas nil) )
 
         ;Revisa si es estado terminal o se llegó a la profundidad máxima
         (when (or (es-terminal? tablero) (>= profundidad profundidad-max)  )
@@ -256,7 +300,8 @@
             (setq lista-movimientos (append lista-movimientos (list i))) ) )
 
         (loop for movimiento in lista-movimientos do
-          (setq lista-aux (aplica-jugada movimiento tablero turno))
+          (setq orden-fichas (ordena-fichas (nth movimiento tablero)))
+          (setq lista-aux (aplica-jugada movimiento tablero turno orden-fichas))
           (setq nuevo-tablero (first lista-aux))
           (setq bool-repite (second lista-aux))
           (setq nuevo-turno (determina-turno turno bool-repite))
@@ -312,7 +357,7 @@
     (loop
 
       (when (= *turno* 1)
-      (format t "~%Turno de jugador ~a:" *turno*)
+      (format t "~%Turno de jugador ~a: " *turno*)
       (setq orden-fichas nil)
       ;(format t "~%Elige la casilla ")
         ;Valida casilla
@@ -322,13 +367,14 @@
            (when (valida-jugada jugador1 *tablero* *turno*) (return t)) );loop
 
         ;Valida orden de fichas
-      (format t "~%Elige el orden de distribución de las fichas las fichas: ")
-        (loop
-           (setq orden-fichas (read))
-           (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
-           (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
+      ;(format t "~%Elige el orden de distribución de las fichas las fichas: ")
+      ;  (loop
+      ;     (setq orden-fichas (read))
+      ;     (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
+      ;     (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
+        (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*)))
 
-        (setq lista-aux (aplica-jugada jugador1 *tablero* *turno*))
+        (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
         (setq *tablero* (first lista-aux)) ;aplica la jugada
         (setq *bool-repite* (second lista-aux))
         (despliega-tablero)
@@ -355,7 +401,7 @@
           (when (valida-fichas (nth jugador2 *tablero*) orden-fichas) (return t) ) )
 
 
-        (setq lista-aux (aplica-jugada jugador2 *tablero* *turno*))
+        (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
         (setq *tablero* (first lista-aux)) ;aplica jugada
         (setq *bool-repite* (second lista-aux))
         (despliega-tablero)
@@ -369,7 +415,8 @@
     (when (and (= *turno* 2) (= jugadores 1) )
       (format t "~%Turno de jugador ~a:~%" *turno*)
       (setq jugador2 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
-      (setq lista-aux (aplica-jugada jugador2 *tablero* *turno*))
+      (setq orden-fichas (ordena-fichas (nth jugador2 *tablero*)))
+      (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
       (setq *tablero* (first lista-aux)) ;aplica jugada
       (setq *bool-repite* (second lista-aux))
       (despliega-tablero)
