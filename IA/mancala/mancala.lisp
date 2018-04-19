@@ -285,10 +285,26 @@
 );defun
 
 ;;============================================================================
+;; valida fichas a jugar
+;; cuenta que se mueva el mismo número de fichas considerando el tipo
+;;============================================================================
+(defun valida-fichas (casilla-tablero lista-orden)
+  "
+  casilla-tablero: casilla del tablero que se modificará
+  orden: en que orden de colocarán las fichas de casilla-tablero en las
+  casillas vecinas
+  "
+  (if (and (= (count 'R casilla-tablero) (count 'R lista-orden)  )
+           (= (count 'A casilla-tablero) (count 'A lista-orden)  )
+           (= (count 'V casilla-tablero) (count 'V lista-orden)  )) (return-from valida-fichas t) nil)
+)
+
+;;============================================================================
 ;; inicia el juego
 ;;============================================================================
 (defun main (&optional (jugadores 2))
-  (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil) )
+  (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil)
+         (orden-fichas nil)  )
     (inicializa)
     (setq *turno* 1)
     (despliega-tablero)
@@ -296,12 +312,21 @@
     (loop
 
       (when (= *turno* 1)
-      (format t "Turno de jugador ~a:" *turno*)
-      (format t "~% Elige la casilla ")
+      (format t "~%Turno de jugador ~a:" *turno*)
+      (setq orden-fichas nil)
+      ;(format t "~%Elige la casilla ")
+        ;Valida casilla
         (loop
            (setq jugador1 (read))
            (if (not (valida-jugada jugador1 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
            (when (valida-jugada jugador1 *tablero* *turno*) (return t)) );loop
+
+        ;Valida orden de fichas
+      (format t "~%Elige el orden de distribución de las fichas las fichas: ")
+        (loop
+           (setq orden-fichas (read))
+           (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
+           (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
 
         (setq lista-aux (aplica-jugada jugador1 *tablero* *turno*))
         (setq *tablero* (first lista-aux)) ;aplica la jugada
@@ -315,10 +340,20 @@
       (when (and (= *turno* 2) (= jugadores 2) )
       (format t "Turno de jugador ~a:" *turno*)
       (format t "~% Elige la casilla ")
+
+      ;valida casilla
         (loop
            (setq jugador2 (read))
            (if (not (valida-jugada jugador2 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
            (when (valida-jugada jugador2 *tablero* *turno*) (return t) ) );loop
+
+     ;Valida orden de fichas
+       (format t "~%Elige el orden de distribución de las fichas las fichas: ")
+       (loop
+          (setq orden-fichas (read))
+          (if (not (valida-fichas (nth jugador2 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
+          (when (valida-fichas (nth jugador2 *tablero*) orden-fichas) (return t) ) )
+
 
         (setq lista-aux (aplica-jugada jugador2 *tablero* *turno*))
         (setq *tablero* (first lista-aux)) ;aplica jugada
