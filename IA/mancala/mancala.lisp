@@ -216,20 +216,20 @@
 );defun
 
 (defun evalua-tablero (tablero)
-  (if (es-terminal? tablero) (return-from evalua-tablero 100) )
+  (if (es-terminal? tablero) (return-from evalua-tablero 1000) )
   (cond
-    ((= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 5)  )
-    ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 6)  )
-    ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 7)  )
-    ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 8)  )
-    ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 9)  )
-    ((= (length (nth 5 tablero)) 1)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 12 tablero)) 1)  (return-from evalua-tablero 10)  )
-    ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 9)  )
-    ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 8)  )
-    ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 7)  )
-    ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 6)  )
-    ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 5)  )
+    ((= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 59)  )
+    ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 69)  )
+    ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 79)  )
+    ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 89)  )
+    ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 99)  )
+    ((= (length (nth 5 tablero)) 1)  (return-from evalua-tablero 100)  )
+    ((= (length (nth 12 tablero)) 1)  (return-from evalua-tablero 100)  )
+    ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 99)  )
+    ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 89)  )
+    ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 79)  )
+    ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 69)  )
+    ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 59)  )
     (t (return-from evalua-tablero (similitud tablero)  ) )
   )
 );defun
@@ -257,15 +257,28 @@
 ;;=============================================================================
 ;; Función ordena-fichas
 ;; Orden las fichas de una casilla de mayor a menor valor (rojo-verde-amarillo)
+;; si se repite el turno entonces las ordena de menor a mayor (amarillo-verde-rojo)
+;aplica-jugada (indice-casilla tablero-orig turno orden-fichas)
 ;;=============================================================================
-(defun ordena-fichas (casilla)
-  (let ((conteo-rojo 0) (conteo-verde 0) (conteo-amarillo 0) (resultado nil) )
+(defun ordena-fichas (casilla indice-casilla tablero turno)
+  (let ((conteo-rojo 0) (conteo-verde 0) (conteo-amarillo 0) (resultado nil) (bool-repite nil) )
     (setq conteo-rojo (count 'R casilla))
     (setq conteo-verde (count 'V casilla))
     (setq conteo-amarillo (count 'A casilla))
-    (loop for i from 0 to (1- conteo-rojo) do (setq resultado (append resultado (list 'R))) )
-    (loop for i from 0 to (1- conteo-verde) do (setq resultado (append resultado (list 'V))) )
-    (loop for i from 0 to (1- conteo-amarillo) do (setq resultado (append resultado (list 'A))) )
+    (setq bool-repite (second (aplica-jugada indice-casilla tablero turno casilla)))
+
+    (when (not bool-repite )
+      (loop for i from 0 to (1- conteo-rojo) do (setq resultado (append resultado (list 'R))) )
+      (loop for i from 0 to (1- conteo-verde) do (setq resultado (append resultado (list 'V))) )
+      (loop for i from 0 to (1- conteo-amarillo) do (setq resultado (append resultado (list 'A))) )
+    )
+
+    (when bool-repite
+      (loop for i from 0 to (1- conteo-amarillo) do (setq resultado (append resultado (list 'A))) )
+      (loop for i from 0 to (1- conteo-verde) do (setq resultado (append resultado (list 'V))) )
+      (loop for i from 0 to (1- conteo-rojo) do (setq resultado (append resultado (list 'R))) )
+    )
+
   resultado
   );let
 )
@@ -300,7 +313,7 @@
             (setq lista-movimientos (append lista-movimientos (list i))) ) )
 
         (loop for movimiento in lista-movimientos do
-          (setq orden-fichas (ordena-fichas (nth movimiento tablero)))
+          (setq orden-fichas (ordena-fichas (nth movimiento tablero) movimiento tablero turno))
           (setq lista-aux (aplica-jugada movimiento tablero turno orden-fichas))
           (setq nuevo-tablero (first lista-aux))
           (setq bool-repite (second lista-aux))
@@ -372,7 +385,7 @@
       ;     (setq orden-fichas (read))
       ;     (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
       ;     (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
-        (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*)))
+        (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*) jugador1 *tablero* *turno*))
 
         (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
         (setq *tablero* (first lista-aux)) ;aplica la jugada
@@ -383,39 +396,40 @@
         (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
       );when (jugador 1 - humano)
 
-      (when (and (= *turno* 2) (= jugadores 2) )
-      (format t "Turno de jugador ~a:" *turno*)
-      (format t "~% Elige la casilla ")
+      ;;PARA JUGADOR HUMANO
+      ;(when (and (= *turno* 2) (= jugadores 2) )
+      ;(format t "Turno de jugador ~a:" *turno*)
+      ;(format t "~% Elige la casilla ")
 
       ;valida casilla
-        (loop
-           (setq jugador2 (read))
-           (if (not (valida-jugada jugador2 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
-           (when (valida-jugada jugador2 *tablero* *turno*) (return t) ) );loop
+      ;  (loop
+      ;     (setq jugador2 (read))
+      ;     (if (not (valida-jugada jugador2 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
+      ;     (when (valida-jugada jugador2 *tablero* *turno*) (return t) ) );loop
 
      ;Valida orden de fichas
-       (format t "~%Elige el orden de distribución de las fichas las fichas: ")
-       (loop
-          (setq orden-fichas (read))
-          (if (not (valida-fichas (nth jugador2 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
-          (when (valida-fichas (nth jugador2 *tablero*) orden-fichas) (return t) ) )
+       ;(format t "~%Elige el orden de distribución de las fichas las fichas: ")
+       ;(loop
+        ;  (setq orden-fichas (read))
+        ;  (if (not (valida-fichas (nth jugador2 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
+        ;  (when (valida-fichas (nth jugador2 *tablero*) orden-fichas) (return t) ) )
 
 
-        (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
-        (setq *tablero* (first lista-aux)) ;aplica jugada
-        (setq *bool-repite* (second lista-aux))
-        (despliega-tablero)
-        (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
-        (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
-        (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
-      );when (jugador 2 - humano)
+        ;(setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
+        ;(setq *tablero* (first lista-aux)) ;aplica jugada
+        ;(setq *bool-repite* (second lista-aux))
+        ;(despliega-tablero)
+        ;(format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
+        ;(if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+        ;(if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
+      ;);when (jugador 2 - humano)
 
 
     ;Humano-vs-maquina
     (when (and (= *turno* 2) (= jugadores 1) )
       (format t "~%Turno de jugador ~a:~%" *turno*)
       (setq jugador2 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
-      (setq orden-fichas (ordena-fichas (nth jugador2 *tablero*)))
+      (setq orden-fichas (ordena-fichas (nth jugador2 *tablero*) jugador2 *tablero* *turno*))
       (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
       (setq *tablero* (first lista-aux)) ;aplica jugada
       (setq *bool-repite* (second lista-aux))
