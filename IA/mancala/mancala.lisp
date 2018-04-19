@@ -37,7 +37,7 @@
   (setq *ops-maquina* '(7 8 9 10 11 12))
   (setq *turno* 1)
   (setq *bool-repite* nil)
-  (setq *profundidad-max* 11)
+  (setq *profundidad-max* 12)
 )
 
 ;;================================================================
@@ -360,7 +360,7 @@
 ;;============================================================================
 ;; inicia el juego
 ;;============================================================================
-(defun main (&optional (jugadores 2))
+(defun main (&optional (jugadores 1))
   (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil)
          (orden-fichas nil)  )
     (inicializa)
@@ -369,7 +369,7 @@
 
     (loop
 
-      (when (= *turno* 1)
+      (when (and (= *turno* 1) (= jugadores 1))
       (format t "~%Turno de jugador ~a: " *turno*)
       (setq orden-fichas nil)
       ;(format t "~%Elige la casilla ")
@@ -396,38 +396,22 @@
         (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
       );when (jugador 1 - humano)
 
-      ;;PARA JUGADOR HUMANO
-      ;(when (and (= *turno* 2) (= jugadores 2) )
-      ;(format t "Turno de jugador ~a:" *turno*)
-      ;(format t "~% Elige la casilla ")
-
-      ;valida casilla
-      ;  (loop
-      ;     (setq jugador2 (read))
-      ;     (if (not (valida-jugada jugador2 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
-      ;     (when (valida-jugada jugador2 *tablero* *turno*) (return t) ) );loop
-
-     ;Valida orden de fichas
-       ;(format t "~%Elige el orden de distribución de las fichas las fichas: ")
-       ;(loop
-        ;  (setq orden-fichas (read))
-        ;  (if (not (valida-fichas (nth jugador2 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
-        ;  (when (valida-fichas (nth jugador2 *tablero*) orden-fichas) (return t) ) )
-
-
-        ;(setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
-        ;(setq *tablero* (first lista-aux)) ;aplica jugada
-        ;(setq *bool-repite* (second lista-aux))
-        ;(despliega-tablero)
-        ;(format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
-        ;(if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
-        ;(if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
-      ;);when (jugador 2 - humano)
-
+    (when (and (= *turno* 1) (= jugadores 0))
+      ;(format t "~%Turno de jugador ~a:~%" *turno*)
+      (setq jugador1 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
+      (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*) jugador1 *tablero* *turno*))
+      (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
+      (setq *tablero* (first lista-aux)) ;aplica jugada
+      (setq *bool-repite* (second lista-aux))
+      (despliega-tablero)
+      (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador1)
+      ;(if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+      (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
+    );when maquina vs maquina
 
     ;Humano-vs-maquina
     (when (and (= *turno* 2) (= jugadores 1) )
-      (format t "~%Turno de jugador ~a:~%" *turno*)
+      ;(format t "~%Turno de jugador ~a:~%" *turno*)
       (setq jugador2 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
       (setq orden-fichas (ordena-fichas (nth jugador2 *tablero*) jugador2 *tablero* *turno*))
       (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
@@ -435,7 +419,7 @@
       (setq *bool-repite* (second lista-aux))
       (despliega-tablero)
       (format t "~%El jugador ~a modificó la casilla ~a ~%" *turno* jugador2)
-      (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
+      ;(if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%" *turno*))
       (if (not *bool-repite*) (setq *turno* 1) (setq *turno* 2) ) ;Verifica si se repite turno
     );when (humano-maquina)
 
