@@ -27,7 +27,7 @@
 ;;================================================================
 ;; profundidad máxima
 ;;================================================================
-(defparameter *profundidad-max* 15)
+(defparameter *profundidad-max* 12)
 
 ;;================================================================
 ;; Función para inicializar las variables globales
@@ -37,7 +37,7 @@
   (setq *ops-maquina* '(7 8 9 10 11 12))
   (setq *turno* 1)
   (setq *bool-repite* nil)
-  (setq *profundidad-max* 10)
+  (setq *profundidad-max* 12)
 )
 
 ;;================================================================
@@ -210,28 +210,37 @@
          (setq dist-cpu (reduce #'+ (mapcar #'abs (mapcar #'- casillas-cpu objetivo) ) ))
 
          ;(- dist-cpu dist-hum)
-         (max dist-cpu dist-hum)
+         ;(- dist-hum dist-cpu)
+         (/ 1 (+ 1 dist-hum))
+         ;(max dist-cpu dist-hum)
+         ;(* -1 dist-cpu)
 
   );let
 );defun
 
-(defun evalua-tablero (tablero)
+(defun evalua-tablero (tablero turno)
   (if (es-terminal? tablero) (return-from evalua-tablero 1000) )
-  (cond
-    ((= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 590)  )
-    ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 690)  )
-    ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 790)  )
-    ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 890)  )
-    ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 990)  )
-    ((= (length (nth 5 tablero)) 1)  (return-from evalua-tablero 1000)  )
-    ((= (length (nth 12 tablero)) 1)  (return-from evalua-tablero 1000)  )
-    ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 990)  )
-    ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 890)  )
-    ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 790)  )
-    ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 690)  )
-    ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 590)  )
-    (t (return-from evalua-tablero (similitud2 tablero)  ) )
-  )
+  (when (= turno 1)
+    (cond
+      ( (= (length (nth 0 tablero)) 6)  (return-from evalua-tablero 590)  )
+      ((= (length (nth 1 tablero)) 5)  (return-from evalua-tablero 690)  )
+      ((= (length (nth 2 tablero)) 4)  (return-from evalua-tablero 790)  )
+      ((= (length (nth 3 tablero)) 3)  (return-from evalua-tablero 890)  )
+      ((= (length (nth 4 tablero)) 2)  (return-from evalua-tablero 990)  )
+      ((= (length (nth 5 tablero)) 1)  (return-from evalua-tablero 1000)  )
+      (t (return-from evalua-tablero (similitud2 tablero)  ) ) );cond
+  );when turno 1
+
+  (when (= turno 2)
+    (cond
+      ((= (length (nth 12 tablero)) 1)  (return-from evalua-tablero 1000)  )
+      ((= (length (nth 11 tablero)) 2)  (return-from evalua-tablero 990)  )
+      ((= (length (nth 10 tablero)) 3)  (return-from evalua-tablero 890)  )
+      ((= (length (nth 9 tablero)) 4)  (return-from evalua-tablero 790)  )
+      ((= (length (nth 8 tablero)) 5)  (return-from evalua-tablero 690)  )
+      ((= (length (nth 7 tablero)) 6)  (return-from evalua-tablero 590)  )
+      (t (return-from evalua-tablero (similitud2 tablero)  ) ) );cond
+  );when turno 2
 );defun
 
 
@@ -301,7 +310,7 @@
 
         ;Revisa si es estado terminal o se llegó a la profundidad máxima
         (when (or (es-terminal? tablero) (>= profundidad profundidad-max)  )
-          (setq lista-resultado (list (evalua-tablero tablero) nil) )
+          (setq lista-resultado (list (evalua-tablero tablero turno) nil) )
           (return-from abnegamax lista-resultado) )
 
         ;(format t "Profundidad = ~a ~%" profundidad)
@@ -400,7 +409,6 @@
 
     (when (and (= *turno* 1) (= jugadores 0)  (not (es-terminal? *tablero*)) )
       (format t "~%Turno de jugador ~a:~%" *turno*)
-      (format t "Inicia negamax de jugador ~a ~%" *turno*)
       (setq jugador1 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
       (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*) jugador1 *tablero* *turno*))
       (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
@@ -412,10 +420,8 @@
       (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
     );when maquina vs maquina
 
-    ;Humano-vs-maquina
     (when  ( and (= *turno* 2) (not (es-terminal? *tablero*)) )
       (format t "~%Turno de jugador ~a:~%" *turno*)
-      (format t "Inicia negamax de jugador ~a ~%" *turno*)
       (setq jugador2 (second (abnegamax *tablero* 0 *turno* -1000 1000)))
       (setq orden-fichas (ordena-fichas (nth jugador2 *tablero*) jugador2 *tablero* *turno*))
       (setq lista-aux (aplica-jugada jugador2 *tablero* *turno* orden-fichas))
