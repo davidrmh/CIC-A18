@@ -372,8 +372,11 @@
 
 ;;============================================================================
 ;; inicia el juego
+;; jugadores==1 humano vs máquina
+;; flag-ordena==nil  el humano establece el orden de distribución de las fichas
+;; flag-ordena==t el orden de las fichas es determinado por ordena-fichas
 ;;============================================================================
-(defun main (&optional (jugadores 1))
+(defun main (&optional (jugadores 1) (flag-ordena nil))
   (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil)
          (orden-fichas nil)  )
     (inicializa)
@@ -392,13 +395,18 @@
            (if (not (valida-jugada jugador1 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
            (when (valida-jugada jugador1 *tablero* *turno*) (return t)) );loop
 
-        ;Valida orden de fichas
-      ;(format t "~%Elige el orden de distribución de las fichas las fichas: ")
-      ;  (loop
-      ;     (setq orden-fichas (read))
-      ;     (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
-      ;     (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
-        (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*) jugador1 *tablero* *turno*))
+
+      ;Pide el orden de las fichas
+      (when (not flag-ordena)
+        (format t "~%Elige el orden de distribución de las fichas las fichas (escribelo como lista, ej, '(R V A) :~%")
+          (loop
+            (setq orden-fichas  (eval (read)))
+            (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
+            (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
+      );when
+
+      ;ordena las fichas de manera automática
+    (if flag-ordena (setq orden-fichas (ordena-fichas (nth jugador1 *tablero*) jugador1 *tablero* *turno*)) )
 
         (setq lista-aux (aplica-jugada jugador1 *tablero* *turno* orden-fichas))
         (setq *tablero* (first lista-aux)) ;aplica la jugada
