@@ -32,12 +32,12 @@
 ;;================================================================
 ;; Función para inicializar las variables globales
 ;;================================================================
-(defun inicializa ()
+(defun inicializa (prof)
   (setq *tablero* '((r a v) (r a v) (r a v) (r a v) (r a v) (r a v) () (r a v) (r a v) (r a v) (r a v) (r a v) (r a v) ()))
   (setq *ops-maquina* '(7 8 9 10 11 12))
   (setq *turno* 1)
   (setq *bool-repite* nil)
-  (setq *profundidad-max* 12)
+  (setq *profundidad-max* prof)
 )
 
 ;;================================================================
@@ -211,12 +211,8 @@
          ;obtiene la distancia entre casillas de la mánquina y casillas objetivo
          (setq dist-cpu (reduce #'+ (mapcar #'abs (mapcar #'- casillas-cpu objetivo) ) ))
 
-         ;(- dist-cpu dist-hum)
-         ;(- dist-hum dist-cpu)
-         (/ 1 (+ 1 dist-hum))
-         ;(max dist-cpu dist-hum)
-         ;(* -1 dist-cpu)
 
+         (/ 1 (+ 1 dist-cpu))
   );let
 );defun
 
@@ -332,7 +328,8 @@
           (setq bool-repite (second lista-aux))
           (setq nuevo-turno (determina-turno turno bool-repite))
 
-          (setq lista-resultado (abnegamax nuevo-tablero (1+ profundidad) nuevo-turno (* -1 beta) (* -1 (max alfa mejor-puntuacion))  ))
+          (setq lista-resultado (abnegamax nuevo-tablero (1+ profundidad) nuevo-turno (if bool-repite alfa (* -1 beta) )
+          (if bool-repite beta (* -1 (max alfa mejor-puntuacion)) )  ))
 
           ;Considera la repetición de turnos
           ;si no repite se multiplica por -1
@@ -376,11 +373,11 @@
 ;; flag-ordena==nil  el humano establece el orden de distribución de las fichas
 ;; flag-ordena==t el orden de las fichas es determinado por ordena-fichas
 ;;============================================================================
-(defun main (&optional (jugadores 1) (flag-ordena nil))
+(defun main (&optional (jugadores 1) (flag-ordena nil) (profundidad 10) )
   (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil)
          (orden-fichas nil)  )
-    (inicializa)
-    (setq *turno* 1)
+    (inicializa profundidad)
+    (setq *turno* 2)
     (despliega-tablero)
 
     (loop
