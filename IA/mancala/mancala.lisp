@@ -1,4 +1,18 @@
-;;===============================================================
+;;============================================================================
+;; MANCALA
+;; David R. Montalván Hernández Abril 2018
+;;============================================================================
+;; Instrucciones
+;; 1. carga el archivo
+;; 2. llama la función main con parámetros
+;; jugadores: 0=>máquina vs máquina, 1=>Humano vs máquina (default)
+;; flag-ordena: t=>Las fichas se ordenan de acuerdo a la función ordena-fichas
+;; esto hace un juego más rápido ya que sólo se selecciona la casilla
+;; nil => se selecciona la casilla y el orden de las fichas
+;; profundidad: profundidad máxima (10 default)
+;;=============================================================================
+
+;;=============================================================================
 ;; Tablero
 ;; Se representa con una lista de listas
 ;; cada lista representa una casilla del tablero
@@ -212,7 +226,8 @@
          (setq dist-cpu (reduce #'+ (mapcar #'abs (mapcar #'- casillas-cpu objetivo) ) ))
 
 
-         (/ 1 (+ 1 dist-cpu))
+         ;(/ 1 (+ 1 dist-cpu))
+         (- dist-hum dist-cpu)
   );let
 );defun
 
