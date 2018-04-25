@@ -78,8 +78,68 @@ def ES (numGen=500,c=0.6):
                 sigma = (c**2)*sigma
             else:
                 sigma=sigma/(c**2)
-                
+
         auxCont=auxCont+1
         costo[i] = min(costoPadre,costoHijo)
 
     return costo
+
+
+##==============================================================================
+## Calcula el costo promedio por generación
+##==============================================================================
+def costoPromedio(simulaciones):
+    '''
+    ENTRADA
+    simulaciones: Lista con los resultados de las simulaciones
+    SALIDA:
+    promedios: Arreglo de numpy cuya entrada i es el costo promedio
+    de la generación i
+    '''
+
+    #número de simulaciones
+    numSim=len(simulaciones)
+
+    #número de generaciones
+    numGen=len(simulaciones[0])
+
+    promedios=np.zeros(numGen)
+    suma=0
+
+    for i in range(0,numGen):
+        for j in range(0,numSim):
+            #Suma de costos de la generación i
+            suma=suma+simulaciones[j][i]
+        promedios[i]=float(suma)/numSim
+        suma=0
+    return promedios
+
+##==============================================================================
+## Grafica los resultados
+##==============================================================================
+def grafica (costos,c):
+    plt.plot(costos)
+    plt.title("Para c=" + str(c))
+    plt.xlabel("Numero de generacion")
+    plt.ylabel("Costo")
+    plt.show()
+
+##==============================================================================
+## Main
+##==============================================================================
+def main (numGen=500,numSim=50,c=0.6):
+    '''
+    ENTRADA
+    numGen: Número de generaciones
+    numSim: Número de simulaciones
+    c: Parámetro para escalar la desviación estándar
+
+    SALIDA
+    Gráfica con los costos promedios para cada generación
+    '''
+
+    simulaciones=[]
+    for i in range(0,numSim):
+        simulaciones.append(ES(numGen,c))
+    costos=costoPromedio(simulaciones)
+    grafica(costos,c)
