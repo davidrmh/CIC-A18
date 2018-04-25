@@ -118,28 +118,34 @@ def costoPromedio(simulaciones):
 ## Grafica los resultados
 ##==============================================================================
 def grafica (costos,c):
-    plt.plot(costos)
-    plt.title("Para c=" + str(c))
+    plt.clf()
+    for i in range(0,len(c)):
+        plt.plot(costos[i],label="c=" + str(c[i]))
     plt.xlabel("Numero de generacion")
     plt.ylabel("Costo")
+    plt.title("Comparaciones ejercicio 6.6")
+    plt.legend(loc="best")
     plt.show()
 
 ##==============================================================================
 ## Main
 ##==============================================================================
-def main (numGen=500,numSim=50,c=0.6):
+def main (numGen=500,numSim=50,c=[0.6,0.8,1]):
     '''
     ENTRADA
     numGen: Número de generaciones
     numSim: Número de simulaciones
-    c: Parámetro para escalar la desviación estándar
+    c: Parámetros para escalar la desviación estándar
 
     SALIDA
     Gráfica con los costos promedios para cada generación
     '''
 
     simulaciones=[]
-    for i in range(0,numSim):
-        simulaciones.append(ES(numGen,c))
-    costos=costoPromedio(simulaciones)
+    costos=[]
+    for valor in c:
+        for i in range(0,numSim):
+            simulaciones.append(ES(numGen,valor))
+        costos.append(costoPromedio(simulaciones))
+
     grafica(costos,c)
