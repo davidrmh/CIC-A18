@@ -70,7 +70,7 @@
         (r (incf rojo) )
         (v (incf verde) )
         (a (incf amarillo) ) )    )
-    (setq lista-resultado (list (concatenate 'string "R:" (write-to-string rojo) " V:" (write-to-string verde) " A:" (write-to-string amarillo)  )
+    (setq lista-resultado (list (concatenate 'string "" (write-to-string amarillo) " " (write-to-string verde) " " (write-to-string rojo)  )
       (reduce #'+ (list (* 10 rojo) (* 5 verde)  (* 1 amarillo) )   )) )
     lista-resultado
   );let
@@ -95,17 +95,17 @@
 ;; Despliega el tablero en la terminal
 ;;================================================================
 (defun despliega-tablero ()
-  (format t "~%==================================================================================================~%")
-  (format t "Base-PC     Casilla-12     Casilla-11     Casilla-10     Casilla-9     Casilla-8     Casilla-7")
+  (format t "~%=============================================================================~%")
+  (format t "Base-PC      12       11       10        9       8       7")
   (format t  "~%~a           ~a    ~a    ~a    ~a   ~a   ~a"
     (second (puntaje (nth 13 *tablero*))) (first (puntaje (nth 12 *tablero*))) (first (puntaje (nth 11 *tablero*))) (first (puntaje (nth 10 *tablero*))) (first (puntaje (nth 9 *tablero*)))
   (first (puntaje  (nth 8 *tablero*)))  (first  (puntaje (nth 7 *tablero*)))  )
-  (format t "~%==================================================================================================")
-  (format t  "~%~a  ~a   ~a    ~a    ~a   ~a       ~a"
+  (format t "~%=============================================================================")
+  (format t  "~%            ~a    ~a    ~a    ~a   ~a   ~a         ~a"
     (first (puntaje (nth 0 *tablero*))) (first (puntaje (nth 1 *tablero*))) (first (puntaje (nth 2 *tablero*))) (first (puntaje (nth 3 *tablero*))) (first (puntaje (nth 4 *tablero*)))
   (first (puntaje  (nth 5 *tablero*)))  (second  (puntaje (nth 6 *tablero*)))  )
-  (format t  "~%Casilla-0    Casilla-1     Casilla-2      Casilla-3      Casilla-4     Casilla-5     Base-humano")
-  (format t "~%==================================================================================================~%")
+  (format t  "~%              6        5        4        3       2       1       Base-humano")
+  (format t "~%=============================================================================~%")
 );defun
 
 ;;================================================================
@@ -389,10 +389,13 @@
 ;; flag-ordena==t el orden de las fichas es determinado por ordena-fichas
 ;;============================================================================
 (defun main (&optional (jugadores 1) (flag-ordena nil) (profundidad 10) )
-  (let ((jugador1 nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil)
+  (let ((jugador1 nil) (jugador1-aux nil) (jugador2 nil) (puntaje1 0) (puntaje2 0) (lista-aux nil) (lista-puntajes nil)
          (orden-fichas nil)  )
     (inicializa profundidad)
-    (setq *turno* 2)
+    (setq *turno* 1)
+    (format t "                                    BIENVENIDO~%")
+    (format t "~%Las fichas están ordenadas de menor(amarillo) a mayor valor (rojo) de izquierda a derecha~%")
+    (format t "~%El número que aparece debajo de las fichas es el índice de la casilla~%")
     (despliega-tablero)
 
     (loop
@@ -404,15 +407,27 @@
         ;Valida casilla
         (loop
            (setq jugador1 (read))
+           ;Convierte jugada humano a jugada máquina
+           ;Hice esto para no modificar demasiado mi código y considerar
+           ;las observaciones del profesor
+           (setq jugador1-aux jugador1)
+           (cond
+             ((= jugador1 1) (setq jugador1 5) )
+             ((= jugador1 2) (setq jugador1 4) )
+             ((= jugador1 3) (setq jugador1 3) )
+             ((= jugador1 4) (setq jugador1 2) )
+             ((= jugador1 5) (setq jugador1 1) )
+             ((= jugador1 6) (setq jugador1 0) ) )
+
            (if (not (valida-jugada jugador1 *tablero* *turno*)) (format t "~%Jugada no válida, elige otra opción "))
            (when (valida-jugada jugador1 *tablero* *turno*) (return t)) );loop
 
 
       ;Pide el orden de las fichas
       (when (not flag-ordena)
-        (format t "~%Elige el orden de distribución de las fichas las fichas (escribelo como lista, ej, '(R V A) :~%")
+        (format t "~%Elige el orden de distribución de las fichas las fichas (escríbelo como lista, ej, (A V R) ) :~%")
           (loop
-            (setq orden-fichas  (eval (read)))
+            (setq orden-fichas  (read))
             (if (not (valida-fichas (nth jugador1 *tablero*) orden-fichas)) (format t "~%Fichas no válidas, revisa tus fichas"))
             (when (valida-fichas (nth jugador1 *tablero*) orden-fichas) (return t) ) )
       );when
@@ -425,7 +440,7 @@
         (setq *bool-repite* (second lista-aux))
 
         (despliega-tablero)
-        (format t "~%El jugador ~a modificó la casilla ~a ~%~%" *turno* jugador1)
+        (format t "~%El jugador ~a modificó la casilla ~a ~%~%" *turno* jugador1-aux)
         (if *bool-repite* (format t "~%Jugador ~a vuelve a jugar~%~%" *turno*))
 
         (if (not *bool-repite*) (setq *turno* 2) (setq *turno* 1) ) ;Verifica si se repite turno
