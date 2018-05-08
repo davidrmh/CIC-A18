@@ -20,6 +20,8 @@ Cada expresión en paréntesis representa una estrella relacionada a una semilla
 
 Finalmente, utilizando las conjunciones de la regla $R$, podemos construir una matriz de cobertura para las $N$ observaciones de la clase positiva.
 
+<center>
+
 |Mintérmino|Obs1|Obs2|$\ldots$|ObsN|
 |----------|----|----|--------|----|
 |$P_{11}P_{12}$|X|$\ldots$|$\ldots$|x|
@@ -27,5 +29,7 @@ Finalmente, utilizando las conjunciones de la regla $R$, podemos construir una m
 |$P_{1m_{i}-1}P_{1m_{i}}$|X|$\ldots$|$\ldots$|x|
 |$\vdots$|$\vdots$|$\vdots$|$\vdots$|$\vdots$|
 |$P_{nm_{i}-1}P_{nm_{i}}$|X|$\ldots$|$\ldots$|x|
+
+</center>
 
 Utilizando esta matriz es posible aplicar el método de reducción de Petrick.
