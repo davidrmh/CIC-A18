@@ -36,6 +36,35 @@
     (loop for observacion in datos do
       (setq clase-aux (nth indice observacion))
       (if (not (find clase-aux clases)) (setq clases (append clases  (list clase-aux)))) );loop
-  clases      
+  clases
+  );let
+);defun
+
+;;==============================================================================
+;; Función para clasificar ejemplos positivos y negativos de acuerdo a una
+;; clase dada
+;;
+;; ENTRADA
+;; datos: Lista. Lista creada con la función lee-datos
+;; clase: Símbolo. Símbolo que representa la clase positiva. Debe de ser algún
+;; símbolo que regresa la función obten-clases
+;; indice: Entero. Índice (iniciando en 0) de la columna que tiene la clase
+;;
+;;
+;; SALIDA
+;; Una lista con los siguiente elementos
+;; (first) positivas. Lista. Lista (subconjuto de datos) con las observaciones
+;; que corresponden a la clase positiva
+;; (second) negativas. Lista Lista (subconjuto de datos) con las observaciones
+;; que corresponden a la clase negativa
+;;==============================================================================
+(defun separa-clases (datos clase indice)
+  (let ((positivas nil) (negativas nil) (clase-aux nil)  )
+    (loop for observacion in datos do
+      (setq clase-aux (nth indice observacion))
+      (if (equal clase-aux clase)
+        (setq positivas (append positivas  (list observacion)))
+        (setq negativas (append negativas (list observacion)))) );loop
+  (list positivas negativas)
   );let
 );defun
