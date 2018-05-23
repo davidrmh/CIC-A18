@@ -45,7 +45,7 @@
 ;; clase dada
 ;;
 ;; ENTRADA
-;; datos: Lista. Lista creada con la función lee-datos
+;; datos: Lista. Lista con las observaciones
 ;; clase: Símbolo. Símbolo que representa la clase positiva. Debe de ser algún
 ;; símbolo que regresa la función obten-clases
 ;; indice: Entero. Índice (iniciando en 0) de la columna que tiene la clase
@@ -61,10 +61,52 @@
 (defun separa-clases (datos clase indice)
   (let ((positivas nil) (negativas nil) (clase-aux nil)  )
     (loop for observacion in datos do
+
+      ;Clase de la observación actual
       (setq clase-aux (nth indice observacion))
+
       (if (equal clase-aux clase)
         (setq positivas (append positivas  (list observacion)))
         (setq negativas (append negativas (list observacion)))) );loop
   (list positivas negativas)
   );let
 );defun
+
+;;==============================================================================
+;; Función para generar un conjunto de números (enteros) dentro un rango [0,Max]
+;; sin repeticiones
+;;
+;; ENTRADA
+;; total: Entero. Total de números a generar
+;; maximo: Entero. Límite superior
+;;
+;; SALIDA
+;; indices: Lista. Lista con los números generados
+;;==============================================================================
+(defun genera-indices (total maximo)
+  (let ((indices nil) (numero nil) )
+    (loop
+      ;Genera un número aleatorio en (0,maximo)
+      (setq numero (random maximo))
+
+      ;agrega a la lista revisando primer si el número ya se encontraba en ella
+      (if (not (find numero indices)) (push numero indices) )
+
+      ;Revisa condición de paro (hasta tener el número total de elementos)
+      (when (equal total (length indices)) (return-from genera-indices indices))
+     );loop
+  );let
+);defun
+
+;;==============================================================================
+;; Función para crear los conjuntos de prueba y de entrenamiento
+;;
+;; ENTRADA
+;; datos: Lista. Lista creada con la función lee-datos
+;; proporcion: Número en (0,1). Proporción del conjunto de entrenamiento
+;;
+;; SALIDA
+;; Lista con los siguiente componentes:
+;; (first) entrenamiento: Lista. Observaciones en el conjunto de entrenamiento
+;; (second) prueba: Lista. Observaciones en el conjunto de prueba
+;;==============================================================================
