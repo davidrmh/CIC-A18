@@ -1,7 +1,7 @@
 
 ;;Situación inicial
 (every Personaje has
-  (posicion (string)) )
+  (posicion ()) )
 
 (*Lobo has
   (instance-of (Personaje))
@@ -27,48 +27,16 @@
   (Personajes ((a Personaje) (a Personaje) (a Personaje) (a Personaje) ) )
 )
 
-;;Situación LC-GO
-(*Situacion-LC-GO has (instance-of (Situation)))
-(in-situation *Situacion-LC-GO)
-(*Orilla-origen now-has (Personajes (*Lobo *Comida)))
-(*Orilla-destino now-has (Personajes (*Granjero *Oveja)))
+(Last has (ultimo ( (a Personaje ))))
 
-;Situación LCG-O
-(*Situacion-LCG-O has (instance-of (Situation)))
-(in-situation *Situacion-LCG-O)
-(*Orilla-origen now-has (Personajes (*Lobo *Comida *Granjero)))
-(*Orilla-destino now-has (Personajes (*Oveja)))
+(reglas has (
 
-;Situación C-LGO
-(*Situacion-C-LGO has (instance-of (Situation)))
-(in-situation *Situacion-C-LGO)
-(*Orilla-origen now-has (Personajes (*Comida)))
-(*Orilla-destino now-has (Personajes (*Lobo *Granjero *Oveja)))
+  (regla1 ( (if ( (the posicion of *Granjero) = (the posicion of *Oveja)  ) and ( (the ultimo of Last) /= *Oveja )
+  then ( (*Oveja now-has (posicion ("destino"))) and ( (Last now-has (ultimo (*Oveja))) ) )  ) ) )
 
-;Situación CGO-L
-(*Situacion-CGO-L has (instance-of (Situation)))
-(in-situation *Situacion-CGO-L)
-(*Orilla-origen now-has (Personajes (*Comida *Granjero *Oveja)))
-(*Orilla-destino now-has (Personajes (*Lobo)))
+  (regla2 ( (if ( (the posicion of *Granjero) = "destino") and ( (oneof (the Personajes of *Orilla-origen) where (t)  ) )
+  then ( (*Granjero now-has (posicion ("origen")) ) and (Last now-has (ultimo (nil))) )  ) ) )
 
-;Situación O-LGC
-(*Situacion-O-LGC has (instance-of (Situation)))
-(in-situation *Situacion-O-LGC)
-(*Orilla-origen now-has (Personajes (*Oveja)))
-(*Orilla-destino now-has (Personajes (*Lobo *Granjero *Comida)))
-
-;Situación GO-LC
-(*Situacion-GO-LC has (instance-of (Situation)))
-(in-situation *Situacion-GO-LC)
-(*Orilla-origen now-has (Personajes (*Oveja *Granjero)))
-(*Orilla-destino now-has (Personajes (*Lobo *Comida)))
-
-;Situación Vacia-LCGO
-(*Situacion-vacia-LCGO has (instance-of (Situation)))
-(in-situation *Situacion-vacia-LCGO)
-(*Orilla-origen now-has
-  (Personajes ((a Personaje) (a Personaje) (a Personaje) (a Personaje))) )
-(*Orilla-destino now-has (Personajes (*Lobo *Comida *Granjero *Oveja)))
-
-;Regresa a la situación global
-(in-situation *Global)
+  (regla3 ( (if ( (the posicion of *Granjero) = "origen" ) and ((oneof (the Personajes of *Orilla-origen) where (t) ))
+  then ( (?x == (oneof (the Personajes of *Orilla-origen) where (t) )) and (?x now-has (posicion ("destino")) ) and (*Granjero now-has (posicion ("destino")) )
+    and (Last now-has ( ultimo (?x))) )  ) )   ) ) )
