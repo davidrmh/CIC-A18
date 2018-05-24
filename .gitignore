@@ -7,6 +7,12 @@
 *.jpg
 *.jpeg
 *.odp
+*.aux
+*.bbl
+*.blg
+*.log
+*.synctex.gz
+*.log
 IA/GLOL.lisp
 
 patrones/machinelearninginaction/
