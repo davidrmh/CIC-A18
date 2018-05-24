@@ -36,7 +36,7 @@ Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) 
 
 Este trabajo busca también comparar el desempeño de distintas metodologías relacionadas al reconocimiento de patrones cuando se aplican al proceso de detectar señales de compra o venta de acciones.
 
-Finalmente, la aportación de este trabajo es el análisis del mercado accionario mexicano.
+Finalmente, la aportación de este trabajo es el análisis del mercado accionario mexicano, desde una perspectiva del área de reconocimiento de patrones.
 
 %\begin{itemize}
 %	\item Motivación (justificación).
@@ -52,11 +52,46 @@ Finalmente, la aportación de este trabajo es el análisis del mercado accionario 
 \section{Fundamentos}
 
 \subsection{Análisis técnico y fundamental}
-De acuerdo a \cite{tabook}
+De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las acciones con la intención de tomar decisiones de inversión que generen ganancias. Los supuestos básicos de este tipo de análisis son los siguientes:
+
+\begin{itemize}
+	\item Los precios están determinados únicamente por la interacción de la oferta y la demanda.
+	\item Los precios tienden a moverse siguiendo una tendencia.
+	\item Cambios en la oferta y la demanda provocan reversiones en las tendencias.
+	\item Cambios en la oferta y la demanda pueden detectarse utilizando gráficas.
+	\item Los patrones en las gráficas tienden a repetirse.
+\end{itemize}
+
+El análisis técnico hace el supuesto de que la información de todos los factores (incluyendo factores psicológicos como la avaricia, miedo, mal información, etc...) que afectan las curvas de oferta y demanda, está reflejada en el precio de la acción de la compañía.
+
+El análisis técnico utiliza las siguiente herramientas para el análisis de los mercados accionarios:
+
+\subsubsection{Indicadores técnicos}
+Los indicadores técnicos son series de tiempo derivadas de las series del precio o volumen de una acción. Estos indicadores interactúan con otros indicadores o con el precio/volumen con el que fueron calculados generando señales de compra o venta de acuerdo a reglas específicas.
+
+Entre los indicadores más conocidos se encuentran:
+
+\subsubsection{Promedios móviles simples (Simple Moving Average)}
+
+Este indicador se calcula como un promedio de los precios más recientes. Su fórmula es
+
+$$MA_{t:w} = \dfrac{P_{t} + P_{t-1} + \ldots + P_{t-w-1}  }  {w} $$
+
+en donde 
+\begin{itemize}
+	\item $MA_{t:w} = $ Promedio móvil simple en el momento $t$ para una ventana de $w$ periodos más recientes.
+	\item $P_{t} = $ Precio (cierre, apertura, mínimo, máximo, etc...) de la acción en el momento $t$.
+	\item $w = $ Ventana de tiempo utilizada (meses, días, horas, minutos)
+\end{itemize}
+
+Utilizando este indicador, es posible obtener la siguiente regla:
+
+
+
 
 
 %Hacer estas subsecciones
-%Análisis técnico (imágenes con python) y fundamental
+%Análisis técnico (indicadores y chart patterns) (imágenes con python) y fundamental
 %EMH (Historia-postulado, imagen con ejemplo,imagen de las versiones)
 %Explicar que es un ETF y su relación con EMH
 %Costos de transacción y como calcular la ganancia
