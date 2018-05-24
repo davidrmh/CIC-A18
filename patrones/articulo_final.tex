@@ -1,0 +1,83 @@
+\documentclass[10pt,letterpaper,twocolumn]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+
+\title{\textbf{Aprendizaje de reglas de operación para el mercado accionario mexicano}}
+\author{David Ricardo Montalván Hernández}
+\date{}
+
+\begin{document}
+\maketitle	
+\begin{abstract}
+Con la digitalización de los mercados financieros, particularmente del mercado accionario, el desarrollo de algoritmos y técnicas computacionales para la determinación y ejecución de órdenes de compra o venta de títulos financieros ha ganado relevancia tanto en la academia como en la industria.
+En este artículo se explora el uso de técnicas computacionales relacionadas al área de reconocimiento de patrones, con el propósito de obtener estrategias de inversión para el mercado accionario mexicano.
+\end{abstract}
+
+\section{Introducción}	
+
+El aumento en el poder de cómputo, la digitalización de los mercados financieros y la posibilidad de obtener grandes ganancias, han motivado en gran medida a la investigación y el desarrollo de algoritmos computacionales cuyo fin es guiar al inversionista en la toma de decisiones de compra o venta de títulos financieros (en particular acciones).
+
+A pesar de que la idea básica es: "comprar barato hoy para vender a un precio mayor en el futuro", dada la incertidumbre de los mercados, esta investigación se ha auxiliado de herramientas matemáticas y computacionales  para la generación de modelos que auxilien en la toma de decisiones (cuando comprar y cuando vender). Particularmente, se ha dado énfasis en el uso de técnicas relacionadas a la inteligencia artificial.
+
+El objetivo de este trabajo consiste en proponer un método o algoritmo para aprender de forma automática reglas para operar en el mercado accionario mexicano.
+
+Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) superiores (menores) a las generadas por la \textbf{hipótesis del mercado eficiente} la cual se discutirá en la sección 3 y básicamente consiste en lo siguiente:
+
+\begin{itemize}
+	\item Fijar un periodo de tiempo $[0,T]$.
+	\item Comprar en el inicio del periodo a un precio $P_{0}$.
+	\item Vender en el final del periodo a un precio $P_{T}$.
+	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+\end{itemize}
+
+Este trabajo busca también comparar el desempeño de distintas metodologías relacionadas al reconocimiento de patrones cuando se aplican al proceso de detectar señales de compra o venta de acciones.
+
+Finalmente, la aportación de este trabajo es el análisis del mercado accionario mexicano.
+
+%\begin{itemize}
+%	\item Motivación (justificación).
+%	\item Problema a resolver.
+%	\item Objetivo general.
+%	\item Objetivos específicos
+%	\item Aportaciones
+%\end{itemize}
+
+\section{Estado del arte}
+%Incluir una tabla comparativa
+
+\section{Fundamentos}
+
+\subsection{Análisis técnico y fundamental}
+De acuerdo a \cite{tabook}
+
+
+%Hacer estas subsecciones
+%Análisis técnico (imágenes con python) y fundamental
+%EMH (Historia-postulado, imagen con ejemplo,imagen de las versiones)
+%Explicar que es un ETF y su relación con EMH
+%Costos de transacción y como calcular la ganancia
+%SVM
+%Regresión logística
+%C5.0
+
+\section{Solución propuesta}
+%Explicar etiquetamiento de datos, training data y test data
+
+\section{Resultados}
+%Interpretación de las reglas (cuando sea posible)
+%Tabla con ganancia del método vs B&H
+
+
+\section{Conclusiones y trabajo futuro}
+%Trabajo futuro: Considerar medidas de riesgo
+%Métodos simbólicos
+
+\bibliography{referencias_articulo}{}
+\bibliographystyle{apalike}
+
+
+\end{document}
