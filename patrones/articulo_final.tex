@@ -1,4 +1,4 @@
-\documentclass[10pt,letterpaper,twocolumn]{article}
+\documentclass[10pt,letterpaper,onecolumn]{article}
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -51,7 +51,7 @@ Finalmente, la aportación de este trabajo es el análisis del mercado accionario 
 
 \section{Fundamentos}
 
-\subsection{Análisis técnico y fundamental}
+\subsection{Análisis técnico}
 De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las acciones con la intención de tomar decisiones de inversión que generen ganancias. Los supuestos básicos de este tipo de análisis son los siguientes:
 
 \begin{itemize}
@@ -69,7 +69,7 @@ El análisis técnico utiliza las siguiente herramientas para el análisis de los m
 \subsubsection{Indicadores técnicos}
 Los indicadores técnicos son series de tiempo derivadas de las series del precio o volumen de una acción. Estos indicadores interactúan con otros indicadores o con el precio/volumen con el que fueron calculados generando señales de compra o venta de acuerdo a reglas específicas.
 
-Entre los indicadores más conocidos se encuentran:
+Entre los indicadores más conocidos se encuentran \cite{ta-patternbook}:
 
 \subsubsection{Promedios móviles simples (Simple Moving Average)}
 
@@ -86,12 +86,104 @@ en donde
 
 Utilizando este indicador, es posible obtener la siguiente regla:
 
+$$ \begin{array}{ccc}
+	P_{t}>MA_{t:w} & \wedge & P_{t-1}<MA_{t-1:w} \implies Compra \\
+	P_{t}<MA_{t:w} & \wedge & P_{t-1}>MA_{t-1:w} \implies Venta
+	\end{array}
+$$
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\linewidth]{imagenes_articulo/MA_ejemplo}
+	\caption{Señales generadas por un indicador de promedio móviles.}
+	\label{fig:maejemplo}
+\end{figure}
+
+\subsubsection{Intersección de promedios móviles (Moving Averages Crossover)}
+
+Este indicador se calcula con la diferencia de dos promedio móviles.
+
+$$MAC_{t:w_{S} w_{L} } = MA_{t:w_{S}} - MA_{t : w_{L} }   $$
+
+en donde:
+
+\begin{itemize}
+	
+	\item $MAC_{t: w_{S} w_{L} } = $ Intersección de promedios móviles en el momento $t$ para las ventanas de tiempo $w_{S} < w_{L}$.
+	
+	\item $MA_{t:w} = $ Promedio móvil simple en el momento $t$ para una ventana de $w$ periodos más recientes.
+	
+\end{itemize}
+
+La regla generada por este indicador es la siguiente:
+
+$$ \begin{array}{ccc}
+MAC_{t: w_{S}  w_{L} }>0 & \wedge & MAC_{t-1: w_{S}  w_{L } }<0 \implies Compra \\
+MAC_{t: w_{S}  w_{L} }<0 & \wedge & MAC_{t-1: w_{S}  w_{L } }>0 \implies Venta
+\end{array}
+$$
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\linewidth]{imagenes_articulo/MAC_ejemplo}
+	\caption{Señales generadas por un indicador de intersección de promedios móviles}
+	\label{fig:macejemplo}
+\end{figure}
+
+\subsubsection{Bandas de Bollinger (Bollinger Bands)}
 
 
+Este indicador consiste en "envolver" al precio $P_{t}$ en dos bandas (superior e inferior) calculadas de la siguiente manera:
+
+$$
+	\begin{array}{ccccc}
+		Superior_{t:w,k} & = & BB_{t:w,k}^{up} & = & MA_{t:w} + k \sigma_{t:w}\\
+		Inferior_{t:w,k} & = & BB_{t:w,k}^{low} & = & MA_{t:w} - k \sigma_{t:w}
+	\end{array}
+$$
+
+en donde:
+
+\begin{itemize}
+	\item $MA_{t:w} = $ Promedio móvil simple en el momento $t$ para una ventana de $w$ periodos más recientes.
+	\item $\sigma_{t:w} = $ Desviación estándar de los precios, utilizando los $w$ datos más recientes.
+\end{itemize}
+
+la regla para este indicador es la siguiente
+
+$$
+	\begin{array}{cccc}
+	
+		\left(P_{t} > BB_{t:w,k}^{up} \wedge P_{t-1} > BB_{t-1:w,k}^{up} \right) & \vee & \left(P_{t} > BB_{t:w,k}^{low} \wedge P_{t-1} < BB_{t-1:w,k}^{low} \right) & \implies Compra \\
+		
+		\left(P_{t} < BB_{t:w,k}^{low} \wedge P_{t-1} < BB_{t-1:w,k}^{low} \right) & \vee & \left(P_{t} < BB_{t:w,k}^{up} \wedge P_{t-1} > BB_{t-1:w,k}^{up} \right) & \implies Vende
+		
+	\end{array}
+$$
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\linewidth]{imagenes_articulo/bollinger_ejemplo}
+	\caption{Señales generadas por un indicador de bandas de Bollinger}
+	\label{fig:bollingerejemplo}
+\end{figure}
+
+\subsubsection{Retos del análisis técnico}
+Algunas de las dificultades al utilizar las herramientas del análisis técnico son las siguientes:
+
+\begin{itemize}
+	\item ¿Qué conjunto de indicadores utilizar?
+	\item ¿Con que parámetros utilizar cada uno de ellos?
+	\item ¡Que criterio(s) utilizar cuando no hay un acuerdo en las señales generadas por sus reglas correspondientes?
+\end{itemize}
+
+
+
+\subsection{Hipótesis del mercado eficiente}
 
 
 %Hacer estas subsecciones
-%Análisis técnico (indicadores y chart patterns) (imágenes con python) y fundamental
+%Análisis técnico (indicadores y chart patterns)
 %EMH (Historia-postulado, imagen con ejemplo,imagen de las versiones)
 %Explicar que es un ETF y su relación con EMH
 %Costos de transacción y como calcular la ganancia
