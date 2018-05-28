@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import copy as cp
 import matplotlib.pyplot as plt
+import etiqueta as etiqueta # :P
+reload(etiqueta)
 from sklearn import preprocessing
 from sklearn import svm
 from sklearn import tree
@@ -42,6 +44,75 @@ def clasificadorSVM(entrenamiento,prueba):
     prueba['Clase']=modelo.predict(pruebaNormalizados)
 
     return prueba
+##==============================================================================
+##                          EVALUA MODEL SVM
+##                      CON MÉTODO DE ETIQUETADO 1
+##==============================================================================
+def evaluaSVM(nombreArchivo="naftrac.csv",archivoFechas="fechas.csv",hforw=10,hback=7,umbral=0.015):
+    '''
+    ENTRADA
+    nombreArchivo. String. Nombre del archivo csv con los precios
+
+    archivoFechas. String. Nombre del archivo csv con las fechas para separar
+    los periodos de entrenamiento y prueba
+
+    hforw: Entero. Número de periodos que "se mira" hacia el futuro
+
+    hback: Entero. Número de periodos que "se mira" hacia el pasado
+
+    umbral: Float. Umbral para considerar que hubo un tendencia a la alza
+    '''
+
+    #Lee los precios
+    datos=etiqueta.leeTabla(nombreArchivo)
+
+    #Lee las fechas
+    fechas=pd.read_csv(archivoFechas)
+
+    #Aquí guardo las ganancias de cada periodo
+    gananciasEstrategia=[]
+    gananciasBH=[]
+
+    #Comienza la evaluación de los modelos
+    for i in range(0,fechas.shape[0]):
+
+        #Fecha de inicio para el conjunto de entrenamiento
+        inicioEntrena=fechas.iloc[i,0]
+
+        #Fecha fin del conjunto de entrenamiento
+        finEntrena=fechas.iloc[i,1]
+
+        #Fecha inicio del conjunto de prueba
+        inicioPrueba=fechas.iloc[i,2]
+
+        #Fecha fin del conjunto de prueba
+        finPrueba=fechas.iloc[i,3]
+
+        #Etiqueta el conjunto de entrenamiento
+        entrenaCon,entrenaDis,percentiles=etiqueta.etiquetaMetodo1(datos,inicioEntrena,finEntrena,hforw,hback,umbral)
+
+        #Crea el conjunto de prueba
+        pruebaCon,pruebaDis=etiqueta.conjuntoPruebaMetodo1 (datos,inicioPrueba,finPrueba,percentiles,hback)
+
+        #Ajusta el modelo y obtiene las predicciones
+        pruebaCon=clasificadorSVM(entrenaCon,pruebaCon)
+
+        #Califica sobre el conjunto de prueba
+        gananciaEstrategia,gananciaBH=etiqueta.evaluaMetodo1(datos,pruebaCon,hforw,umbral)
+
+        gananciasEstrategia.append(gananciaEstrategia)
+        gananciasBH.append(gananciaBH)
+
+        #Imprime resultados
+        print "Para el conjunto de prueba del " + str(inicioPrueba) + " al " + str(finPrueba)
+        print "Se tiene que: Ganancia estrategia = " + str(gananciaEstrategia)
+        print "Ganancia buy and hold = " + str(gananciaBH)
+        print "\n\n"
+
+    return gananciasEstrategia,gananciasBH
+
+
+
 
 ##==============================================================================
 ##                          ÁRBOL DE DECISIÓN C4.5
