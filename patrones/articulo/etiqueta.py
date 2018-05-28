@@ -381,8 +381,8 @@ def evaluaMetodo1(datos,prueba,hforw=15,umbral=0.015):
             #Se reinicia variación
             variacion=0
 
-            print "El día " + fecha + " se compran " + str(acciones) + " acciones"
-            print "A un precio de " + str(precioEjecucion)
+            #print "El día " + fecha + " se compran " + str(acciones) + " acciones"
+            #print "A un precio de " + str(precioEjecucion)
 
 
         #Aumenta el contador de días
@@ -406,7 +406,7 @@ def evaluaMetodo1(datos,prueba,hforw=15,umbral=0.015):
             #Aumenta el efectivo
             efectivo=efectivo + acciones*precioEjecucion*(1-comision)
 
-            print "El día " + fecha + " se venden " + str(acciones)
+            #print "El día " + fecha + " se venden " + str(acciones)
 
             #Disminuyen acciones
             acciones=0
@@ -417,7 +417,7 @@ def evaluaMetodo1(datos,prueba,hforw=15,umbral=0.015):
             #Se reinicia el contador de dias
             contLimite=0
 
-            print "A un precio de " + str(precioEjecucion)
+            #print "A un precio de " + str(precioEjecucion)
 
     #Se cierra posición abierta (si la hay)
 
@@ -431,8 +431,8 @@ def evaluaMetodo1(datos,prueba,hforw=15,umbral=0.015):
         #Aumenta el efectivo
         efectivo=efectivo + acciones*precioEjecucion*(1-comision)
 
-        print "Se cierra posicion con " + str(acciones) + " acciones"
-        print "a un precio de " + str(precioEjecucion)
+        #print "Se cierra posicion con " + str(acciones) + " acciones"
+        #print "a un precio de " + str(precioEjecucion)
 
         #Disminuyen acciones
         acciones=0
