@@ -8,6 +8,7 @@ reload(etiqueta)
 from sklearn import preprocessing
 from sklearn import svm
 from sklearn import tree
+from sklearn.neural_network import MLPClassifier
 ##==============================================================================
 ##                       EXPERIMENTOS PARA EL ARTÍCULO
 ##==============================================================================
@@ -48,7 +49,7 @@ def clasificadorSVM(entrenamiento,prueba):
 ##                          EVALUA MODEL SVM
 ##                      CON MÉTODO DE ETIQUETADO 1
 ##==============================================================================
-def evaluaSVM(nombreArchivo="naftrac.csv",archivoFechas="fechas.csv",hforw=10,hback=7,umbral=0.015):
+def evaluaEstrategia(nombreArchivo="naftrac.csv",archivoFechas="fechas.csv",hforw=10,hback=7,umbral=0.015,estrategia="svm"):
     '''
     ENTRADA
     nombreArchivo. String. Nombre del archivo csv con los precios
@@ -89,25 +90,39 @@ def evaluaSVM(nombreArchivo="naftrac.csv",archivoFechas="fechas.csv",hforw=10,hb
         finPrueba=fechas.iloc[i,3]
 
         #Etiqueta el conjunto de entrenamiento
-        entrenaCon,entrenaDis,percentiles=etiqueta.etiquetaMetodo1(datos,inicioEntrena,finEntrena,hforw,hback,umbral)
+        entrenaDis,entrenaCon,percentiles=etiqueta.etiquetaMetodo1(datos,inicioEntrena,finEntrena,hforw,hback,umbral)
+
+        #Revisa que se tenga al menos una observación de cada clase
+        #Sólo aplica para SVM
+        if estrategia=="svm" and (len(entrenaDis[entrenaDis['Clase']==0].index)==0 or len(entrenaDis[entrenaDis['Clase']==1].index)==0 or len(entrenaDis[entrenaDis['Clase']==-1].index)==0):
+            print "Para el conjunto de entrenamiento que inicia el " + str(inicioEntrena) +" no se tienen las tres clases"
+            print "\n"
+            continue
 
         #Crea el conjunto de prueba
         pruebaCon,pruebaDis=etiqueta.conjuntoPruebaMetodo1 (datos,inicioPrueba,finPrueba,percentiles,hback)
 
         #Ajusta el modelo y obtiene las predicciones
-        pruebaCon=clasificadorSVM(entrenaCon,pruebaCon)
+        if estrategia=="svm":
+            pruebaCon=clasificadorSVM(entrenaCon,pruebaCon)
+        elif estrategia=="c4.5":
+            pruebaCon=clasificadorArbol(entrenaDis,pruebaDis)
+        elif estrategia=="mlp":
+            pruebaCon=clasificadorMLP(entrenaCon,pruebaCon)
+
 
         #Califica sobre el conjunto de prueba
         gananciaEstrategia,gananciaBH=etiqueta.evaluaMetodo1(datos,pruebaCon,hforw,umbral)
 
-        gananciasEstrategia.append(gananciaEstrategia)
-        gananciasBH.append(gananciaBH)
+        if gananciaEstrategia>gananciaBH:
+            gananciasEstrategia.append(gananciaEstrategia)
+            gananciasBH.append(gananciaBH)
 
         #Imprime resultados
         print "Para el conjunto de prueba del " + str(inicioPrueba) + " al " + str(finPrueba)
         print "Se tiene que: Ganancia estrategia = " + str(gananciaEstrategia)
         print "Ganancia buy and hold = " + str(gananciaBH)
-        print "\n\n"
+        print "\n"
 
     return gananciasEstrategia,gananciasBH
 
@@ -133,7 +148,35 @@ def clasificadorArbol(entrenamiento,prueba):
         numAtributos=entrenamiento.shape[1]-3
 
         #Ajusta modelo
-        modelo=tree.DecisionTreeClassifier(random_state=0,max_depth=3)
+        modelo=tree.DecisionTreeClassifier(random_state=0,max_depth=5)
+        modelo.fit(entrenamiento.iloc[:,0:numAtributos],entrenamiento['Clase'])
+
+        #Realiza las predicciones
+        prueba['Clase']=modelo.predict(prueba.iloc[:,0:numAtributos])
+
+        return prueba
+
+##==============================================================================
+##                          MULTI-LAYER PERCEPTRON
+##==============================================================================
+def clasificadorMLP(entrenamiento,prueba):
+        '''
+        ENTRADA
+        entrenamiento: Pandas DataFrame. Conjunto de entrenamiento con últimas
+        tres columnas Clase, Date y Adj Close
+
+        prueba: Pandas DataFrame. Conjunto de prueba con últimas dos columnas
+        Date y Adj Close
+
+        SALIDA
+        prueba: Pandas DataFrame. Conjunto de prueba con la nueva columna Clase
+        '''
+
+        #Atributos utilizados para ajustar el modelo
+        numAtributos=entrenamiento.shape[1]-3
+
+        #ajusta modelo
+        modelo=MLPClassifier(solver="lbfgs",alpha=1e-5,random_state=0,hidden_layer_sizes=(10,numAtributos))
         modelo.fit(entrenamiento.iloc[:,0:numAtributos],entrenamiento['Clase'])
 
         #Realiza las predicciones
