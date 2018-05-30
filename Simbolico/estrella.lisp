@@ -58,7 +58,7 @@
 ;; (second) negativas. Lista Lista (subconjuto de datos) con las observaciones
 ;; que corresponden a la clase negativa
 ;;==============================================================================
-(defun separa-clases (datos clase indice)
+(defun separa-positivos (datos clase indice)
   (let ((positivas nil) (negativas nil) (clase-aux nil)  )
     (loop for observacion in datos do
 
@@ -137,3 +137,31 @@
 
   );let
 );defun
+
+
+;;==============================================================================
+;; Función para elegir una semilla y su clase
+;;
+;; ENTRADA
+;; datos. Lista. Lista de observaciones (idealmente el conjunto de entrenamiento)
+;; indice. Entero. Índice (iniciando en 0) de la columna que tiene la clase
+;;
+;; SALIDA
+;; Lista con los siguientes componentes:
+;; (first) semilla. Lista. Una observación de la lista datos
+;; (second) clase-semilla. Símbolo. La clase de la semilla
+;;==============================================================================
+(defun obten-semilla (datos indice)
+  (let ((semilla nil) (clase-semilla nil) (aux 0) )
+
+    ;Elige al azar una observación del conjunto de datos
+    (setq aux  (genera-indices 1 (-  (length datos) 1)) )
+    (setq aux (first aux))
+    (setq semilla  (nth aux datos))
+
+    ;Extrae la clase de la semilla
+    (setq clase-semilla (nth indice semilla) )
+
+    (list semilla (list clase-semilla) )
+  );let
+) ;defun
