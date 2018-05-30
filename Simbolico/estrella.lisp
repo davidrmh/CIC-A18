@@ -162,6 +162,6 @@
     ;Extrae la clase de la semilla
     (setq clase-semilla (nth indice semilla) )
 
-    (list semilla (list clase-semilla) )
+    (list semilla  clase-semilla )
   );let
 ) ;defun
