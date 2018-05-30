@@ -110,3 +110,30 @@
 ;; (first) entrenamiento: Lista. Observaciones en el conjunto de entrenamiento
 ;; (second) prueba: Lista. Observaciones en el conjunto de prueba
 ;;==============================================================================
+(defun split-data (datos &optional (proporcion 0.5) )
+  (let ((numEntrena 0) (numPrueba 0) (indices-entrena nil)  (entrenamiento nil) (prueba nil) )
+
+    ;Obtiene el tamaño del conjunto de entrenamiento
+    (setq numEntrena (floor  (* proporcion (length datos)) ))
+
+    ;Obtiene el tamaño del conjunto de prueba
+    (setq numPrueba (- (length datos) numEntrena ) )
+
+    ;Obtiene aleatoriamente los índices de las observaciones del conjunto
+    ;de entrenamiento
+    (setq indices-entrena (genera-indices numEntrena (- (length datos) 1)  ))
+
+    ;Crea el conjunto de entrenamiento
+    (loop for i in indices-entrena do
+      (push (nth i datos) entrenamiento  )
+    );loop
+
+    ;Crea el conjunto de prueba
+    (loop for i from 0 to (- (length datos) 1) do
+      (if (not (find i indices-entrena)) (push (nth i datos) prueba ) )
+    );loop
+
+    (list entrenamiento prueba)
+
+  );let
+);defun
