@@ -211,3 +211,50 @@
     (eval expresion)
   );let
 );defun
+
+;;==============================================================================
+;; Función para crear el conjunto potencia con los elementos de una lista
+;; incluye repeticiones
+;; http://www.chegg.com/homework-help/questions-and-answers/write-lisp-function-powerset-lst-takes-list-lst-input-returns-power-set-lst-assume-input-l-q8416123
+;;
+;;  ENTRADA
+;; lista. Lista
+;;
+;; SALIDA
+;; Una lisata con el conjunto potencia (incluye repeticiones)
+;;==============================================================================
+(defun potencia (lst)
+
+   (cond
+
+            ((null lst) nil)
+
+            ((equal 1 (length lst))(list lst)(list nil))
+
+            (T (append (list lst)(list (list(car lst)))
+
+            (list (cdr lst))
+
+               (list (cons (car lst)(list (car (cdr lst)))))
+
+                (list (cons (car lst)(list (car (reverse lst)))))
+
+                 (potencia (cdr lst))))))
+
+;;==============================================================================
+;; Función para quitar las repeticiones del conjunto potencia
+;;
+;; ENTRADA
+;; potencia. Lista. Lista con los elementos del conjunto potencia
+;;
+;; SALIDA
+;; Conjunto potencia sin repeticiones
+;;==============================================================================
+(defun limpia-potencia (potencia)
+  (let ((lista nil))
+    (loop for elemento in potencia do
+      (if  (and (not (member elemento lista :test #'equal)) (not (equal elemento nil)))  (push elemento lista) )
+    );loop
+    lista
+  );let
+);defun
