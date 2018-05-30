@@ -94,7 +94,7 @@ $$
 
 \begin{figure}
 	\centering
-	\includegraphics[width=1.0\linewidth]{imagenes_articulo/MA_ejemplo}
+	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/MA_ejemplo}
 	\caption{Señales generadas por un indicador de promedio móviles.}
 	\label{fig:maejemplo}
 \end{figure}
@@ -125,7 +125,7 @@ $$
 
 \begin{figure}
 	\centering
-	\includegraphics[width=1.0\linewidth]{imagenes_articulo/MAC_ejemplo}
+	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/MAC_ejemplo}
 	\caption{Señales generadas por un indicador de intersección de promedios móviles}
 	\label{fig:macejemplo}
 \end{figure}
@@ -163,7 +163,7 @@ $$
 
 \begin{figure}
 	\centering
-	\includegraphics[width=1.0\linewidth]{imagenes_articulo/bollinger_ejemplo}
+	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/bollinger_ejemplo}
 	\caption{Señales generadas por un indicador de bandas de Bollinger}
 	\label{fig:bollingerejemplo}
 \end{figure}
@@ -174,27 +174,64 @@ Algunas de las dificultades al utilizar las herramientas del análisis técnico so
 \begin{itemize}
 	\item ¿Qué conjunto de indicadores utilizar?
 	\item ¿Con que parámetros utilizar cada uno de ellos?
-	\item ¡Que criterio(s) utilizar cuando no hay un acuerdo en las señales generadas por sus reglas correspondientes?
+	\item ¿Que criterio(s) utilizar cuando no hay un acuerdo en las señales generadas por sus reglas correspondientes?
 \end{itemize}
 
 
 
-\subsection{Hipótesis del mercado eficiente}
+\subsection{Hipótesis del mercado eficiente (HME)}
+Esta hipótesis, propuesta por Eugene Fama en los años 60's, nos dice que los cambios observados en los precios son provocados únicamente por la nueva información disponible, es decir, la información histórica (de cualquier tipo) no tiene importancia al momento de  determinar los precios del futuro, en particular, el análisis técnico no nos permite estimar las tendencias del futuro.
+
+Existen tres versiones de la HME:
+\subsubsection{Versión débil de la HME}
+En su versión débil, la hipótesis del mercado eficiente nos dice que los precios del pasado no afectan los movimientos del futuro, en consecuencia, el análisis técnico es fútil para generar estrategias de inversión.
+Es importante señalar que esta versión sólo hace referencia a los precios históricos, dejando abierta la posibilidad de utilizar información de otro tipo, por ejemplo estados financieros de las compañías o noticias relacionadas a ella, para predecir los precios futuros.
+
+\subsubsection{Versión semi-fuerte de la HME}
+En su versión semi-fuerte, la hipótesis del mercado eficiente nos dice que la información pública histórica (precios, estados financieros, noticias, etc...) no es de utilidad alguna al momento de predecir los movimientos del futuro. En consecuencia, sólo la información privilegiada (aquella que sólo unas cuantas personas poseen) podría ser de utilidad para predecir los movimientos del futuro.
+
+\subsubsection{Versión fuerte de la HME}
+En su versión fuerte, la hipótesis del mercado eficiente nos dice que tanto la información pública como la privilegiada no nos permiten obtener pronosticar los movimientos del mercado.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
+	\caption{Versiones de la hipótesis del mercado eficiente}
+	\label{fig:HME}
+\end{figure}
+
+\subsection{Estrategia Buy and Hold (BH)}
+Esta estrategia de inversión es la estrategia sugerida por la hipótesis del mercado eficiente y consiste en lo siguiente:
+
+\begin{itemize}
+	\item Fijar un periodo de tiempo $[0,T]$.
+	\item Comprar en el inicio del periodo a un precio $P_{0}$.
+	\item Vender en el final del periodo a un precio $P_{T}$.
+	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+\end{itemize}
+
+de acuerdo a la HME, la ganancia (pérdida) obtenida por la estrategia BH es la máxima (mínima) ganancia (pérdida) que se puede obtener de manera sistemática. Por lo tanto, esta estrategia será utilizada como marco de referencia al momento de compara las estrategias de inversión derivadas por los algoritmos propuestos.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
+	\caption{Estrategia Buy and Hold}
+	\label{fig:BH}
+\end{figure}
+
+\subsection{Títulos referenciados a acciones}
+De acuerdo al sitio de la Bolsa Mexicana de Valores \footnote{https://www.bmv.com.mx/es/mercados/instrumentos}, el mercado mexicano cuenta con Títulos Referenciados a Acciones (TRACS), los cuales son certificados de participación que representan el patrimonio de fideicomisos de inversión y que mantienen en posición canastas de acciones de empresas cotizadas en bolsa además de una componente en efectivos. El objetivo principal de los TRACs, es replicar el comportamiento de las acciones al que está referido.
+
+Es de principal importancia el TRAC llamado NAFTRAC el cual está referenciado al \textbf{Índice de Precios y Cotizaciones} (IPC), índice que busca reflejar el mercado accionario mexicano en su totalidad.
+
+Buscamos entonces, estrategias que generen mejores rendimientos que aquellos generados por el NAFTRAC siguiendo la estrategia Buy and Hold.
 
 
-%Hacer estas subsecciones
-%Análisis técnico (indicadores y chart patterns)
-%EMH (Historia-postulado, imagen con ejemplo,imagen de las versiones)
-%Explicar que es un ETF y su relación con EMH
-%Costos de transacción y como calcular la ganancia
-%SVM
-%Regresión logística
-%C5.0
+\section{Experimentos y resultados}
 
-\section{Solución propuesta}
+\subsection{Conjunto de datos}
+
 %Explicar etiquetamiento de datos, training data y test data
-
-\section{Resultados}
 %Interpretación de las reglas (cuando sea posible)
 %Tabla con ganancia del método vs B&H
 
