@@ -165,3 +165,26 @@
     (list semilla  clase-semilla )
   );let
 ) ;defun
+
+;;==============================================================================
+;; Función para obtener la expresión (en sintaxis de LISP) de un selector
+;; El selector tendrá la forma
+;; (Operador valor-atributo-de-la-observación valor-de-comparación)
+;; Por ejemplo (EQUAL 1 2)
+;;
+;; ENTRADA
+;; observacion. Lista. observación a comparar
+;; operador. Símbolo. Símbolo que representa alguna función lógica
+;; indice. Entero. Índice del atributo de interés
+;; valor. Valor a comparar
+;;
+;; SALIDA
+;; expresion. Cons. Cons con la expresión representando al selector
+;;==============================================================================
+(defun crea-selector (observacion operador indice valor )
+  (let ((expresion nil) (valor-atributo nil))
+    (setq valor-atributo (nth indice observacion))
+    (setq expresion `(,operador ,valor-atributo ,valor)  )
+    expresion
+  );let
+);defun
