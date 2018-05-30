@@ -169,11 +169,10 @@
 ;;==============================================================================
 ;; Función para obtener la expresión (en sintaxis de LISP) de un selector
 ;; El selector tendrá la forma
-;; (Operador valor-atributo-de-la-observación valor-de-comparación)
-;; Por ejemplo (EQUAL 1 2)
+;; (Operador índice-del-atributo valor-de-comparación)
+;; Por ejemplo (EQUAL 1 2) => el atributo 1 es igual 2?
 ;;
 ;; ENTRADA
-;; observacion. Lista. observación a comparar
 ;; operador. Símbolo. Símbolo que representa alguna función lógica
 ;; indice. Entero. Índice del atributo de interés
 ;; valor. Valor a comparar
@@ -181,10 +180,34 @@
 ;; SALIDA
 ;; expresion. Cons. Cons con la expresión representando al selector
 ;;==============================================================================
-(defun crea-selector (observacion operador indice valor )
-  (let ((expresion nil) (valor-atributo nil))
-    (setq valor-atributo (nth indice observacion))
-    (setq expresion `(,operador ,valor-atributo ,valor)  )
+(defun crea-selector (operador indice valor )
+  (let ((expresion nil))
+    (setq expresion `(,operador ,indice ,valor)  )
     expresion
+  );let
+);defun
+
+;;==============================================================================
+;; Función para evaluar la expresión de un selector relativa a una observación
+;; El selector tendrá la forma
+;; (Operador índice-del-atributo valor-de-comparación)
+;; Por ejemplo (EQUAL 1 2) => el atributo 1 es igual 2?
+;;
+;; ENTRADA
+;; observacion. Lista. observación a comparar
+;; selector. Cons. Cons con la expresión representando al selector
+;;
+;; SALIDA
+;; T si se cumple la condición del selector, NIL en otro caso
+;;==============================================================================
+(defun evalua-selector (observacion selector)
+  (let ((expresion nil) (valor-atributo nil) (operador nil) (indice-atributo nil)
+         (valor-comparacion nil))
+    (setq operador (first selector))
+    (setq indice-atributo (second selector))
+    (setq valor-comparacion (third selector))
+    (setq valor-atributo (nth indice-atributo observacion))
+    (setq expresion `(,operador ',valor-atributo ',valor-comparacion)  )
+    (eval expresion)
   );let
 );defun
