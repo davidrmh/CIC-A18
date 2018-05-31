@@ -276,13 +276,6 @@
 );defun
 
 ;;==============================================================================
-;; PENDIENTE
-;; función para limpiar observaciones contradictorias (mismos atributos distinta clase)
-;; Completitud y Cobertura
-;; Criterio LEF
-;;==============================================================================
-
-;;==============================================================================
 ;; Función para revisar la consistencia de un complejo
 ;;
 ;; ENTRADA
@@ -349,3 +342,38 @@
     consistentes
   );let
 );defun
+
+;;==============================================================================
+;; Función para encontrar la cobertura de un complejo
+;;
+;; ENTRADA
+;; complejo: Lista. Lista cuyos elementos son selectores
+;; (idealmente debe ser un complejo consistente)
+;; observaciones. Lista. Lista con un conjunto de observaciones
+;; (idealmente observaciones de la clase positiva)
+;;
+;; SALIDA
+;; Lista con componentes:
+;; (first) obs-cubiertas. Lista con las observaciones cubiertas por el complejo
+;; (second) cobertura. Entero que representa el número de observaciones cubiertas
+;;==============================================================================
+(defun encuentra-cobertura (complejo observaciones)
+  (let ((obs-cubiertas nil) (cobertura 0))
+    (loop for observacion in observaciones do
+      ;Rehusando la función es-consistente?
+      ;Si no es consistente, quiere decir que el complejo cubre
+      ;la observación
+      (when (not (es-consistente? (list observacion) complejo) )
+        (push observacion obs-cubiertas)
+        (setq cobertura (1+ cobertura))
+      );when
+    );loop
+    (list obs-cubiertas cobertura)
+  );let
+);defun
+
+;;==============================================================================
+;; PENDIENTE
+;; función para limpiar observaciones contradictorias (mismos atributos distinta clase)
+;; Criterio LEF
+;;==============================================================================
