@@ -373,7 +373,56 @@
 );defun
 
 ;;==============================================================================
+;; Función para calcular el valor utilizado para el criterio LEF
+;; Este criterio será Cobertura - Longitud del complejo
+;;
+;; ENTRADA
+;; complejo. Lista. Lista cuyos elementos son selectores
+;; (idealmente deber ser un complejo consistente)
+;; observaciones. Lista. Lista con un conjunto de observaciones
+;; (idealmente observaciones de la clase positiva)
+;;
+;; SALIDA
+;; puntaje. Entero. Número que representa la resta de la cobertura del complejo
+;; y su longitud
+;;==============================================================================
+(defun puntaje-lef (complejo observaciones)
+  (let ((longitud 0) (cobertura 0) (puntaje 0) )
+    (setq longitud (length complejo))
+    (setq cobertura (second (encuentra-cobertura complejo observaciones) ) )
+    (setq puntaje (- cobertura  longitud))
+    puntaje
+  );let
+);defun
+
+;;==============================================================================
+;; Función para encontrar el mejor complejo de un conjunto de complejos
+;;
+;; ENTRADA
+;; complejos: Lista. Lista con un conjunto de complejos relativos a una
+;; observación (idealmente una semilla). Idealmente complejos consistentes
+;; observaciones. Lista. Lista con un conjunto de observaciones
+;; (idealmente observaciones de la clase positiva)
+;;
+;; SALIDA
+;; mejor-complejo. Lista. Lista cuyos elementos son selectores. Este complejo
+;; es el de mejor puntaje de acuerdo al criterio LEF
+;;==============================================================================
+(defun mejor-complejo (complejos observaciones)
+  (let ((mejor-puntaje -100000) (puntaje 0) (mejor-complejo nil) )
+    (loop for complejo in complejos do
+      (setq puntaje (puntaje-lef complejo observaciones) )
+      (when  (and (> puntaje mejor-puntaje) (not (equal complejo nil)))
+
+        (setq mejor-puntaje puntaje)
+        (setq mejor-complejo complejo)
+      );when
+    );loop
+    mejor-complejo
+  );let
+);defun
+
+;;==============================================================================
 ;; PENDIENTE
 ;; función para limpiar observaciones contradictorias (mismos atributos distinta clase)
-;; Criterio LEF
 ;;==============================================================================
