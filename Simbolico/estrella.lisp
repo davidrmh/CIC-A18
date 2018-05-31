@@ -423,6 +423,31 @@
 );defun
 
 ;;==============================================================================
+;; Función para actualizar las observaciones de la clase positiva, eliminando
+;; aquellas que son cubiertas por el mejor-complejo de una semilla
+;;
+;; ENTRADA
+;; obs-cubiertas. Lista. Lista con las observaciones que cubre el complejo
+;; Se obtiene con la función encuentra-cobertura
+;; observaciones. Lista. Lista con las observaciones de la clase positiva
+;;
+;; SALIDA
+;; nuevas-positivas. Lista. Lista similar a observaciones exceptuando aquellas
+;; observaciones en obs-cubiertas
+;;==============================================================================
+(defun actualiza-positivas (obs-cubiertas positivas)
+  (let ((nuevas-positivas nil))
+    (loop for observacion in positivas do
+      ;Revisa si la observación no se encuentra dentro de las
+      ;que fueron cubiertas
+      (if (not (find observacion obs-cubiertas)) (push observacion nuevas-positivas))
+    );loop
+  nuevas-positivas  
+  );let
+);defun
+
+;;==============================================================================
 ;; PENDIENTE
-;; función para limpiar observaciones contradictorias (mismos atributos distinta clase)
+;; Main
+;; Medidas de desempeño
 ;;==============================================================================
