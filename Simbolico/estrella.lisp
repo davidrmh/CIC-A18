@@ -1,4 +1,9 @@
 ;;==============================================================================
+;;                            VARIABLES GLOBALES
+;;==============================================================================
+(defparameter *indices-atributos* '(1 2 3 4 5 6 7 8 9))
+
+;;==============================================================================
 ;; Función para leer los datos
 ;; ENTRADA
 ;; nombre-archivo. String. Ruta de los datos
@@ -220,9 +225,52 @@
 ;; lista. Lista
 ;;
 ;; SALIDA
-;; Una lista con el conjunto potencia 
+;; Una lista con el conjunto potencia
 ;;==============================================================================
-(defun potencia(s)
+(defun potencia (s)
   (if s (mapcan (lambda (x) (list (cons (car s) x) x))
                 (potencia (cdr s)))
       '(())))
+
+;;==============================================================================
+;; Función para crear los complejos de una observación
+;;
+;; ENTRADA
+;; observacion: Lista. Lista que representa una observación
+;; indices: Lista. Lista con los índices de los atributos
+;; operador. Símbolo. Símbolo que representa alguna función lógica
+;;
+;; SALIDA
+;; Lista anidada en la cual cada elemento representa la conjunción de selectores
+;;==============================================================================
+(defun crea-complejos (observacion indices operador)
+  (let ((complejos nil) (selectores nil) (selector nil) (set-potencia nil)
+        (valor-referencia nil)  )
+    ;Obtiene el conjunto potencia utilizando la lista de índices
+    (setq set-potencia (potencia indices))
+
+    ;Construye los complejos
+    (loop for combinacion in set-potencia do
+      ;Aquí guardo un conjunto de selectores
+      ;se interpreta como la conjunción de cada uno de ellos
+      (setq selectores nil)
+
+      (when (not (equal combinacion nil))
+
+        ;Para cada elemento de un elemento del conjunto potencia
+        (loop for i in combinacion do
+          ;Extrae el valor del atributo i de la observación
+          (setq valor-referencia (nth i observacion))
+          (setq selector (crea-selector operador i valor-referencia))
+          (push selector selectores)
+        );loop i
+
+      );when
+
+      (push selectores complejos)
+    );loop combinacion
+
+    complejos
+
+  );let
+);defun
