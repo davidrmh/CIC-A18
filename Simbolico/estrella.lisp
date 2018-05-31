@@ -274,3 +274,50 @@
 
   );let
 );defun
+
+;;==============================================================================
+;; Función para revisar la consistencia de un complejo
+;;
+;; ENTRADA
+;; observaciones: Lista. Lista con el conjunto de observaciones
+;; idealmente las observaciones de la clase negativa
+;; complejo. Lista. Una lista con selectores
+;;
+;; SALIDA
+;; T si el complejo no cubre alguna observación de la lista de observaciones
+;;==============================================================================
+(defun es-consistente? (observaciones complejo)
+  (let ((filtrados nil) (tmp nil) )
+    ;Copia las observaciones en la variable auxiliar filtrados
+    (setq filtrados (copy-seq observaciones))
+
+    ;La idea es filtrar los datos utilizando selector por selector
+    (loop for selector in complejo do
+      (setq tmp nil)
+      (loop for observacion in filtrados do
+
+        ;Si la observación cumple la condición del selector
+        ;entonces se agrega a tmp, esta variable almacenará
+        ;las observaciones que serán verificadas utilizando el siguiente selector
+        (if (evalua-selector observacion selector) (push observacion tmp))
+
+      );loop observación
+
+      ;Si ninguna observación cumplió los criterios del selector
+      ;entonces el complejo es consistente
+      (if (equal tmp nil) (return-from es-consistente? t))
+
+      ;Actualiza la variable filtrados
+      ;con las observaciones que cumplen la condición del selector actual
+      ;para ser utilizadas con el siguiente selector
+      (setq filtrados  (copy-seq tmp) )
+
+    );loop selector
+
+    ;Si el la función se ejecuta hasta este punto
+    ;quiere decir que se exploraron todos los selectores
+    ;y se encontraron observaciones que cumplían cada una de las
+    ;condiciones, es decir, no es consistente
+    nil
+  );let
+);defun
