@@ -276,6 +276,13 @@
 );defun
 
 ;;==============================================================================
+;; PENDIENTE
+;; función para limpiar observaciones contradictorias (mismos atributos distinta clase)
+;; Completitud y Cobertura
+;; Criterio LEF
+;;==============================================================================
+
+;;==============================================================================
 ;; Función para revisar la consistencia de un complejo
 ;;
 ;; ENTRADA
@@ -319,5 +326,26 @@
     ;y se encontraron observaciones que cumplían cada una de las
     ;condiciones, es decir, no es consistente
     nil
+  );let
+);defun
+
+;;==============================================================================
+;; Función para obtener los complejos consistentes de una observacion
+;;
+;; ENTRADA
+;; complejos: Lista. Lista con un conjunto de complejos relativos a una
+;; observación (idealmente una semilla)
+;; observaciones: Lista. Lista con un conjunto de observaciones
+;; (idealmente correspondientes a la clase negativa)
+;;
+;; SALIDA
+;; consistentes: Lista. Lista con los complejos consistentes
+;;==============================================================================
+(defun encuentra-consistentes (complejos observaciones)
+  (let ((consistentes nil))
+    (loop for complejo in complejos do
+      (if (es-consistente? observaciones complejo) (push complejo consistentes) )
+    );loop
+    consistentes
   );let
 );defun
