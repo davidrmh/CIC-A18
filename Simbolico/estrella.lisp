@@ -2,6 +2,8 @@
 ;;                            VARIABLES GLOBALES
 ;;==============================================================================
 (defparameter *indices-atributos* '(1 2 3 4 5 6 7 8 9))
+(defparameter *operador* 'equal)
+(defparameter *indice-clase* 0) ;índice de la columna que tiene la clase
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -148,7 +150,7 @@
 ;; Función para elegir una semilla y su clase
 ;;
 ;; ENTRADA
-;; datos. Lista. Lista de observaciones (idealmente el conjunto de entrenamiento)
+;; datos. Lista. Lista de observaciones (idealmente las observaciones de la clase positiva)
 ;; indice. Entero. Índice (iniciando en 0) de la columna que tiene la clase
 ;;
 ;; SALIDA
@@ -442,10 +444,54 @@
       ;que fueron cubiertas
       (if (not (find observacion obs-cubiertas)) (push observacion nuevas-positivas))
     );loop
-  nuevas-positivas  
+  nuevas-positivas
   );let
 );defun
 
+;;==============================================================================
+;; Función para obtener la estrella de una clase a partir de las observaciones
+;; de la clase positiva y la clase negativa
+;;
+;; ENTRADA
+;; positivas: Lista. Lista que contiene las observaciones de la clase positiva
+;; negativas: Lista. Lista que contiene las observaciones de la clase negativa
+;;
+;; SALIDA
+;; Estrella: Lista de complejos. Se puede interpretar como la disyunción de cada uno de
+;; ellos
+;;==============================================================================
+(defun obten-estrella (positivas negativas)
+  (let ((estrella nil) (semilla nil) (obs-cobertura nil) (complejos nil)
+        (mejor-complejo nil) )
+      (loop
+
+        ;Encuentra semilla
+        (setq semilla (first (obten-semilla positivas *indice-clase*)))
+
+        ;Encuentra los complejos que cubren a la semilla
+        (setq complejos (crea-complejos semilla *indices-atributos* *operador*))
+
+        ;Encuentra los complejos consistentes
+        (setq complejos (encuentra-consistentes complejos negativas))
+
+        ;Encuentra el mejor complejo (consistente) de acuerdo al criterio LEF
+        (setq mejor-complejo (mejor-complejo complejos positivas))
+
+        ;Obtiene las observaciones que son cubiertas por el mejor-complejo
+        (setq obs-cobertura (first (encuentra-cobertura mejor-complejo positivas) ))
+
+        ;Añade el mejor complejo a la estrella
+
+        (if (not (equal mejor-complejo nil)) (push mejor-complejo estrella) )
+
+        ;Actualiza las observaciones de la clase positiva
+        (setq positivas (actualiza-positivas obs-cobertura positivas))
+
+        (when (equal positivas nil) (return-from obten-estrella estrella) )
+      );loop
+    estrella
+  );let
+);defun
 ;;==============================================================================
 ;; PENDIENTE
 ;; Main
