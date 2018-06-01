@@ -92,6 +92,7 @@
 ;;==============================================================================
 (defun genera-indices (total maximo)
   (let ((indices nil) (numero nil) )
+    (when (= maximo 0) (return-from genera-indices (list 0) ))
     (loop
       ;Genera un número aleatorio en (0,maximo)
       (setq numero (random maximo))
@@ -448,6 +449,76 @@
   );let
 );defun
 
+
+;;==============================================================================
+;; Función para arreglar las observaciones contradictorias
+;;
+;; ENTRADA
+;; positivas. Lista. Lista con las observaciones de la clase positiva
+;; negativas. Lista. Lista con las observaciones de la clase negativa
+;;
+;; SALIDA
+;; Lista con los siguientes elementos
+;; (first) Lista con las observaciones de la clase positiva sin contradicciones
+;; (second) Lista con las observaciones de la clase negativa sin contradicciones
+;;==============================================================================
+(defun quita-contradicciones (positivas negativas)
+  (let ((positivas-filtradas nil) (negativas-filtradas nil) (atributos-pos nil)
+        (atributos-neg nil) (num-pos 0) (num-neg 0) (aux nil) (obs nil))
+
+        ;último índice válido de cada lista de observaciones
+        (setq num-pos (- (length positivas) 1 ))
+        (setq num-neg (- (length positivas) 1 ))
+
+        ;Primero guarda los atributos (sin clase) de cada observación
+        ;Positivas
+        (loop for observacion in positivas do
+          (setq aux nil)
+
+          (loop for i in *indices-atributos* do
+            ;Extrae cada valor de la observación
+            (setq aux (append aux (list (nth i observacion) )))
+          );loop
+          (push aux atributos-pos)
+        );loop
+
+        ;negativas
+        (loop for observacion in negativas do
+          (setq aux nil)
+
+          (loop for i in *indices-atributos* do
+            ;Extrae cada valor de la observación
+            (setq aux (append aux (list (nth i observacion) )))
+          );loop
+          (push aux atributos-neg)
+        );loop
+
+        ;Después filtra eliminando contradicciones
+        ;Positivas
+        (loop for i from 0 to num-pos do
+          (setq obs (nth i positivas))
+          (setq aux (nth i atributos-pos))
+
+          ;Revisa si es una observación cuyos atributos no los
+          ;tiene otra observación de la clase contraria
+          (if (not (find aux atributos-neg)) (push obs positivas-filtradas)  )
+        );loop
+
+        ;Negativas
+        (loop for i from 0 to num-neg do
+          (setq obs (nth i negativas))
+          (setq aux (nth i atributos-neg))
+
+          ;Revisa si es una observación cuyos atributos no los
+          ;tiene otra observación de la clase contraria
+          (if (not (find aux atributos-pos)) (push obs negativas-filtradas) )
+        );loop
+    (list positivas-filtradas negativas-filtradas)
+
+  );let
+);defun
+
+
 ;;==============================================================================
 ;; Función para obtener la estrella de una clase a partir de las observaciones
 ;; de la clase positiva y la clase negativa
@@ -492,8 +563,30 @@
     estrella
   );let
 );defun
+
 ;;==============================================================================
 ;; PENDIENTE
+;; Simplificar reglas
 ;; Main
-;; Medidas de desempeño
+;; Evaluar conjunto de prueba y medidas de desempeño
 ;;==============================================================================
+
+;(H D C B E F) (problemas con clase D)
+;lee-datos
+;(setq split (split-data datos))
+;(setq entrenamiento (first split))
+;(setq prueba (second split))
+;(setq separacion (separa-positivos entrenamiento 'F 0))
+;(setq positivas (first separacion))
+;(setq negativas (second separacion))
+;(setq filtradas (quita-contradicciones positivas negativas))
+;(setq positivas (first filtradas))
+;(setq negativas (second filtradas))
+;(obten-estrella positivas negativas)
+
+;H (((EQUAL 2 X)))
+;D (((EQUAL 4 3) (EQUAL 3 1) (EQUAL 2 I) (EQUAL 1 A)))
+;C (((EQUAL 6 1) (EQUAL 3 1) (EQUAL 2 O) (EQUAL 1 A)))
+;B (((EQUAL 1 X)))
+;E (((EQUAL 8 1) (EQUAL 4 2) (EQUAL 1 K)) ((EQUAL 8 1) (EQUAL 2 C)))
+;F (((EQUAL 4 2) (EQUAL 3 2) (EQUAL 1 A)))
