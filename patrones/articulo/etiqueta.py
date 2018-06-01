@@ -54,6 +54,7 @@ def subconjunto(datos,fechaInicio,fechaFin):
         return 0
 
     subconjunto = datos[indiceInicio:(indiceFin + 1) ]
+    subconjunto=subconjunto.reset_index(drop=True)
     return subconjunto
 
 
