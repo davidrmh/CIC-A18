@@ -27,32 +27,35 @@ def leeTabla(ruta="naftrac.csv"):
     data=data.reset_index(drop=True)
     return data
 ##==============================================================================
-## Función para obtener el conjunto de entrenamiento
+## Función para obtener un subconjunto de datos de acuerdo a fechas dadas
 ##==============================================================================
-def entrenamientoDataSet(datos,fechaFin):
+def subconjunto(datos,fechaInicio,fechaFin):
     '''
     ## ENTRADA
     ## datos: Pandas DataFrame creado con leeTabla
     ##
+    ##fechaInicio: String en formato 'YYYY-MM-DD' que representa la fecha inicial
+    ##
     ## fechaFin: String en formato 'YYYY-MM-DD' que representa la última fecha
-    ## del conjunto de entrenamiento
     ##
     ## SALIDA
-    ## entrenamiento: Pandas DataFrame con los datos de entrenamiento
+    ## subconjunto: Pandas DataFrame con el subconjunto de datos
     '''
 
-    #Encuentra el índice correspondiente a la fechaFin
-    #Validando que la fecha se encuentre en los datos
-    if len(datos[datos['Date']==fechaFin])!= 0:
-        indiceFin=datos[datos['Date']==fechaFin].index[0]
-    else:
-        print "Fecha no encontrada, elige una nueva"
+    #Encuentra el índice de inicio
+    indiceInicio=datos[datos['Date']==fechaInicio].index[0]
+    if not indiceInicio:
+        print "Fecha inicio no encontrada"
+        return 0
+    #Encuentra el índice final
+    indiceFin=datos[datos['Date']==fechaFin].index[0]
+    if not indiceFin:
+        print "Fecha fin no encontrada"
         return 0
 
-    #Se incluye la fechaFin en el conjunto de entrenamiento
-    entrenamiento=datos.iloc[0:(indiceFin+1)]
+    subconjunto = datos[indiceInicio:(indiceFin + 1) ]
+    return subconjunto
 
-    return entrenamiento
 
 ##==============================================================================
 ##                           MÉTODO 1
@@ -441,3 +444,368 @@ def evaluaMetodo1(datos,prueba,hforw=15,umbral=0.015):
     ganancia=(efectivo-capital)/capital
 
     return ganancia,gananciaBH
+
+##==============================================================================
+##                      METODO 2 (ALGORITMO GENÉTICO)
+##==============================================================================
+
+capital=100000.00
+comision=0.25/100
+tasa=0.0/100
+
+##==============================================================================
+## Función de fitness para el etiquetamiento del método 2
+##==============================================================================
+def fitnessMetodo2(datos):
+    '''
+    ENTRADA:
+    datos. Pandas DataFrame con los precios y la columna Clase
+
+    SALIDA:
+    exceso. Float. Exceso de ganancia
+    '''
+
+    acciones=0
+    flagPosicionAbierta=False
+    ultimoPrecio=0
+    precioEjecucion=0
+    efectivo=capital
+    numSignals=datos.shape[0]
+
+    fechaInicio=datos['Date'].iloc[0]
+    fechaFin=datos['Date'].iloc[numSignals-1]
+    indiceInicio=datos[datos['Date']==fechaInicio].index[0]
+    indiceFin=datos[datos['Date']==fechaFin].index[0]
+
+    ##################################################################
+    ##Cálculo de la ganancia siguiendo la estrategia de Buy and Hold##
+    ##################################################################
+
+    #Se compra en el segundo día del conjunto de datos
+    #esto es para comparar correctamente con la estrategia generada
+    precioInicioHigh=float(datos['High'].iloc[indiceInicio + 1])
+    precioInicioLow=float(datos['Low'].iloc[indiceInicio + 1])
+    precioInicioMid=(precioInicioLow + precioInicioHigh)/2.0
+    acciones=np.floor(efectivo/(precioInicioMid*(1+comision)))
+    efectivo=efectivo-precioInicioMid*acciones*(1+comision)
+
+    precioFinHigh=float(datos[datos['Date']==fechaFin]['High'])
+    precioFinLow=float(datos[datos['Date']==fechaFin]['Low'])
+    precioFinMid=(precioFinLow + precioFinHigh)/2.0
+
+
+    #Ganancia de intereses PENDIENTE
+    #Como es una persona invirtiendo se suponen intereses simples
+    fInicio=pd.to_datetime(fechaInicio,format='%Y-%m-%d')
+    fFin=pd.to_datetime(fechaFin,format='%Y-%m-%d')
+    deltaDias=(fFin-fInicio)/np.timedelta64(1,'D') #Diferencia en días
+    #Para los intereses se consideran fines de semana
+    intereses=efectivo*tasa*deltaDias/365
+
+    #Vendemos las acciones compradas en el pasado
+    #y calculamos el efectivo final asi como la ganancia de Buy and Hold
+    efectivo=efectivo + intereses +acciones*precioFinMid*(1-comision)
+    gananciaBH=(efectivo - capital)/capital
+
+    ##################################################################
+    ###Cálculo de la ganancia siguiendo la estrategia del individuo###
+    ##################################################################
+
+    efectivo=capital
+    acciones=0
+    intereses=0
+    fUltimaOperacion=pd.to_datetime(fechaInicio,format='%Y-%m-%d')
+    variacion=0
+
+    #No se incluye el último periodo, por eso es numSignals - 1
+    #en este periodo se cierra la posición abierta (en caso de haberla)
+    for t in range(0,numSignals-1):
+
+        #Auxiliar para la variable variacion
+        #para evitar comprar y vender el mismo día
+        flagCompraReciente=False
+
+        #Se calcula el precio de ejecución
+        #promedio de H y L de t+1
+        #También se obtiene el precio de apertura de t+1
+        fecha=datos['Date'].iloc[t+1]
+        precioLow=float(datos[datos['Date']==fecha]['Low'])
+        precioHigh=float(datos[datos['Date']==fecha]['High'])
+        precioOpen=float(datos[datos['Date']==fecha]['Open'])
+        precioEjecucion=(precioLow + precioHigh)/2.0
+
+        #Cálculo los intereses acumulados hasta el momento
+        #PENDIENTE
+
+        #es posible comprar?
+        #Se ejecuta compra cuando se tiene dinero y no se había comprado previamente
+        if datos['Clase'].iloc[t]==1 and compraPosible(efectivo,precioEjecucion) and not flagPosicionAbierta:
+
+            #Se compran más acciones (Se invierte todo el dinero posible)
+            acciones=acciones + np.floor(efectivo/(precioEjecucion*(1+comision)))
+
+            #Se reduce el efectivo
+            efectivo=efectivo-precioEjecucion*acciones*(1+comision)
+
+            #Se registra una posición abierta
+            flagPosicionAbierta=True
+
+            #Se registra el último precio de compra
+            ultimoPrecio=precioEjecucion
+
+            #Se actualiza flagCompraReciente
+            flagCompraReciente=True
+
+            #Se reinicia contLimite
+            contLimite=0
+
+            #Se reinicia variación
+            variacion=0
+
+            #print "El día " + fecha + " se compran " + str(acciones) + " acciones"
+            #print "A un precio de " + str(precioEjecucion)
+
+
+        #es posible vender?
+        #No se permiten ventas en corto por eso acciones > 0
+        #Se venden todas las acciones en un sólo momento
+        #Se vende cuando:
+        #--Hay señal de venta y se tienen acciones
+        if acciones>0 and datos['Clase'].iloc[t]==-1:
+
+            #Aumenta el efectivo
+            efectivo=efectivo + acciones*precioEjecucion*(1-comision)
+
+            #print "El día " + fecha + " se venden " + str(acciones)
+
+            #Disminuyen acciones
+            acciones=0
+
+            #Se cierra una posición abierta
+            flagPosicionAbierta=False
+
+            #Se reinicia el contador de dias
+            contLimite=0
+
+            #print "A un precio de " + str(precioEjecucion)
+
+    #Se cierra posición abierta (si la hay)
+
+    if flagPosicionAbierta:
+        #cálculo del precio de ejecución
+        fecha=datos['Date'].iloc[numSignals-1]
+        precioLow=float(datos[datos['Date']==fecha]['Low'])
+        precioHigh=float(datos[datos['Date']==fecha]['High'])
+        precioEjecucion=(precioLow + precioHigh)/2.0
+
+        #Aumenta el efectivo
+        efectivo=efectivo + acciones*precioEjecucion*(1-comision)
+
+        #print "Se cierra posicion con " + str(acciones) + " acciones"
+        #print "a un precio de " + str(precioEjecucion)
+
+        #Disminuyen acciones
+        acciones=0
+
+    #Se calcula ganancia final
+    ganancia=(efectivo-capital)/capital
+
+    #Exceso de ganancia (buscamos maximizar esta cantidad)
+    exceso=ganancia-gananciaBH
+
+    return exceso
+
+##==============================================================================
+## Función para crear la población
+##==============================================================================
+def creaPoblacion (numPeriodos,popSize,proba=""):
+    '''
+    ENTRADA
+    numPeriodos: Entero. Número de periodos en el subconjunto de datos
+    (idealmente datos.shape[0])
+
+    popSize: Entero. Número de individuos en la población
+
+    proba: Lista con numPeriodos elementos, cada uno de ellos es una
+    lista con la probabilidad de seleccionar un -1, 0 o 1.
+    Por ejemplo para dos periodos [[0.2,0.2,0.6],[0.6,0.4,0]]
+
+    SALIDA
+    poblacion. numpy array de popSize x numPeriodos (matriz) cuyo i-ésimo
+    renglón representa una posible estrategia para el periodo de interés
+    '''
+    aux=[]
+    poblacion=[]
+    for i in range(0,popSize):
+        aux=[]
+        for t in range(0,numPeriodos):
+            if proba=="":
+                #aux guarda la información del individuo i
+                r=np.random.choice([-1,0,1],size=1)[0]
+
+                if t==(numPeriodos-1):
+                    #la última señal es señal de venta
+                    r=-1
+
+                aux.append(r)
+            else:
+                r=np.random.choice([-1,0,1],size=1,p=proba[t])[0]
+
+                if t==(numPeriodos-1):
+                    #la última señal es señal de venta
+                    r=-1
+
+                aux.append(r)
+        poblacion.append(aux)
+
+    poblacion=np.array(poblacion)
+
+    return poblacion
+
+
+
+##==============================================================================
+## Función para regresar calcular el fitness de cada individuo en la población
+##==============================================================================
+def fitnessPoblacion (datos,poblacion):
+    '''
+    ENTRADA
+    datos. Pandas DataFrame con los precios
+
+    poblacion: numpy array  (idealmente creado con la función creaPoblacion)
+
+    SALIDA
+    fitness: numpy array. arreglo cuya i-ésima entrada representa el fitness
+    proporcional (probabilidad) del i-ésimo individuo (i-ésimo renglón de población)
+
+    sinAjuste: numpy array. Arreglo cuya i-ésima entrada representa el fitness del
+    i-ésimo individuo (i-ésimo renglón de población)
+    '''
+    fitness=[]
+    auxDatos=cp.deepcopy(datos)
+
+    for i in poblacion:
+        auxDatos.loc[:,('Clase')]=i #De esta forma para evitar el warning
+        fitness.append(fitnessMetodo2(auxDatos))
+
+    sinAjuste=cp.deepcopy(fitness)
+    sinAjuste=np.array(sinAjuste)
+
+    #Normaliza para que todas las entradas sean positivas
+    margen=0.001 #para evitar entradas con 0
+    probas=np.array(fitness)-np.min(fitness) + margen
+    probas=probas/np.sum(probas)
+
+    return probas,sinAjuste
+
+##==============================================================================
+## Función para seleccionar los k-mejores individuos de una población
+##==============================================================================
+def kMejores(poblacion,fitness,k):
+    '''
+    ENTRADA
+    poblacion: numpy array creado con la función creaPoblacion
+
+    fitness: numpy array. Arreglo cuya i-ésima entrada representa el fitness del
+    i-ésimo individuo (i-ésimo renglón de población)
+
+    k: Entero mayor o igual a 1
+
+    SALIDA
+    mejores: numpy array con los k individuos con mayor fitness
+    '''
+
+    #argsort funcion de menor a mayor por eso se utiliza reverse
+    aux=list(np.argsort(fitness))
+    aux.reverse() #Método destructivo
+
+    #elige los k-mejores
+    mejores=poblacion[aux[0:k],:]
+
+    return mejores
+##==============================================================================
+## Función para actualizar las probabilidades de acuerdo a los k-mejores
+##==============================================================================
+def actualizaProbabilidades (mejores):
+    '''
+    ENTRADA
+    mejores. numpy array creado con la función kMejores
+
+    SALIDA
+    proba: Lista con numPeriodos elementos, cada uno de ellos es una
+    lista con la probabilidad de seleccionar un -1, 0 o 1.
+    Por ejemplo para dos periodos [[0.2,0.2,0.6],[0.6,0.4,0]]
+    '''
+
+    numPeriodos=mejores.shape[1]
+    k=mejores.shape[0]
+    aux=[] #almacena tres probabilidades(para -1,0 y 1)
+    probas=[]
+    for t in range(0,numPeriodos):
+        aux=[]
+        for i in [-1,0,1]:
+            #p es la probabilidad de tener el valor i
+            #en el periodo t
+            p=float(np.sum(mejores[:,t]==i))/k
+            aux.append(p)
+        probas.append(aux)
+
+    return probas
+
+
+##==============================================================================
+## Función para etiquetar los datos de acuerdo al método 2
+##==============================================================================
+
+def etiquetaMetodo2 (datos,numGen=30,popSize=50):
+    '''
+    Etiqueta los datos utilizando un algoritmo genético que busca
+    la combinación de señales compra,venta,hold que generen mayor ganancia
+
+    ENTRADA
+    datos: Pandas DataFrame. Conjunto de entrenamiento
+
+    SALIDA
+    datos: Pandas DataFrame. Conjunto de entrenamiento con la nueva columna
+    Clase, que contiene la estrategia encontrada por el algoritmo genético.
+
+    proba: Lista con numPeriodos elementos, cada uno de ellos es una
+    lista con la probabilidad de seleccionar un -1, 0 o 1.
+    Por ejemplo para dos periodos [[0.2,0.2,0.6],[0.6,0.4,0]]
+    '''
+
+    numPeriodos=datos.shape[0]
+    k=int(popSize/2) #k-mejores
+
+    #poblacion inicial
+    poblacion=creaPoblacion(numPeriodos,popSize,proba="")
+
+    mejorFitness=-100
+    mejorEstrategia=""
+
+    for i in range(0,numGen):
+
+        #Calcula el fitness de la poblacion
+        probas,fitness=fitnessPoblacion(datos,poblacion)
+
+        #Encuentra los k mejores
+        mejores=kMejores(poblacion,probas,k)
+
+        #Guarda los mejores hasta el momento
+        if fitness[np.argmax(fitness)]>mejorFitness:
+            mejorFitness=fitness[np.argmax(fitness)]
+            mejorEstrategia=mejores[0]
+
+        #actualiza probabilidades
+        probas=actualizaProbabilidades(mejores)
+
+        #crea la nueva población
+        poblacion=creaPoblacion(numPeriodos,popSize,probas)
+
+        print "Fin de la generacion " + str(i)
+        print "Mejor fitness hasta el momento " + str(round(np.max(mejorFitness),6))
+
+    #añade la estrategia del mejor individuo
+    datos.loc[:,('Clase')]=mejores[0,:]
+
+    return datos,probas
