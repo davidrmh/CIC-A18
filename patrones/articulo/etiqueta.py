@@ -814,7 +814,7 @@ def etiquetaMetodo2 (datos,numGen=20,popSize=50):
 ##==============================================================================
 ## Función para crear los features para el etiquetado del modelo 2
 ##==============================================================================
-def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=""):
+def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=False):
     '''
     La idea es muy similar a la función etiquetaMetodo1
     Crea los atributos de los datos
@@ -878,7 +878,7 @@ def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=""):
     #Aquí guardo los percentiles 25,50 y 75 de cada columna
     #Es una lista de numpy arrays
 
-    if percentiles=="":
+    if not percentiles:
         percentiles=[]
         for i in range(0,numAtributos):
             percentiles.append(np.percentile(etiquetas[i],q=[25,50,75]))
@@ -899,10 +899,7 @@ def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=""):
         etiquetas[i].loc[indicesPercentil75]=3
         etiquetas[i].loc[indicesPercentil100]=4
 
-    if percentiles=="":
-        return etiquetas,continuos,percentiles
-    else:
-        return etiquetas,continuos
+    return etiquetas,continuos,percentiles
 
 ##=============================================================================
 ## Función para guardar los conjuntos de entrenamiento etiquetados
