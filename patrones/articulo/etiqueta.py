@@ -758,7 +758,7 @@ def actualizaProbabilidades (mejores):
 ## Función para etiquetar los datos de acuerdo al método 2
 ##==============================================================================
 
-def etiquetaMetodo2 (datos,numGen=30,popSize=50):
+def etiquetaMetodo2 (datos,numGen=20,popSize=50):
     '''
     Etiqueta los datos utilizando un algoritmo genético que busca
     la combinación de señales compra,venta,hold que generen mayor ganancia
@@ -902,4 +902,43 @@ def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=""):
     if percentiles=="":
         return etiquetas,continuos,percentiles
     else:
-        return etiquetas,continuos    
+        return etiquetas,continuos
+
+##=============================================================================
+## Función para guardar los conjuntos de entrenamiento etiquetados
+##=============================================================================
+def guardaEntrenamiento(datos,fechas,prefijo="naftrac"):
+    '''
+    ENTRADA
+    prefijo: String. Prefijo del nombre de cada archivo
+    El nombre tendrá la siguiente forma
+    prefijo + "-" + inicioEntrena + ".csv"
+
+    datos: Pandas DataFrame creado con la función leeTabla
+    (csv de Yahoo Finance con toda la información)
+
+    fechas: Pandas DataFrame con las siguientes columnas
+    inicioEntrena,finEntrena,inicioPrueba,finPrueba que contiene
+    las fechas de inicio y fin de cada conjunto de datos
+
+    SALIDA
+    Guarda en el directorio de trabajo los archivos que contienen la
+    información de la mejor estrategia a seguir para el conjunto de
+    entrenamiento entre las fechas dadas
+    '''
+
+    #Número de fechas
+    numeroFechas=fechas.shape[0]
+
+    for i in range(0,numeroFechas):
+        inicio=fechas.iloc[i,0]
+        fin=fechas.iloc[i,1]
+        nombreArchivo=prefijo + "-" + str(inicio) + ".csv"
+        print "Iniciando con el archivo " + nombreArchivo
+        entrenamiento=subconjunto(datos,inicio,fin)
+        entrenamiento,proba=etiquetaMetodo2(entrenamiento)
+
+        #Guarda el los datos
+        entrenamiento.to_csv(nombreArchivo,index=False)
+
+    return 0
