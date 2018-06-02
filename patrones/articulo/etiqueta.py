@@ -810,3 +810,96 @@ def etiquetaMetodo2 (datos,numGen=30,popSize=50):
     datos.loc[:,('Clase')]=mejores[0,:]
 
     return datos,probas
+
+##==============================================================================
+## Función para crear los features para el etiquetado del modelo 2
+##==============================================================================
+def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=""):
+    '''
+    La idea es muy similar a la función etiquetaMetodo1
+    Crea los atributos de los datos
+    La idea es calcular las variaciones entre el precio en t y los precios
+    en t-1,t-2,..,t-hback estas variaciones serán los atributos.
+
+    ENTRADA
+    data: Pandas DataFrame. Tabla con los datos del csv
+
+    fechaInicio: String en formato 'YYYY-MM-DD' que representa la fecha de inicio
+
+    fechaFin: String en formato 'YYYY-MM-DD' que representa la fecha fin
+
+    hback: periodos hacia atrás
+
+    SALIDA:
+    etiquetas: Pandas DataFrame con los atributos discretizados
+
+    continuos: Pandas DataFrame con los atributos continuos
+
+    percentiles: Lista. Lista con np arrays representando los percentiles
+    de cada atributo
+    '''
+
+    n=datos.shape[0]-1 #Numero de indices validos
+    inicio=hback
+    indiceInicio=datos[datos['Date']==fechaInicio].index[0]
+    indiceFin=datos[datos['Date']==fechaFin].index[0]
+
+    #valida compatilibidad entre fecha inicio entre fechaInicio y hback
+    if indiceInicio < inicio:
+        print "Revisa la fecha de inicio o el parámetro hback"
+        return 0
+
+    atributos=[]
+    clases=[]
+
+    #Calcula las variaciones para todo el conjunto de datos
+    #Después se filtrará de acuerdo a los parámetros de fecha
+    for i in range(indiceInicio,indiceFin+1):
+        renglon=[]
+
+        #Los atributos son los cambios entre el precio en t y t-1,
+        # t y t-2,...,t y t-hback
+        for j in range(1,hback+1):
+            renglon.append(datos["Adj Close"][i]/datos["Adj Close"][i-j]-1)
+        atributos.append(renglon)
+
+    #Crea el DataFrame
+    etiquetas=pd.DataFrame(atributos)
+    fechas=datos['Date'].iloc[indiceInicio : (indiceFin +1) ].reset_index(drop=True)
+    precios=datos['Adj Close'].iloc[indiceInicio : (indiceFin + 1) ].reset_index(drop=True)
+    etiquetas['Date']=fechas
+    etiquetas['Adj Close']=precios
+    etiquetas=etiquetas.reset_index(drop=True)
+    continuos=cp.deepcopy(etiquetas) #Atributos continuos
+
+    #Etiqueta de acuerdo a los percentiles 25 50 75
+    numAtributos=etiquetas.shape[1]-3 #No considera columnas Clase, Date y Adj Close
+
+    #Aquí guardo los percentiles 25,50 y 75 de cada columna
+    #Es una lista de numpy arrays
+
+    if percentiles=="":
+        percentiles=[]
+        for i in range(0,numAtributos):
+            percentiles.append(np.percentile(etiquetas[i],q=[25,50,75]))
+
+    #Actualiza la tabla etiquetas de acuerdo
+    #a los percentiles
+
+    for i in range(0,numAtributos):
+        #indices a modificar
+        indicesPercentil25=etiquetas[etiquetas[i]<=percentiles[i][0]].index
+        indicesPercentil50=etiquetas[ (etiquetas[i]>percentiles[i][0]) & (etiquetas[i]<=percentiles[i][1]) ].index
+        indicesPercentil75=etiquetas[ (etiquetas[i]>percentiles[i][1]) & (etiquetas[i]<=percentiles[i][2]) ].index
+        indicesPercentil100=etiquetas[etiquetas[i]>percentiles[i][2]].index
+
+        #Utilizo loc para evitar el warning que genera iloc
+        etiquetas[i].loc[indicesPercentil25]=1
+        etiquetas[i].loc[indicesPercentil50]=2
+        etiquetas[i].loc[indicesPercentil75]=3
+        etiquetas[i].loc[indicesPercentil100]=4
+
+    if percentiles=="":
+        return etiquetas,continuos,percentiles
+    else:
+        return etiquetas,continuos    
