@@ -183,3 +183,72 @@ def clasificadorMLP(entrenamiento,prueba):
         prueba['Clase']=modelo.predict(prueba.iloc[:,0:numAtributos])
 
         return prueba
+
+
+##==============================================================================
+##                              EVALUA MÉTODO 2
+##==============================================================================
+def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,metodo="svm",hback=21):
+    '''
+    ENTRADA
+    archivoDatos: String. Nombre del archivo csv de Yahoo Finance
+
+    inicio*,fin*: String. Fechas de inicio y fin para cada conjunto
+
+    metodo: String. Que método se utiliza para aprender
+
+    hback: Entero. Número de periodos hacia atrás
+
+    SALIDA
+    exceso: Float. Exceso de ganancia en el conjunto de prueba
+    '''
+    #Obtiene el prefijo del nombre e.g. naftrac
+    prefijo=archivoDatos.split(".csv")[0]
+
+    #Lee el csv con todos los datos
+    datos=etiqueta.leeTabla(archivoDatos)
+
+    #Lee el archivo de entrenamiento correspondiente
+    archivoEntrena=prefijo + "-" + inicioEntrena + ".csv"
+    entrenamiento=pd.read_csv(archivoEntrena)
+
+    #Crea los atributos para el conjunto de entrenamiento
+    entrenaDis,entrenaCon,percentiles=etiqueta.featuresModelo2(datos,inicioEntrena,finEntrena,hback,percentiles=False)
+
+    #Añade la columna clase
+    entrenaDis.loc[:,('Clase')]=entrenamiento['Clase']
+    entrenaCon.loc[:,('Clase')]=entrenamiento['Clase']
+
+    #Crea los atributos para el conjunto de prueba
+    pruebaDis,pruebaCon,percentiles=etiqueta.featuresModelo2(datos,inicioPrueba,finPrueba,hback,percentiles=percentiles)
+
+    #Obtiene el data frame que utiliza la función fitnessMetodo2
+    #del archivo etiqueta
+    prueba=etiqueta.subconjunto(datos,inicioPrueba,finPrueba)
+
+    #Entrena el modelo y obtiene la estrategia para el conjunto de prueba
+    if metodo=="c4.5":
+        #C4.5 utiliza atributos continuos
+        pruebaCon=clasificadorArbol(entrenaCon,pruebaCon)
+        prueba.loc[:,('Clase')]=pruebaCon['Clase']
+
+    elif metodo=="svm":
+        #SVM utiliza atributos continuos
+        pruebaCon=clasificadorSVM(entrenaCon,pruebaCon)
+        prueba.loc[:,('Clase')]=pruebaCon['Clase']
+
+    elif metodo=="mlp":
+        #MLP utiliza atributos continuos
+        pruebaCon=clasificadorMLP(entrenaCon,pruebaCon)
+        prueba.loc[:,('Clase')]=pruebaCon['Clase']
+
+    #Obtiene el exceso de ganacia sobre BH
+    exceso=etiqueta.fitnessMetodo2(prueba)
+
+    print "Entrenamiento " + inicioEntrena + " a " + finEntrena
+    print "Prueba " + inicioPrueba + " a " + finPrueba
+    print "Para el modelo " + metodo
+    print "El exceso sobre BH fue de " + str(round(exceso,6))
+    print "\n"
+
+    return exceso
