@@ -564,6 +564,35 @@
   );let
 );defun
 
+
+;;==============================================================================
+;; Función para evalauar la cobertura de una estrella para una observación
+;;
+;;  ENTRADA
+;;  observacion. Lista. observación a comparar
+;;  estrella. Lista creada con la función obten-estrella
+;;
+;;  SALIDA
+;;  Booleano. T si la estrella cubre la observación, nil en otro caso.
+;;
+;;==============================================================================
+(defun evalua-observacion (observacion estrella)
+  (let ((longitud-complejo 0) (contador-positivos 0))
+      (loop for complejo in estrella do
+          (setq longitud-complejo (length complejo))
+          (setq contador-positivos 0)
+
+          (loop for selector in complejo do
+            (if (evalua-selector observacion selector) (setq contador-positivos (1+ contador-positivos)))
+          );loop selector
+
+          (if (= contador-positivos longitud-complejo)
+             (return-from evalua-observacion t) )
+      );loop complejo
+    nil
+  );let
+);defun
+
 ;;==============================================================================
 ;; PENDIENTE
 ;; Simplificar reglas
