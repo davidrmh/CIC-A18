@@ -202,8 +202,13 @@ def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,
     SALIDA
     exceso: Float. Exceso de ganancia en el conjunto de prueba
     '''
+
     #Obtiene el prefijo del nombre e.g. naftrac
     prefijo=archivoDatos.split(".csv")[0]
+
+    #Archivo en donde se guardan los resultados
+    archivoResultados= prefijo + "-" + "resultados-" + metodo + ".txt"
+    f=open(archivoResultados,"a") #append
 
     #Lee el csv con todos los datos
     datos=etiqueta.leeTabla(archivoDatos)
@@ -245,10 +250,17 @@ def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,
     #Obtiene el exceso de ganacia sobre BH
     exceso=etiqueta.fitnessMetodo2(prueba)
 
+    f.write("Parametro hback = " + str(hback) + "\n")
     print "Entrenamiento " + inicioEntrena + " a " + finEntrena
+    f.write("Entrenamiento " + inicioEntrena + " a " + finEntrena + "\n")
     print "Prueba " + inicioPrueba + " a " + finPrueba
+    f.write("Prueba " + inicioPrueba + " a " + finPrueba + "\n")
     print "Para el modelo " + metodo
+    f.write("Para el modelo " + metodo + "\n")
     print "El exceso sobre BH fue de " + str(round(exceso,6))
+    f.write ("El exceso sobre BH fue de " + str(round(exceso,6)) + "\n")
     print "\n"
+    f.write("\n")
 
+    f.close()
     return exceso
