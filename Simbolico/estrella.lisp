@@ -576,7 +576,7 @@
 ;;  Booleano. T si la estrella cubre la observación, nil en otro caso.
 ;;
 ;;==============================================================================
-(defun evalua-observacion (observacion estrella)
+(defun pertenece-clase? (observacion estrella)
   (let ((longitud-complejo 0) (contador-positivos 0))
       (loop for complejo in estrella do
           (setq longitud-complejo (length complejo))
@@ -587,9 +587,68 @@
           );loop selector
 
           (if (= contador-positivos longitud-complejo)
-             (return-from evalua-observacion t) )
+             (return-from pertenece-clase? t) )
       );loop complejo
     nil
+  );let
+);defun
+
+;;==============================================================================
+;; Función para obtener las métricas de desempeño de una estrella específica
+;;
+;; ENTRADA
+;; estrella: Lista creada con la función obten-estrella
+;; positivas: Lista. Observaciones de la clase positiva (idealmente del conjuto de prueba)
+;; negativas: Lista. Observaciones de la clase negativa (idealmente del conjuto de prueba)
+;;
+;; SALIDA
+;; Lista con los siguientes componentes
+;; (first) accuracy
+;; (second) recall (clase-positiva)
+;; (third) precision (clase-positiva)
+;;==============================================================================
+(defun metricas (estrella positivas negativas)
+  (let ((verdaderos-negativos 0) (falsos-positivos 0) (falsos-negativos 0)
+        (verdaderos-positivos 0) (contador 0) (accuracy 0)
+        (precision 0) (recall 0))
+
+        ;calcula los verdaderos-negativos
+        (setq contador 0)
+        (loop for observacion in negativas do
+          (if (not (pertenece-clase? observacion estrella)) (incf contador))
+        );loop
+        (setq verdaderos-negativos contador)
+
+        ;calcula los falsos positivos
+        (setq contador 0)
+        (loop for observacion in negativas do
+          (if (pertenece-clase? observacion estrella) (incf contador))
+        );loop
+        (setq falsos-positivos contador)
+
+        ;calcula los falso-negativos
+        (setq contador 0)
+        (loop for observacion in positivas do
+          (if (not (pertenece-clase? observacion estrella)) (incf contador))
+        );loop
+        (setq falsos-negativos contador)
+
+        ;calcula los verdaderos-positivos
+        (setq contador 0)
+        (loop for observacion in positivas do
+          (if (pertenece-clase? observacion estrella) (incf contador))
+        );loop
+        (setq verdaderos-positivos contador)
+
+        ;calcula las métricas
+        (setq accuracy
+          (/ (+ verdaderos-negativos verdaderos-positivos)
+            (+ verdaderos-negativos verdaderos-positivos falsos-positivos falsos-negativos)))
+
+        (setq recall (/ verdaderos-positivos (+ verdaderos-positivos falsos-negativos)))
+
+        (setq precision (/ verdaderos-positivos (+ verdaderos-positivos falsos-positivos)))
+    (list accuracy recall precision)
   );let
 );defun
 
