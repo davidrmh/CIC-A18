@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import copy as cp
 import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
 
 ##==============================================================================
 ## Lee datos, quita los null
@@ -56,6 +57,37 @@ def subconjunto(datos,fechaInicio,fechaFin):
     subconjunto = datos[indiceInicio:(indiceFin + 1) ]
     subconjunto=subconjunto.reset_index(drop=True)
     return subconjunto
+
+##==============================================================================
+## Función para graficar una estrategia
+##==============================================================================
+def graficaEstrategia(datos):
+    '''
+    ENTRADA
+    datos: Pandas DataFrame con al menos las columnas Date, Adj Close y Clase
+
+    SALIDA
+    Gráfica de la estrategia
+    '''
+    indicesBuy=datos[datos['Clase']==1].index
+    indicesSell=datos[datos['Clase']==-1].index
+    indicesHold=datos[datos['Clase']==0].index
+    precios=datos['Adj Close']
+    fechaInicio=datos['Date'].iloc[0]
+    fechaFin=datos['Date'].iloc[-1]
+    formatter=DateFormatter('%y-%m-%d')
+    fechas=datos['Date']
+
+    fig, ax = plt.subplots()
+    plt.plot(fechas,precios,'-',color="blue",label="Precio de cierre")
+    plt.plot(precios.iloc[indicesBuy],'.',color="green",ms=15,label="Compra")
+    plt.plot(precios.iloc[indicesSell],'.',color="red",ms=15,label="Venta")
+    plt.plot(precios.iloc[indicesHold],'.',color="black",ms=15,label="Espera")
+    plt.title("Estrategia para el periodo " + fechaInicio + " -- " + fechaFin)
+    plt.legend(loc="best")
+    ax.xaxis.set_tick_params(rotation=80, labelsize=9)
+    plt.show()
+
 
 
 ##==============================================================================
