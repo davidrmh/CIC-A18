@@ -653,6 +653,17 @@
 );defun
 
 ;;==============================================================================
+;; Función para simplificar una estrella
+;;
+;; ENTRADA
+;; estrella. Lista creada con la función obten-estrella
+;;
+;; SALIDA
+;; nueva-estrella. Lista que representa una estrella con reglas generalizadas
+;;==============================================================================
+
+
+;;==============================================================================
 ;; Función main
 ;;(setq lista (main "datasets/flare.data2"))
 ;; ENTRADA
@@ -664,7 +675,7 @@
 ;; (second) Una lista con la estrella de cada clase
 ;; (third) Métricas de desempeño de cada clase
 ;;==============================================================================
-(defun main (nombre-archivo)
+(defun main (nombre-archivo &optional (proporcion 0.5))
   (let ((datos nil) (clases nil) (split nil) (entrenamiento nil) (prueba nil)
   (separacion nil) (positivas nil) (negativas nil) (filtradas nil) (separacion-prueba nil)
   (positivas-prueba nil) (negativas-prueba nil) (estrella nil) (estrellas nil)
@@ -676,7 +687,7 @@
 
     (loop for clase in clases do
       ;Separa el conjunto de datos
-      (setq split (split-data datos))
+      (setq split (split-data datos proporcion))
       (setq entrenamiento (first split))
       (setq prueba (second split))
       (setq separacion (separa-positivos entrenamiento clase *indice-clase*))
