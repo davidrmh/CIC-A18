@@ -648,33 +648,86 @@
         (setq recall (/ verdaderos-positivos (+ verdaderos-positivos falsos-negativos)))
 
         (setq precision (/ verdaderos-positivos (+ verdaderos-positivos falsos-positivos)))
-    (list accuracy recall precision)
+    (list (float accuracy) (float recall) (float precision) )
   );let
+);defun
+
+;;==============================================================================
+;; Función main
+;;(setq lista (main "datasets/flare.data2"))
+;; ENTRADA
+;; nombre-archivo. String. Ubicación del archivo con los datos
+;;
+;; SALIDA
+;; Lista con los siguientes componentes:
+;; (first) Clases
+;; (second) Una lista con la estrella de cada clase
+;; (third) Métricas de desempeño de cada clase
+;;==============================================================================
+(defun main (nombre-archivo)
+  (let ((datos nil) (clases nil) (split nil) (entrenamiento nil) (prueba nil)
+  (separacion nil) (positivas nil) (negativas nil) (filtradas nil) (separacion-prueba nil)
+  (positivas-prueba nil) (negativas-prueba nil) (estrella nil) (estrellas nil)
+    (performance nil) (metricas nil))
+
+    ;lee los datos y obtiene las clases posibles
+    (setq datos (lee-datos nombre-archivo))
+    (setq clases (obten-clases datos *indice-clase*))
+
+    (loop for clase in clases do
+      ;Separa el conjunto de datos
+      (setq split (split-data datos))
+      (setq entrenamiento (first split))
+      (setq prueba (second split))
+      (setq separacion (separa-positivos entrenamiento clase *indice-clase*))
+      (setq positivas (first separacion))
+      (setq negativas (second separacion))
+
+      ;quita observaciones contradictorias
+      (setq filtradas (quita-contradicciones positivas negativas))
+      (setq positivas (first filtradas))
+      (setq negativas (second filtradas))
+
+      ;crea la estrella
+      ;hasta obtener una estrella distinta de nil
+      (loop
+        (setq estrella (obten-estrella positivas negativas))
+        (when (not (equal estrella nil)) (return t) )
+      )
+
+
+      ;obtiene el conjunto de prueba
+      (setq separacion-prueba (separa-positivos prueba clase *indice-clase*))
+      (setq positivas-prueba (first separacion-prueba))
+      (setq negativas-prueba (second separacion-prueba))
+      (setq filtradas (quita-contradicciones positivas-prueba negativas-prueba))
+      (setq positivas-prueba (first filtradas))
+      (setq negativas-prueba (second filtradas))
+
+      ;calcula las métricas
+      (setq performance (metricas estrella positivas-prueba negativas-prueba))
+
+      ;Imprime resultados en pantalla
+      (format t "~%Para la clase ~a se tiene que:~%" clase)
+      (format t "Accuracy = ~a~%" (first performance) )
+      (format t "Recall = ~a~%" (second performance) )
+      (format t "Precision = ~a~%" (third performance) )
+
+      ;Guarda los resultados de la clase
+      (push estrella estrellas)
+      (push performance metricas)
+
+    );loop clase
+
+    (list clases estrellas metricas)
+  );let
+
 );defun
 
 ;;==============================================================================
 ;; PENDIENTE
 ;; Simplificar reglas
-;; Main
-;; Evaluar conjunto de prueba y medidas de desempeño
 ;;==============================================================================
 
-;(H D C B E F) (problemas con clase D)
-;lee-datos
-;(setq split (split-data datos))
-;(setq entrenamiento (first split))
-;(setq prueba (second split))
-;(setq separacion (separa-positivos entrenamiento 'F 0))
-;(setq positivas (first separacion))
-;(setq negativas (second separacion))
-;(setq filtradas (quita-contradicciones positivas negativas))
-;(setq positivas (first filtradas))
-;(setq negativas (second filtradas))
-;(obten-estrella positivas negativas)
-
-;H (((EQUAL 2 X)))
-;D (((EQUAL 4 3) (EQUAL 3 1) (EQUAL 2 I) (EQUAL 1 A)))
-;C (((EQUAL 6 1) (EQUAL 3 1) (EQUAL 2 O) (EQUAL 1 A)))
-;B (((EQUAL 1 X)))
-;E (((EQUAL 8 1) (EQUAL 4 2) (EQUAL 1 K)) ((EQUAL 8 1) (EQUAL 2 C)))
-;F (((EQUAL 4 2) (EQUAL 3 2) (EQUAL 1 A)))
+;PARA DEBUG
+;(defvar datos) (defvar nombre-archivo "datasets/flare.data2") (defvar clases) (defvar split) (defvar entrenamiento) (defvar prueba) (defvar separacion) (defvar positivas) (defvar negativas) (defvar filtradas) (defvar separacion-prueba) (defvar positivas-prueba) (defvar negativas-prueba) (defvar estrella) (defvar performance)
