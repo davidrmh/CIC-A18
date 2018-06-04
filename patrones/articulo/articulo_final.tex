@@ -53,17 +53,17 @@ En \cite{Leigh2002}, se utilizan heurísticas que permiten detectar el patrón de 
 
 \cite{Potvin2004}, continuan con el trabajo de \cite{Allen1999}, eliminando los costos de transacción y considerando otra forma de crear los árboles. Obtienen resultados favorecedores en mercados estables y a la baja pero no en mercados alcistas.\\
 
-\cite{Scott2010}, también utilizan programación genética para determinar sus estrategias, siendo la principal característica de este trabajo el uso de precios y decisiones mensuales; consideran costos de transacción y logran vencer la estrategia de \textit{Buy and Hold}\\
+\cite{Scott2010}, también utilizan programación genética para determinar sus estrategias, siendo la principal característica de este trabajo el uso de precios y decisiones mensuales; consideran costos de transacción y logran vencer la estrategia de \textit{Buy and Hold}.\\
 
-En \cite{Leitao2016}, se utilizan \textit{Puntos perceptualmente importantes} (PIP por sus siglas en inglés) y \textit{Aproximación agregada simbólica} (SAX en inglés) con el fin de reducir la dimensión de la serie de tiempo y expresarla utilizando símbolos, además utilizan un algoritmo genético para poder obtener estrategias de inversión a partir de los mismos. Obtienen resultados favorables pero no consideran costos de transacción\\
+En \cite{Leitao2016}, se utilizan \textit{puntos perceptualmente importantes} (PIP por sus siglas en inglés) y \textit{aproximación agregada simbólica} (SAX en inglés) con el fin de reducir la dimensión de la serie de tiempo y expresarla utilizando símbolos, además utilizan un algoritmo genético para poder obtener estrategias de inversión a partir de los mismos. Obtienen resultados favorables pero no consideran costos de transacción\\
 
-Finalmente, en \cite{Kampouridis2017} se utiliza una escala de tiempo basada en eventos y no una escala de tiempo físico; definen lo que son los \textit{cambios direccionales} y con base en estos buscan obtener señales de compra y venta; además las ganancias obtenidas son ajustadas a una medida de riesgo, consideran costos de transacción y vencen a estrategie \textit{Buy and Hold}.
+Finalmente, en \cite{Kampouridis2017} se utiliza una escala de tiempo basada en eventos y no una escala de tiempo físico; definen lo que son los \textit{cambios direccionales} y con base en estos buscan obtener señales de compra y venta; además las ganancias obtenidas son ajustadas a una medida de riesgo, consideran costos de transacción y vencen a la estrategia \textit{Buy and Hold}.
 %Incluir una tabla comparativa
 
 \section{Fundamentos}
 
 \subsection{Análisis técnico}
-De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las acciones con la intención de tomar decisiones de inversión que generen ganancias. Los supuestos básicos de este tipo de análisis son los siguientes:
+De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las acciones con la intención de guiar las  decisiones de inversión. Los supuestos básicos de este tipo de análisis son los siguientes:
 
 \begin{itemize}
 	\item Los precios están determinados únicamente por la interacción de la oferta y la demanda.
@@ -89,12 +89,12 @@ En su versión semi-fuerte, la hipótesis del mercado eficiente nos dice que la in
 \subsubsection{Versión fuerte de la HME}
 En su versión fuerte, la hipótesis del mercado eficiente nos dice que tanto la información pública como la privilegiada no nos permiten obtener pronosticar los movimientos del mercado.
 
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
-%	\caption{Versiones de la hipótesis del mercado eficiente}
-%	\label{fig:HME}
-%\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
+	\caption{Versiones de la hipótesis del mercado eficiente}
+	\label{fig:HME}
+\end{figure}
 
 \subsection{Estrategia Buy and Hold (BH)}
 Esta estrategia de inversión es la estrategia sugerida por la hipótesis del mercado eficiente y consiste en lo siguiente:
@@ -108,12 +108,12 @@ Esta estrategia de inversión es la estrategia sugerida por la hipótesis del merc
 
 de acuerdo a la HME, la ganancia (pérdida) obtenida por la estrategia BH es la máxima (mínima) ganancia (pérdida) que se puede obtener de manera sistemática. Por lo tanto, esta estrategia será utilizada como marco de referencia al momento de compara las estrategias de inversión derivadas por los algoritmos propuestos.
 
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
-%	\caption{Estrategia Buy and Hold}
-%	\label{fig:BH}
-%\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
+	\caption{Estrategia Buy and Hold}
+	\label{fig:BH}
+\end{figure}
 
 \subsection{Títulos referenciados a acciones}
 De acuerdo al sitio de la Bolsa Mexicana de Valores \footnote{https://www.bmv.com.mx/es/mercados/instrumentos}, el mercado mexicano cuenta con Títulos Referenciados a Acciones (TRACS), los cuales son certificados de participación que representan el patrimonio de fideicomisos de inversión y que mantienen en posición canastas de acciones de empresas cotizadas en bolsa además de una componente en efectivos. El objetivo principal de los TRACs, es replicar el comportamiento de las acciones al que está referido.
@@ -149,6 +149,14 @@ Para etiquetar el conjunto de entrenamiento se utilizó un algoritmo de estimació
 Con este algoritmo se trata de encontrar la mejor estrategia para el periodo de entrenamiento, es decir, aquella estrategia que nos habría generado las mayores ganancias.
 
 Cada individuo en la población se codificó como un vector, $\mathbf{x}$, el cual representa una estrategia de inversión y tiene un número de componentes igual al número de días en el periodo de entrenamiento. Cada componente del vector toma un valor dentro conjunto $\{-1,0,1\}$ con $-1,0,1;$ representando señales de venta, no hacer nada y compra, respectivamente. De esta manera la \textit{i-ésima} componente representa la decisión tomada en el día $i$. El algoritmo busca individuos con la combinación de estos números que genere mayor ganancia, la cual es medida como la ganancia generada por la estrategia del individuo (los componentes del vector $\mathbf{x}$) menos la ganancia generada por la estrategia de \textit{Buy and Hold}, esta cantidad es llamada el \textbf{exceso de ganancia} y deseamos maximizarla.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/estrategia}
+	\caption{Resultado del proceso de etiquetamiento}
+	\label{fig:emh}
+\end{figure}
+
 
 \subsection{Creación de atributos}
 Dado que los precios de las acciones no se mantienen en niveles semejantes a lo largo del tiempo, no es conveniente utilizarlos como atributos de nuestros patrones. En cambio, se optó por calcular las variaciones entre el \textbf{precio de cierre} de un día $t$, $P_t$, y los precios de cierre de un número de dias anteriores a este día, concretamente, $P_{t-1},P_{t-2},\ldots,P_{t-m}$, para $m \geq 1$, terminando con un total de $m$ atributos.

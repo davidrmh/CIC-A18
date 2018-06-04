@@ -80,9 +80,9 @@ def graficaEstrategia(datos):
 
     fig, ax = plt.subplots()
     plt.plot(fechas,precios,'-',color="blue",label="Precio de cierre")
-    plt.plot(precios.iloc[indicesBuy],'.',color="green",ms=15,label="Compra")
-    plt.plot(precios.iloc[indicesSell],'.',color="red",ms=15,label="Venta")
-    plt.plot(precios.iloc[indicesHold],'.',color="black",ms=15,label="Espera")
+    plt.plot(precios.iloc[indicesBuy],'.',color="green",ms=30,label="Compra")
+    plt.plot(precios.iloc[indicesSell],'.',color="red",ms=30,label="Venta")
+    plt.plot(precios.iloc[indicesHold],'.',color="black",ms=30,label="Espera")
     plt.title("Estrategia para el periodo " + fechaInicio + " -- " + fechaFin)
     plt.legend(loc="best")
     ax.xaxis.set_tick_params(rotation=80, labelsize=9)
