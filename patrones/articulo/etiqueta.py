@@ -790,7 +790,7 @@ def actualizaProbabilidades (mejores):
 ## Función para etiquetar los datos de acuerdo al método 2
 ##==============================================================================
 
-def etiquetaMetodo2 (datos,numGen=20,popSize=50):
+def etiquetaMetodo2 (datos,numGen=30,popSize=50):
     '''
     Etiqueta los datos utilizando un algoritmo genético que busca
     la combinación de señales compra,venta,hold que generen mayor ganancia
