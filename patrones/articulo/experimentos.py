@@ -147,6 +147,10 @@ def clasificadorArbol(entrenamiento,prueba):
         #Atributos utilizados para ajustar el modelo
         numAtributos=entrenamiento.shape[1]-3
 
+        #Normaliza los datos (Atributos con valores continuos)
+        entrenamientoNormalizados=preprocessing.scale(entrenamiento.iloc[:,0:numAtributos])
+        pruebaNormalizados=preprocessing.scale(prueba.iloc[:,0:numAtributos])
+
         #Ajusta modelo
         modelo=tree.DecisionTreeClassifier(random_state=0,max_depth=5)
         modelo.fit(entrenamiento.iloc[:,0:numAtributos],entrenamiento['Clase'])
@@ -175,6 +179,10 @@ def clasificadorMLP(entrenamiento,prueba):
         #Atributos utilizados para ajustar el modelo
         numAtributos=entrenamiento.shape[1]-3
 
+        #Normaliza los datos (Atributos con valores continuos)
+        entrenamientoNormalizados=preprocessing.scale(entrenamiento.iloc[:,0:numAtributos])
+        pruebaNormalizados=preprocessing.scale(prueba.iloc[:,0:numAtributos])
+        
         #ajusta modelo
         modelo=MLPClassifier(solver="lbfgs",alpha=1e-5,random_state=0,hidden_layer_sizes=(10,numAtributos))
         modelo.fit(entrenamiento.iloc[:,0:numAtributos],entrenamiento['Clase'])
