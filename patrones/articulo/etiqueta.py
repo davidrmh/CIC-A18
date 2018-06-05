@@ -933,6 +933,46 @@ def featuresModelo2 (datos,fechaInicio,fechaFin,hback=7,percentiles=False):
 
     return etiquetas,continuos,percentiles
 
+##==============================================================================
+## Otra función para obtener los atributos
+##==============================================================================
+def featuresVer2Modelo2(datos,inicio,fin):
+    '''
+    Es una función sencilla la cual sólo extrae los precios
+    Open High Low y Adj Close del día.
+
+    Utilizar este método sólo con clasificadores que admiten atributos
+    continuos.
+
+    ENTRADA
+    datos: Pandas DataFrame con al menos las columnas Open High Low y Adj Close
+    (idealmente el archivo creado con la función leeTabla)
+
+    inicio: String en formato 'YYYY-MM-DD' que indica la fecha de inicio
+
+    fin: String en formato 'YYYY-MM-DD' que indica la fecha final
+
+    SALIDA
+    features: Pandas DataFrame con las columnas Open High Low y Adj Close
+    '''
+
+    indiceInicio=datos[datos['Date']==inicio].index[0]
+    indiceFin=datos[datos['Date']==fin].index[0]
+    features=pd.DataFrame()
+    features['Open']=datos['Open'].iloc[indiceInicio:(indiceFin+1)]
+    features['Low']=datos['Low'].iloc[indiceInicio:(indiceFin+1)]
+    features['High']=datos['High'].iloc[indiceInicio:(indiceFin+1)]
+    features['Adj Close']=datos['Adj Close'].iloc[indiceInicio:(indiceFin+1)]
+    features['Date']=datos['Date'].iloc[indiceInicio:(indiceFin+1)]
+    #Esta última columna es para ajustar a la forma que debe de tener
+    #la tabla para poder ser utilizada por los modelos del archivo
+    #experimentos.py
+    features['Adj Close Aux']=datos['Adj Close'].iloc[indiceInicio:(indiceFin+1)]
+    features=features.reset_index(drop=True)
+
+    return features
+
+
 ##=============================================================================
 ## Función para guardar los conjuntos de entrenamiento etiquetados
 ##=============================================================================

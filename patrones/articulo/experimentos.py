@@ -188,7 +188,7 @@ def clasificadorMLP(entrenamiento,prueba):
 ##==============================================================================
 ##                              EVALUA MÉTODO 2
 ##==============================================================================
-def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,metodo="svm",hback=21):
+def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,metodo="svm",hback=21,features=1):
     '''
     ENTRADA
     archivoDatos: String. Nombre del archivo csv de Yahoo Finance
@@ -218,14 +218,21 @@ def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,
     entrenamiento=pd.read_csv(archivoEntrena)
 
     #Crea los atributos para el conjunto de entrenamiento
-    entrenaDis,entrenaCon,percentiles=etiqueta.featuresModelo2(datos,inicioEntrena,finEntrena,hback,percentiles=False)
+    #de acuerdo al método especificado
+    if features==1:
+        entrenaDis,entrenaCon,percentiles=etiqueta.featuresModelo2(datos,inicioEntrena,finEntrena,hback,percentiles=False)
 
-    #Añade la columna clase
-    entrenaDis.loc[:,('Clase')]=entrenamiento['Clase']
-    entrenaCon.loc[:,('Clase')]=entrenamiento['Clase']
+        #Añade la columna clase
+        entrenaDis.loc[:,('Clase')]=entrenamiento['Clase']
+        entrenaCon.loc[:,('Clase')]=entrenamiento['Clase']
 
-    #Crea los atributos para el conjunto de prueba
-    pruebaDis,pruebaCon,percentiles=etiqueta.featuresModelo2(datos,inicioPrueba,finPrueba,hback,percentiles=percentiles)
+        #Crea los atributos para el conjunto de prueba
+        pruebaDis,pruebaCon,percentiles=etiqueta.featuresModelo2(datos,inicioPrueba,finPrueba,hback,percentiles=percentiles)
+
+    elif features==2:
+        entrenaCon=etiqueta.featuresVer2Modelo2(datos,inicioEntrena,finEntrena)
+        entrenaCon.loc[:,('Clase')]=entrenamiento['Clase']
+        pruebaCon=etiqueta.featuresVer2Modelo2(datos,inicioPrueba,finPrueba)
 
     #Obtiene el data frame que utiliza la función fitnessMetodo2
     #del archivo etiqueta
@@ -249,8 +256,8 @@ def evaluaMetodo2 (archivoDatos,inicioEntrena,finEntrena,inicioPrueba,finPrueba,
 
     #Obtiene el exceso de ganacia sobre BH
     exceso=etiqueta.fitnessMetodo2(prueba)
-
-    f.write("Parametro hback = " + str(hback) + "\n")
+    if features==1:
+        f.write("Parametro hback = " + str(hback) + "\n")
     print "Entrenamiento " + inicioEntrena + " a " + finEntrena
     f.write("Entrenamiento " + inicioEntrena + " a " + finEntrena + "\n")
     print "Prueba " + inicioPrueba + " a " + finPrueba
