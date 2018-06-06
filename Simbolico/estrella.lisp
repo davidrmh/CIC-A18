@@ -1,9 +1,9 @@
 ;;==============================================================================
 ;;                            VARIABLES GLOBALES
 ;;==============================================================================
-(defparameter *indices-atributos* '(1 2 3 4 5 6 7 8 9))
+(defparameter *indices-atributos* '(0 1 2 3 4 5 6 ))
 (defparameter *operador* 'equal)
-(defparameter *indice-clase* 0) ;índice de la columna que tiene la clase
+(defparameter *indice-clase* 7) ;índice de la columna que tiene la clase
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -661,7 +661,35 @@
 ;; SALIDA
 ;; nueva-estrella. Lista que representa una estrella con reglas generalizadas
 ;;==============================================================================
+(defun simplifica (estrella)
+  (let ((nueva-estrella nil) (nuevos-complejos nil) (num-selectores 0)
+        (indice 0)  )
+    (loop for complejo in estrella do
 
+      (setq nuevos-complejos nil)
+      ;La idea es quitar un selector (generalización de P and Q => C; P => C)
+      (setq num-selectores (length complejo))
+
+      ;Si el complejo está formado por un solo selector, no hacer nada
+      (when (= num-selectores 1)
+        (push (nth 0 complejo) nuevos-complejos)
+      );when
+
+      ;Si el complejo tiene al menos dos selectores, quitar uno al azar
+      (setq indice (random num-selectores)) ;el índice de quien se quitará
+      (when (> num-selectores 1)
+        (loop for i from 0 to (- num-selectores 1) do
+          (if (/= i indice) (push (nth i complejo) nuevos-complejos) )
+        );loop
+      );when
+
+      ;agrega el complejo resultante a la nueva estrella
+      (push  nuevos-complejos nueva-estrella)
+    );loop complejo
+    (setq nueva-estrella (reverse nueva-estrella))
+    nueva-estrella
+  );let
+);defun
 
 ;;==============================================================================
 ;; Función main
@@ -705,6 +733,9 @@
         (setq estrella (obten-estrella positivas negativas))
         (when (not (equal estrella nil)) (return t) )
       )
+
+      ;Simplifica la estrella
+      (setq estrella (simplifica estrella))
 
 
       ;obtiene el conjunto de prueba
