@@ -25,7 +25,7 @@ A pesar de que la idea básica es: "comprar barato hoy para vender a un precio ma
 
 El objetivo de este trabajo consiste en proponer un método o algoritmo para la generación de señales de compra o venta en el mercado accionario mexicano.
 
-Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) superiores (menores) a las generadas por la \textbf{hipótesis del mercado eficiente} la cual se discutirá en la sección 3 y básicamente consiste en lo siguiente:
+Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) superiores (menores) a las generadas por la \textbf{hipótesis del mercado eficiente} la cual se discutirá en la sección 3 y que básicamente consiste en lo siguiente:
 
 \begin{itemize}
 	\item Fijar un periodo de tiempo $[0,T]$.
@@ -36,7 +36,7 @@ Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) 
 
 Este trabajo busca también comparar el desempeño de distintas metodologías relacionadas al reconocimiento de patrones cuando se aplican al proceso de detectar señales de compra o venta de acciones.
 
-Finalmente, la aportación de este trabajo es el análisis del mercado accionario mexicano, desde una perspectiva del área de reconocimiento de patrones.
+Finalmente, se consideran dos aportaciones, la primera es el análisis del mercado accionario mexicano desde una perspectiva del área de reconocimiento de patrones; la segunda, consiste en la propuesta de un método de etiquetamiento para las series de tiempo que representan los precios de estas acciones.
 
 %\begin{itemize}
 %	\item Motivación (justificación).
@@ -173,9 +173,9 @@ Se utilizaron dos métodos para obtener los atributos a considerar:
 Para cada conjunto de entrenamiento y prueba se evaluaron los siguientes modelos:
 
 \begin{itemize}
-	\item Support Vector Machine
-	\item Multilayer Perceptron
-	\item C4.5
+	\item Support Vector Machine (kernel gaussiano, dando mayor importancia a las señales de compra y venta)
+	\item Multilayer Perceptron (1 capa oculta con 10 neuronas, ReLu como activación)
+	\item C4.5 (máxima profundidad 5)
 \end{itemize}
 
 La métrica de desempeño será el \textbf{exceso de ganancia}, la cual se calcula bajo los siguientes supuestos.
@@ -382,11 +382,13 @@ Como se puede observar, de los tres modelos utilizados, el mejor fue aquel que u
 
 Es además importante observar que el método de etiquetamiento, por si mismo, da evidencia sobre la existencia de estrategias que superan a la estrategia \textit{Buy and Hold}, descartando así la validez de la hipótesis del mercado eficiente.
 
-Las futuras direcciones de este trabajo podrían ser las siguientes:
+Las direcciones futuras de este trabajo podrían ser las siguientes:
+
 \begin{itemize}
 	\item Analizar la inclusión de indicadores técnicos.
 	\item Probar con nuevas formas de calcular los atributos de las observaciones.
 	\item Probar con otros métodos de clasificación de patrones.
+	\item Probar distintas frecuencias de muestreo.
 \end{itemize}
 %Trabajo futuro: Considerar medidas de riesgo
 %Métodos simbólicos
