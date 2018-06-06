@@ -1,9 +1,9 @@
 ;;==============================================================================
 ;;                            VARIABLES GLOBALES
 ;;==============================================================================
-(defparameter *indices-atributos* '(0 1 2 3 4 5 6 ))
+(defparameter *indices-atributos* '(1 2 3 4 5 6 7 8 9))
 (defparameter *operador* 'equal)
-(defparameter *indice-clase* 7) ;índice de la columna que tiene la clase
+(defparameter *indice-clase* 0) ;índice de la columna que tiene la clase
 
 ;;==============================================================================
 ;; Función para leer los datos
