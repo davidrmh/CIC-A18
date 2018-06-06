@@ -182,7 +182,7 @@ def clasificadorMLP(entrenamiento,prueba):
         #Normaliza los datos (Atributos con valores continuos)
         entrenamientoNormalizados=preprocessing.scale(entrenamiento.iloc[:,0:numAtributos])
         pruebaNormalizados=preprocessing.scale(prueba.iloc[:,0:numAtributos])
-        
+
         #ajusta modelo
         modelo=MLPClassifier(solver="lbfgs",alpha=1e-5,random_state=0,hidden_layer_sizes=(10,numAtributos))
         modelo.fit(entrenamiento.iloc[:,0:numAtributos],entrenamiento['Clase'])
