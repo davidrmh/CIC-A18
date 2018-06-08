@@ -1,11 +1,12 @@
 # coding: utf-8
 import numpy as np
+import copy as cp
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 ##==============================================================================
-## Funciones bencharmk para probar algoritmos de optimización
+## Funciones benchmak para probar algoritmos de optimización
 ## Se trabajará en el plano R3
 ##==============================================================================
 
@@ -171,3 +172,92 @@ def holder(x,y):
     '''
 
     return -np.abs(np.sin(x)*np.cos(y)*np.exp(np.abs(1 - np.sqrt(x**2 + y**2)/np.pi)))
+
+##==============================================================================
+##                           ALGORITMOS DE OPTIMIZACIÓN
+##==============================================================================
+
+##==============================================================================
+##                          VARIABLES GLOBALES
+##==============================================================================
+beta=1 #Para EP
+gamma=0 #Para EP
+
+##==============================================================================
+## Función para crear poblaciones iniciales
+## La población será representada por una matriz de numIndividuos x 2
+##==============================================================================
+def generaPoblacion(numIndividuos,limInf,limSup):
+    '''
+    ENTRADA
+    numIndividuos: Entero. Número de individuos en la población
+    limInf: Real. Límite inferior del dominio de búsqueda
+    limSup: Real. Límite superior del dominio de búsqueda
+
+    SALIDA
+    poblacion. Numpy Array 2D. Matriz cuyo elemento [i,j] representa
+    el valor del individuo i en el componente j
+    '''
+
+    poblacion = np.random.uniform(limInf,limSup,size=(numIndividuos,2))
+
+    return poblacion
+
+##==============================================================================
+## Algoritmo de optimización utilizando programación evolutiva
+## OBSERVACIÓN: Este algoritmo funciona para funciones objetivo >= 0
+##==============================================================================
+def EP(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
+    '''
+    ENTRADA
+    objetivo: Funcion. Alguno de los benchmarks
+
+    numIndividuos: Entero. Número de individuos de la población
+
+    numGeneraciones: Entero. Número de generaciones
+
+    limInf: Real. Límite inferior del dominio de búsqueda
+
+    limSup: Real. Límite superior del dominio de búsqueda
+
+    SALIDA
+    mejorIndividuo: Arreglo con dos componentes representando la mejor solución
+    '''
+
+    #Genera población inicial
+    poblacion=generaPoblacion(numIndividuos,limInf,limSup)
+
+    mejorFitness=10000
+
+    for i in range(0,numGeneraciones):
+
+        for j in range(0,numIndividuos):
+            #Individuo actual
+            #y su aptitud
+            individuoActual=poblacion[j]
+            fitnessActual=objetivo(individuoActual[0],individuoActual[1])
+
+            if fitnessActual < mejorFitness:
+                mejorFitness=fitnessActual
+                mejorIndividuo=individuoActual
+
+            #Crea un nuevo individuo
+            r=np.random.normal(size=(1,2))
+
+            #Utilizo max para evitar argumentos negativos
+            nuevoIndividuo=individuoActual + r*np.sqrt(max(beta*fitnessActual + gamma,0))
+
+            nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
+
+            #Compara individuos
+            if nuevoFitness < fitnessActual:
+                poblacion[j]=nuevoIndividuo
+
+            if nuevoFitness < mejorFitness:
+                mejorFitness=nuevoFitness
+                mejorIndividuo=nuevoIndividuo
+
+        print "Fin de la generación " + str(i+1)
+        print "Mejor aptitud hasta el momento " + str(mejorFitness)
+
+    return mejorIndividuo
