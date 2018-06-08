@@ -45,11 +45,11 @@ def grafica(limInf,limSup,step,funcion,puntos=[]):
         if puntos:
             pz=sphere(puntos[0],puntos[1])
 
-    elif funcion=='schwefel':
-        z=schwefel(x,y)
-        titulo='Schwefel'
+    elif funcion=='schaffer':
+        z=schaffer(x,y)
+        titulo='Schaffer'
         if puntos:
-            pz=schwefel(puntos[0],puntos[1])
+            pz=schaffer(puntos[0],puntos[1])
 
     elif funcion=='cross':
         z=cross(x,y)
@@ -115,12 +115,11 @@ def sphere(x,y):
     return np.sum(aux**2,axis=0)
 
 ##==============================================================================
-## Schwefel
-##  - \sum x_{i} sin (sqrt (abs (x_{i})))
-## Dominio de búsqueda [-500,500]
-## Óptimo en x=y=420.9687 con valor de 0
+## Schaffer No 2
+## Dominio de búsqueda [-100,100]
+## Óptimo en x=y=0 con valor de 0
 ##==============================================================================
-def schwefel(x,y):
+def schaffer(x,y):
     '''
     ENTRADA
     x,y:números reales o arreglos creados con np.meshgrid
@@ -128,9 +127,8 @@ def schwefel(x,y):
     SALIDA
     número real o arreglo de numpy
     '''
-    aux=np.array([x,y]) #Para poder vectorizar operaciones
 
-    return -1*np.sum(aux * np.sin(np.sqrt(np.abs(aux))),axis=0)
+    return 0.5 + ((np.sin(x**2-y**2))**2 - 0.5) / ((1 + 0.001*(x**2 + y**2))**2)
 
 ##==============================================================================
 ## Cross-in-tray function
@@ -256,6 +254,132 @@ def EP(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
             if nuevoFitness < mejorFitness:
                 mejorFitness=nuevoFitness
                 mejorIndividuo=nuevoIndividuo
+
+        print "Fin de la generación " + str(i+1)
+        print "Mejor aptitud hasta el momento " + str(mejorFitness)
+
+    return mejorIndividuo
+
+##==============================================================================
+## Algoritmo para la estrategia (1 + 1)
+##==============================================================================
+def onePlusOne(objetivo,numGeneraciones,limInf,limSup):
+    '''
+    ENTRADA
+    objetivo: Funcion. Alguno de los benchmarks
+
+    numGeneraciones: Entero. Número de generaciones
+
+    limInf: Real. Límite inferior del dominio de búsqueda
+
+    limSup: Real. Límite superior del dominio de búsqueda
+
+    SALIDA
+    mejorIndividuo: Arreglo con dos componentes representando la mejor solución
+    '''
+    #la población sólo consiste de un individuo
+    poblacion=generaPoblacion(1,limInf,limSup)
+
+    mejorFitness=10000
+
+    contadorExito=0
+    sigma=1.0
+    c=0.817
+    G=2 #min(n,30)
+
+    for i in range(0,numGeneraciones):
+
+        for j in range(0,1):
+            #Individuo actual
+            #y su aptitud
+            individuoActual=poblacion[j]
+            fitnessActual=objetivo(individuoActual[0],individuoActual[1])
+
+            if fitnessActual < mejorFitness:
+                mejorFitness=fitnessActual
+                mejorIndividuo=individuoActual
+
+            #Crea un nuevo individuo
+            r=np.random.normal(scale=sigma,size=(1,2))
+            nuevoIndividuo=individuoActual + r
+
+            nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
+
+            #Compara individuos
+            if nuevoFitness < fitnessActual:
+                poblacion[j]=nuevoIndividuo
+                contadorExito=contadorExito+1
+
+            if nuevoFitness < mejorFitness:
+                mejorFitness=nuevoFitness
+                mejorIndividuo=nuevoIndividuo
+
+            #Actualiza sigma
+            if i >= G:
+                if float(contadorExito)/G < 1.0/5:
+                    sigma=sigma*c**2
+                elif float(contadorExito)/G > 1.0/5:
+                    sigma = sigma / (c**2)
+                contadorExito=0
+
+        print "Fin de la generación " + str(i+1)
+        print "Mejor aptitud hasta el momento " + str(mejorFitness)
+
+    return mejorIndividuo
+
+##==============================================================================
+## Algoritmo para la estrategia (1 + 1)
+## sin ajuste del parámetro sigma
+##==============================================================================
+def onePlusOneVer2(objetivo,numGeneraciones,limInf,limSup):
+    '''
+    ENTRADA
+    objetivo: Funcion. Alguno de los benchmarks
+
+    numGeneraciones: Entero. Número de generaciones
+
+    limInf: Real. Límite inferior del dominio de búsqueda
+
+    limSup: Real. Límite superior del dominio de búsqueda
+
+    SALIDA
+    mejorIndividuo: Arreglo con dos componentes representando la mejor solución
+    '''
+    #la población sólo consiste de un individuo
+    poblacion=generaPoblacion(1,limInf,limSup)
+
+    mejorFitness=10000
+
+    contadorExito=0
+    sigma=1.0
+
+    for i in range(0,numGeneraciones):
+
+        for j in range(0,1):
+            #Individuo actual
+            #y su aptitud
+            individuoActual=poblacion[j]
+            fitnessActual=objetivo(individuoActual[0],individuoActual[1])
+
+            if fitnessActual < mejorFitness:
+                mejorFitness=fitnessActual
+                mejorIndividuo=individuoActual
+
+            #Crea un nuevo individuo
+            r=np.random.normal(scale=sigma,size=(1,2))
+            nuevoIndividuo=individuoActual + r
+
+            nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
+
+            #Compara individuos
+            if nuevoFitness < fitnessActual:
+                poblacion[j]=nuevoIndividuo
+                contadorExito=contadorExito+1
+
+            if nuevoFitness < mejorFitness:
+                mejorFitness=nuevoFitness
+                mejorIndividuo=nuevoIndividuo
+
 
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
