@@ -271,7 +271,7 @@ def EP(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
 
-    return mejorIndividuo
+    return mejorIndividuo,mejorFitness
 
 ##==============================================================================
 ## Algoritmo de optimización utilizando programación evolutiva
@@ -354,7 +354,7 @@ def EPVer2(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
 
-    return mejorIndividuo
+    return mejorIndividuo,mejorFitness
 
 
 ##==============================================================================
@@ -433,7 +433,7 @@ def onePlusOne(objetivo,numGeneraciones,limInf,limSup):
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
 
-    return mejorIndividuo
+    return mejorIndividuo,mejorFitness
 
 ##==============================================================================
 ## Algoritmo para la estrategia (1 + 1)
@@ -504,7 +504,7 @@ def onePlusOneVer2(objetivo,numGeneraciones,limInf,limSup):
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
 
-    return mejorIndividuo
+    return mejorIndividuo,mejorFitness
 
 ##==============================================================================
 ## Evolución diferencial
@@ -598,4 +598,90 @@ def DE(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
 
-    return mejorIndividuo
+    return mejorIndividuo,mejorFitness
+
+##==============================================================================
+## Función main
+##==============================================================================
+def main():
+    f=open("resultados-benchmarks.txt",'w')
+    objetivos=['eggholder','sphere','schaffer','cross','holder']
+    algoritmos=['EP','EPVer2','onePlusOne','onePlusOneVer2','DE']
+
+    for obj in objetivos:
+        if obj=='eggholder':
+            objetivo=eggholder
+            limInf=-512
+            limSup=512
+            solucion=np.array([512,404.2319])
+            fopt=-959.6407
+        elif obj=='sphere':
+            objetivo=sphere
+            limInf=-1
+            limSup=1
+            solucion=np.array([0,0])
+            fopt=0
+        elif obj=='schaffer':
+            objetivo=schaffer
+            limInf=-100
+            limSup=100
+            solucion=np.array([0,0])
+            fopt=0
+        elif obj=='cross':
+            objetivo=cross
+            limInf=-10
+            limSup=10
+            solucion=np.array([[1.34941,-1.34941],[1.34941,1.34941],[-1.34941,1.34941],[-1.34941,-1.34941]])
+            fopt=-2.06261
+        elif obj=='holder':
+            objetivo=holder
+            limInf=-10
+            limSup=10
+            solucion=np.array([[8.05502,9.66459],[-8.05502,9.66459],[-8.05502,-9.66459],[8.05502,-9.66459]])
+            fopt=-19.2085
+
+        for algoritmo in algoritmos:
+            if algoritmo=='EP':
+                mejor,valorMejor=EP(objetivo,500,40,limInf,limSup)
+                f.write("Para la funcion " + obj + "\n")
+                f.write("Con el algoritmo " + algoritmo)
+                f.write("Se obtiene un optimo en " + str(mejor) + '\n')
+                f.write("Con un valor de " + str(valorMejor) + '\n')
+                f.write("El optimo verdadero se encuentra en " + str(solucion) + '\n')
+                f.write("Con un valor de " + str(fopt) + '\n')
+            elif algoritmo=='EPVer2':
+                mejor,valorMejor=EPVer2(objetivo,500,40,limInf,limSup)
+                f.write("Para la funcion " + obj + "\n")
+                f.write("Con el algoritmo " + algoritmo)
+                f.write("Se obtiene un optimo en " + str(mejor) + '\n')
+                f.write("Con un valor de " + str(valorMejor) + '\n')
+                f.write("El optimo verdadero se encuentra en " + str(solucion) + '\n')
+                f.write("Con un valor de " + str(fopt) + '\n')
+            elif algoritmo=='onePlusOne':
+                mejor,valorMejor=onePlusOne(objetivo,500,limInf,limSup)
+                f.write("Para la funcion " + obj + "\n")
+                f.write("Con el algoritmo " + algoritmo)
+                f.write("Se obtiene un optimo en " + str(mejor) + '\n')
+                f.write("Con un valor de " + str(valorMejor) + '\n')
+                f.write("El optimo verdadero se encuentra en " + str(solucion) + '\n')
+                f.write("Con un valor de " + str(fopt) + '\n')
+            elif algoritmo=='onePlusOneVer2':
+                mejor,valorMejor=onePlusOneVer2(objetivo,500,limInf,limSup)
+                f.write("Para la funcion " + obj + "\n")
+                f.write("Con el algoritmo " + algoritmo)
+                f.write("Se obtiene un optimo en " + str(mejor) + '\n')
+                f.write("Con un valor de " + str(valorMejor) + '\n')
+                f.write("El optimo verdadero se encuentra en " + str(solucion) + '\n')
+                f.write("Con un valor de " + str(fopt) + '\n')
+            elif algoritmo=='DE':
+                mejor,valorMejor=DE(objetivo,500,40,limInf,limSup)
+                f.write("Para la funcion " + obj + "\n")
+                f.write("Con el algoritmo " + algoritmo)
+                f.write("Se obtiene un optimo en " + str(mejor) + '\n')
+                f.write("Con un valor de " + str(valorMejor) + '\n')
+                f.write("El optimo verdadero se encuentra en " + str(solucion) + '\n')
+                f.write("Con un valor de " + str(fopt) + '\n')
+    f.close()
+
+if __name__=='__main__':
+    main()
