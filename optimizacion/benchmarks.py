@@ -159,6 +159,7 @@ def cross(x,y):
 ## x: -8.05502, y:9.66459
 ## x: 8.05502, y:-9.66459
 ## x: -8.05502, y:-9.66459
+## con valor de -19.2085
 ##==============================================================================
 def holder(x,y):
     '''
@@ -205,7 +206,6 @@ def generaPoblacion(numIndividuos,limInf,limSup):
 
 ##==============================================================================
 ## Algoritmo de optimización utilizando programación evolutiva
-## OBSERVACIÓN: Este algoritmo funciona para funciones objetivo >= 0
 ##==============================================================================
 def EP(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
     '''
@@ -272,6 +272,90 @@ def EP(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
 
     return mejorIndividuo
+
+##==============================================================================
+## Algoritmo de optimización utilizando programación evolutiva
+## con adaptación de varianza
+##==============================================================================
+def EPVer2(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
+    '''
+    ENTRADA
+    objetivo: Funcion. Alguno de los benchmarks
+
+    numIndividuos: Entero. Número de individuos de la población
+
+    numGeneraciones: Entero. Número de generaciones
+
+    limInf: Real. Límite inferior del dominio de búsqueda
+
+    limSup: Real. Límite superior del dominio de búsqueda
+
+    SALIDA
+    mejorIndividuo: Arreglo con dos componentes representando la mejor solución
+    '''
+
+    #Genera población inicial
+    poblacion=generaPoblacion(numIndividuos,limInf,limSup)
+
+    #varianzas
+    var=np.random.uniform(size=(numIndividuos,2))
+
+    #epsilon
+    eps=np.array([0.001,0.001])
+
+    mejorFitness=10000
+    c=1
+
+    for i in range(0,numGeneraciones):
+
+        for j in range(0,numIndividuos):
+            #Individuo actual
+            #y su aptitud
+            individuoActual=poblacion[j]
+            fitnessActual=objetivo(individuoActual[0],individuoActual[1])
+
+            if fitnessActual < mejorFitness:
+                mejorFitness=fitnessActual
+                mejorIndividuo=individuoActual
+
+            #Crea un nuevo individuo
+            rx=np.random.normal(size=(1,2))
+            rv=np.random.normal(size=(1,2))
+
+            #Utilizo max para evitar argumentos negativos
+            nuevoIndividuo=individuoActual + + rx*np.sqrt(var[j])
+            nuevaVarianza=var[j] + rv*np.sqrt(c*var[j])
+
+            #Restringe al dominio de búsqueda
+            if nuevoIndividuo[0][0]<limInf:
+                nuevoIndividuo[0][0]=limInf
+            if nuevoIndividuo[0][0]>limSup:
+                nuevoIndividuo[0][0]=limSup
+
+            if nuevoIndividuo[0][1]<limInf:
+                nuevoIndividuo[0][1]=limInf
+            if nuevoIndividuo[0][1]>limSup:
+                nuevoIndividuo[0][1]=limSup
+
+            #restringe la nueva varianza
+            nuevaVarianza=np.max([nuevaVarianza[0],eps],axis=0)
+
+            nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
+
+            #Compara individuos
+            if nuevoFitness < fitnessActual:
+                poblacion[j]=nuevoIndividuo
+                var[j]=nuevaVarianza
+
+            if nuevoFitness < mejorFitness:
+                mejorFitness=nuevoFitness
+                mejorIndividuo=nuevoIndividuo
+
+        print "Fin de la generación " + str(i+1)
+        print "Mejor aptitud hasta el momento " + str(mejorFitness)
+
+    return mejorIndividuo
+
 
 ##==============================================================================
 ## Algoritmo para la estrategia (1 + 1)
@@ -403,7 +487,7 @@ def onePlusOneVer2(objetivo,numGeneraciones,limInf,limSup):
                 nuevoIndividuo[0][1]=limInf
             if nuevoIndividuo[0][1]>limSup:
                 nuevoIndividuo[0][1]=limSup
-            
+
 
             nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
 
