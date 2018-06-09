@@ -180,6 +180,8 @@ def holder(x,y):
 ##==============================================================================
 beta=1 #Para EP
 gamma=0 #Para EP
+fi1max=2.05 #Para PSO
+fi2max=2.05 #Para PSO
 
 ##==============================================================================
 ## Función para crear poblaciones iniciales
@@ -245,6 +247,17 @@ def EP(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
             #Utilizo max para evitar argumentos negativos
             nuevoIndividuo=individuoActual + r*np.sqrt(max(beta*fitnessActual + gamma,0))
 
+            #Restringe al dominio de búsqueda
+            if nuevoIndividuo[0][0]<limInf:
+                nuevoIndividuo[0][0]=limInf
+            if nuevoIndividuo[0][0]>limSup:
+                nuevoIndividuo[0][0]=limSup
+
+            if nuevoIndividuo[0][1]<limInf:
+                nuevoIndividuo[0][1]=limInf
+            if nuevoIndividuo[0][1]>limSup:
+                nuevoIndividuo[0][1]=limSup
+
             nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
 
             #Compara individuos
@@ -302,6 +315,17 @@ def onePlusOne(objetivo,numGeneraciones,limInf,limSup):
             #Crea un nuevo individuo
             r=np.random.normal(scale=sigma,size=(1,2))
             nuevoIndividuo=individuoActual + r
+
+            #Restringe al dominio de búsqueda
+            if nuevoIndividuo[0][0]<limInf:
+                nuevoIndividuo[0][0]=limInf
+            if nuevoIndividuo[0][0]>limSup:
+                nuevoIndividuo[0][0]=limSup
+
+            if nuevoIndividuo[0][1]<limInf:
+                nuevoIndividuo[0][1]=limInf
+            if nuevoIndividuo[0][1]>limSup:
+                nuevoIndividuo[0][1]=limSup
 
             nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
 
@@ -369,6 +393,18 @@ def onePlusOneVer2(objetivo,numGeneraciones,limInf,limSup):
             r=np.random.normal(scale=sigma,size=(1,2))
             nuevoIndividuo=individuoActual + r
 
+            #Restringe al dominio de búsqueda
+            if nuevoIndividuo[0][0]<limInf:
+                nuevoIndividuo[0][0]=limInf
+            if nuevoIndividuo[0][0]>limSup:
+                nuevoIndividuo[0][0]=limSup
+
+            if nuevoIndividuo[0][1]<limInf:
+                nuevoIndividuo[0][1]=limInf
+            if nuevoIndividuo[0][1]>limSup:
+                nuevoIndividuo[0][1]=limSup
+            
+
             nuevoFitness=objetivo(nuevoIndividuo[0][0],nuevoIndividuo[0][1])
 
             #Compara individuos
@@ -380,6 +416,100 @@ def onePlusOneVer2(objetivo,numGeneraciones,limInf,limSup):
                 mejorFitness=nuevoFitness
                 mejorIndividuo=nuevoIndividuo
 
+
+        print "Fin de la generación " + str(i+1)
+        print "Mejor aptitud hasta el momento " + str(mejorFitness)
+
+    return mejorIndividuo
+
+##==============================================================================
+## Evolución diferencial
+##==============================================================================
+def DE(objetivo,numIndividuos,numGeneraciones,limInf,limSup):
+
+    '''
+    ENTRADA
+    objetivo: Funcion. Alguno de los benchmarks
+
+    numIndividuos: Entero. Número de individuos de la población
+
+    numGeneraciones: Entero. Número de generaciones
+
+    limInf: Real. Límite inferior del dominio de búsqueda
+
+    limSup: Real. Límite superior del dominio de búsqueda
+
+    SALIDA
+    mejorIndividuo: Arreglo con dos componentes representando la mejor solución
+    '''
+
+    #Step size
+    F=(0.9+0.4)/2.0
+
+    #Crossover rate
+    c=(1.0+0.1)/2
+
+    #Población inicial
+    poblacion=generaPoblacion(numIndividuos,limInf,limSup)
+
+    #Mejor fitness
+    mejorFitness=100000
+
+    for i in range(0,numGeneraciones):
+
+        for j in range(0,numIndividuos):
+            individuoActual=poblacion[j]
+            fitnessActual=objetivo(individuoActual[0],individuoActual[1])
+
+            if fitnessActual < mejorFitness:
+                mejorFitness=fitnessActual
+                mejorIndividuo=individuoActual
+
+            #Construye los individuos auxiliares para crear
+            #un nuevo individuo
+            r=np.random.choice(np.arange(0,numIndividuos),size=3,replace=False)
+            while j in r:
+                r=np.random.choice(np.arange(0,numIndividuos),size=3,replace=False)
+            r1=r[0]
+            r2=r[1]
+            r3=[2]
+            indAux1=poblacion[r1]
+            indAux2=poblacion[r2]
+            indAux3=poblacion[r3]
+
+            candidato=indAux1 + F*(indAux2 - indAux3)
+
+            #Restringe al dominio de búsqueda
+            if candidato[0][0]<limInf:
+                candidato[0][0]=limInf
+            if candidato[0][0]>limSup:
+                candidato[0][0]=limSup
+
+            if candidato[0][1]<limInf:
+                candidato[0][1]=limInf
+            if candidato[0][1]>limSup:
+                candidato[0][1]=limSup
+
+            #Muta la dimension k
+            nuevoIndividuo=np.array([0,0]) #Este será el nuevo individuo
+            indiceJ=np.random.choice([0,1],size=1)[0]
+            for k in range(0,2):
+                u=np.random.uniform(size=1)[0]
+                if u < c or k==indiceJ:
+                    nuevoIndividuo[k]=candidato[0][k]
+                else:
+                    nuevoIndividuo[k]=individuoActual[k]
+
+            #Calcula el fitness del individuoActual y el nuevoIndividuo
+            fitnessNuevo=objetivo(nuevoIndividuo[0],nuevoIndividuo[1])
+
+            #Guarda el mejor
+            if fitnessNuevo < fitnessActual:
+                poblacion[j]=nuevoIndividuo
+
+            if fitnessNuevo < mejorFitness:
+                mejorFitness=fitnessNuevo
+                mejorIndividuo=nuevoIndividuo
 
         print "Fin de la generación " + str(i+1)
         print "Mejor aptitud hasta el momento " + str(mejorFitness)
