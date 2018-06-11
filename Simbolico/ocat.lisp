@@ -148,6 +148,38 @@
 );defun
 
 ;;==============================================================================
+;; Función para clasificar ejemplos positivos y negativos de acuerdo a una
+;; clase dada
+;;
+;; ENTRADA
+;; datos: Lista. Lista con las observaciones
+;; clase: Símbolo. Símbolo que representa la clase positiva. Debe de ser algún
+;; símbolo que regresa la función obten-clases
+;; indice: Entero. Índice (iniciando en 0) de la columna que tiene la clase
+;;
+;;
+;; SALIDA
+;; Una lista con los siguiente elementos
+;; (first) positivas. Lista. Lista (subconjuto de datos) con las observaciones
+;; que corresponden a la clase positiva
+;; (second) negativas. Lista Lista (subconjuto de datos) con las observaciones
+;; que corresponden a la clase negativa
+;;==============================================================================
+(defun separa-positivos (datos clase indice)
+  (let ((positivas nil) (negativas nil) (clase-aux nil)  )
+    (loop for observacion in datos do
+
+      ;Clase de la observación actual
+      (setq clase-aux (nth indice observacion))
+
+      (if (equal clase-aux clase)
+        (setq positivas (append positivas  (list observacion)))
+        (setq negativas (append negativas (list observacion)))) );loop
+  (list positivas negativas)
+  );let
+);defun
+
+;;==============================================================================
 ;; Función para crear los conjuntos val(xi)
 ;;
 ;; ENTRADA
@@ -232,7 +264,7 @@
     (loop for i from 0 to ind-reng do
       ;Extrae la i-ésima observación
       (setq observacion (nth i datos))
-      
+
       (setq renglon nil)
 
       (loop for j in indices-atributos do
