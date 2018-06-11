@@ -232,6 +232,8 @@
     (loop for i from 0 to ind-reng do
       ;Extrae la i-ésima observación
       (setq observacion (nth i datos))
+      
+      (setq renglon nil)
 
       (loop for j in indices-atributos do
         ;Extrae el valor del atributo j en la observación
