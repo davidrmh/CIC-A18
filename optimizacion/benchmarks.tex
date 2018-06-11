@@ -1,0 +1,60 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\author{David Ricardo Montalván Hernández}
+\begin{document}
+	\begin{center}
+	\textbf{Benchmarks}\\
+	David Ricardo Montalván Hernández
+	\end{center}
+
+\section{Función eggholder}
+$$f(x,y) = -(y+47) \sin{\sqrt{\left| \dfrac{x}{2} + (y+47)\right|} }
+- x\sin{\sqrt{\left| x - (y+47) \right|}} $$
+Para esta función se utilizó un algoritmo de programación evolutiva con ajuste para la varianza.
+
+El punto óptimo obtenido fue $(425.5677,447.7062)$ con un valor de $-873.1362$.
+
+El punto óptimo real es $(512,404.2319)$ con un valor de $-959.6407$.
+
+El problema con este algoritmo fue que la varianza se redujo prematuramente.
+
+Utilizando el mismo algoritmo pero sin ajustar dicho parámetro, se obtuvo el punto $(484.7026,435.2762)$ con un valor de $-955.7955$.
+
+\section{Función sphere}
+$$f(x,y)=x^{2} + y^{2}$$
+
+Para esta función se utilizó una estrategia evolutiva del tipo $(1+1)$
+obteniéndose como punto óptimo $(-9.49 \times 10^{-13}, -1.62 \times 10^{-13}) $ con un valor de $9.28 \times 10 ^{-25}$
+
+El punto óptimo real es $(0,0)$ con un valor $0$.
+
+Este problema no es un problema complejo y es por esta razón que incluso un algoritmo tan simple tiene buen desempeño.
+
+\section{Función Schaffer 2}
+
+$$f(x,y) = 0.5 + \dfrac{\sin^2({x^2-y^2})- 0.5}{\left[ 1 + 0.001(x^2 + y^2) \right]^2} $$
+
+Para esta función se utilizó un algoritmo diferencia evolutivo, obteniéndose como óptimo $(0,0)$ el cual es el óptimo global verdadero.
+
+\section{Función Croos-in-tray}
+$$f(x,y)= -0.0001 \left[ \left| \sin x \sin y \exp{\left( \left| 100 
+-  \dfrac{\sqrt {x^2 + y^2} } {\pi} \right| \right)} \right| +
+1 \right]^{0.1} $$ 
+
+Para esta función se utilizó una estrategia evolutiva del tipo $(1+1)$ obteniéndose como solución el punto $(-4.5501,-7.5875)$ con un valor de $-1.6538$.
+
+Este problema tiene como soluciones los puntos $((+-) 1.34941, (+-) 1.34941)$ con valor de $-2.06261$
+
+La razón de este pobre desempeño es la falta de exploración en el dominio de búsqueda debido al diseño del algoritmo (se utiliza un sólo individuo para explorar todo el espacio).
+
+\section{Función Hölder table}
+$$f(x,y) = -\left| \sin x \cos y \exp{  \left( \left| 1 - 
+\dfrac{ \sqrt{x^2 + y^2}  }{ \pi } \right| \right) } \right| $$
+
+Para esta función se utilizó programación evolutiva (sin ajuste de varianza), obteniéndose como punto óptimo $(-8.0577,-9.6649)$ con un valor de $-19.2084$.
+
+Uno de los puntos óptimos reales es el punto $(-8.05502,-9.66459)$ con un valor de $-19.2085$.
+\end{document}
