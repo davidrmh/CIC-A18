@@ -249,11 +249,11 @@
 ;; Función para booleanizar los datos, se crea la tabla con los datos booleanizados
 ;;
 ;; ENTRADA
-;; datos. Lista con las observaciones a booleanizar
-;; indices-atributos. Lista con los índices de cada atributo en datos
+;; datos: Lista con las observaciones a booleanizar
+;; indices-atributos: Lista con los índices de cada atributo en datos
 ;;
 ;; SALIDA
-;; tabla. Lista. Lista con cada observación de datos booleanizada
+;; tabla: Lista. Lista con cada observación de datos booleanizada
 ;;==============================================================================
 (defun tabla-booleana (datos indices-atributos)
   (let ((tabla nil) (aux-renglon nil) (renglon  nil) (valor nil) (ind-reng 0)
@@ -287,5 +287,37 @@
     );loop i
 
     tabla
+  );let
+);defun
+
+;;==============================================================================
+;; Función para separar la tabla booleanizada en observaciones positivas
+;; y observaciones negativas
+;;
+;; ENTRADA
+;; datos: Lista con observaciones (el mismo conjunto de datos con el cual)
+;; se creó la tabla booleanizada
+;; tabla: Lista creada con la función tabla-booleana
+;; clase: Símbolo. Símbolo que representa la clase positiva
+;; indice-clase: Índice que contiene la clase en la variable datos
+;;
+;; SALIDA
+;; Lista con los siguiente componentes
+;; (first) positivas: Elementos de tabla que corresponden a la clase positiva
+;; (second) negativas: Elementos de tabla que corresponden a la clase negativa
+;;==============================================================================
+(defun separa-tabla (datos tabla clase indice-clase)
+  (let ((positivas nil) (negativas nil) (num-obs 0) (observacion nil) )
+    (setq num-obs (- (length datos) 1))
+
+    (loop for i from 0 to num-obs do
+      (setq observacion (nth i datos))
+
+      (if (equal (nth indice-clase observacion) clase) (push (nth i tabla) positivas)
+      (push (nth i tabla) negativas) )
+
+    );loop
+
+    (list positivas negativas)
   );let
 );defun
