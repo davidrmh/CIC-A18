@@ -357,3 +357,60 @@
     (list contador observaciones)
   );let
 );defun
+
+;;==============================================================================
+;; División protegida (para evitar denominador igual a cero)
+;;==============================================================================
+(defun div (numerador denominador)
+  (let ((resultado 0))
+    (if (= denominador 0) (setq resultado 10000000)
+      (setq resultado (/ numerador denominador))  )
+  resultado
+  );let
+);defun
+
+;;==============================================================================
+;; Función para calcular aptitudes
+;;
+;; ENTRADA
+;; tabla-positivas, tabla-negativas: Listas creadas con la función separa-tabla
+;; indices: Lista de índices
+;;
+;; SALIDA
+;; Lista con los siguientes componentes
+;; (first) lista-aptitudes: Lista con la aptitud para cada índice. El i-índice
+;; de esta lista se refiere a:
+;; Aptitud obtenida con la fórmula |pos(xi)| / |neg(xi)| si i es par
+;; Aptitud obtenida con la fórmula |pos(¬xi)| / |neg(¬xi)| si i es impar
+;; (second) aux: Lista de la forma (0 0 1 1 2 2 ...) que sirve para identificar
+;; que índice corresponde a cada aptitud y si se utilizó xi (i par) o ¬xi (i impar)
+;;==============================================================================
+(defun aptitudes (tabla-positivas tabla-negativas indices)
+  (let ((lista-aptitudes nil) (aux nil) (pos nil) (neg nil)
+    (pos-neg nil) (neg-neg nil) (aptitud 0) (aptitud-neg 0)  )
+
+      (loop for indice in indices do
+        ;|pos(xi)|
+        (setq pos (first (conteo tabla-positivas indice :pos) ) )
+
+        ;|neg(xi)|
+        (setq neg (first (conteo tabla-negativas indice :pos) ) )
+
+        ;|pos(¬xi)|
+        (setq pos-neg (first (conteo tabla-positivas indice :neg) ) )
+
+        ;|neg(¬xi)|
+        (setq neg-neg (first (conteo tabla-negativas indice :neg) ) )
+
+        ;|pos(xi)| / |neg(xi)|
+        (setq aptitud (div pos neg) )
+
+        ;|pos(¬xi)| / |neg (¬xi)|
+        (setq aptitud-neg (div pos-neg neg-neg))
+
+        (setq lista-aptitudes (append lista-aptitudes (list aptitud aptitud-neg)))
+        (setq aux (append aux (list indice indice)))
+      );loop
+    (list lista-aptitudes aux)
+  );let
+);defun
