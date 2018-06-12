@@ -321,3 +321,39 @@
     (list positivas negativas)
   );let
 );defun
+
+;;==============================================================================
+;; Función auxiliar para el cálculo de las aptitudes
+;; esta función cuenta el número de observaciones cubiertas en un conjunto si
+;; se incluye o no un término especificado, es decir, calcula Pos(xi) o Neg(xi)
+;;
+;; ENTRADA
+;; tabla: Lista. Lista creada con la función separa-tabla.
+;; indice: Entero. índice del término a analizar
+;; tipo: Etiqueta. :pos => se incluye el termino :neg => no se incluye (¬xi)
+;;
+;; SALIDA
+;; Lista con los siguiente componentes
+;; (first) Contador: Número de observaciones que se cubren
+;; (second) Observaciones: Observaciones que se cubren
+;;==============================================================================
+(defun conteo (tabla indice tipo)
+  (let ((contador 0) (observaciones nil))
+    (loop for observacion in tabla do
+
+      ;Se incluye el término (es 1 en la tabla)
+      (when (and  (equal (nth indice observacion) 1) (equal tipo :pos))
+        (push observacion observaciones)
+        (incf contador)
+      );when
+
+      ;No se incluye el término (es 0 en la tabla)
+      (when (and  (equal (nth indice observacion) 0) (equal tipo :neg))
+        (push observacion observaciones)
+        (incf contador)
+      );when
+
+    );loop
+    (list contador observaciones)
+  );let
+);defun
