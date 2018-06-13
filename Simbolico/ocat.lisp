@@ -363,8 +363,8 @@
 ;;==============================================================================
 (defun div (numerador denominador)
   (let ((resultado 0))
-    (if (= denominador 0) (setq resultado 10000000)
-      (setq resultado (/ numerador denominador))  )
+    (if (= denominador 0) (setq resultado 10000000) )
+    (if (/= denominador 0) (setq resultado (/ numerador denominador))  )
   resultado
   );let
 );defun
@@ -374,7 +374,7 @@
 ;;
 ;; ENTRADA
 ;; tabla-positivas, tabla-negativas: Listas creadas con la función separa-tabla
-;; indices: Lista de índices
+;; indices: Lista de índices para incluir o excluir
 ;;
 ;; SALIDA
 ;; Lista con los siguientes componentes
