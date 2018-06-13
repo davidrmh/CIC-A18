@@ -493,3 +493,31 @@
   elemento
   );let
 );defun
+
+;;==============================================================================
+;; Función para actualizar una tabla booleanizada quitando las observaciones
+;; que cumplen cierta condicion (1 o 0) en un término dado
+;;
+;; ENTRADA
+;; tabla: Lista que representa una tabla booleanizada
+;; termino: Entero que representa un índice a comparar para cada observación
+;; tipo Etiqueta: :pos => 1, :neg=>0. Para obtener la condición de comparación
+;;
+;; SALIDA
+;; nueva-tabla: Lista similar a tabla pero quitando las observaciones que
+;; cumplen la condición
+;;==============================================================================
+(defun actualiza-tabla (tabla termino tipo)
+  (let ((condicion nil) (nueva-tabla nil) )
+
+    ;Determina la condición
+    (if (equal tipo :pos) (setq condicion 1) (setq condicion 0) )
+
+    ;Filtra las observaciones que no cumplen la condición en el término dado
+    (loop for observacion in tabla do
+      (if (not (equal (nth termino observacion) condicion) )
+        (setq nueva-tabla (append nueva-tabla  (list observacion ) ) ) )
+    );loop
+  nueva-tabla
+  );let
+);defun
