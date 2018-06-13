@@ -450,3 +450,46 @@
     (list k-max argumentos)
   );let
 );defun
+
+;;==============================================================================
+;; Función para actualizar una lista eliminando un elemento dado
+;; esta función se utiliza para actualizar la lista de términos por analizar
+;;
+;; ENTRADA
+;; lista: Lista de número
+;; eliminar: Término a eliminar de la lista
+;;
+;; SALIDA
+;; nueva-lista: Lista sin el término eliminar
+;;==============================================================================
+(defun actualiza-terminos (lista eliminar)
+  (let ((nueva-lista nil))
+    (loop for elemento in lista do
+      (if (not (= elemento eliminar))
+        (setq nueva-lista (append nueva-lista (list elemento))) )
+    );loop
+  nueva-lista
+  );let
+);defun
+
+;;==============================================================================
+;; Función para seleccionar un elemento al azar dentro de una lista
+;;
+;; ENTRADA
+;; lista. Lista con los elementos
+;;
+;; SALIDA
+;; elemento: Elemento de la lista seleccionado al azar
+;;==============================================================================
+(defun selecciona-azar (lista)
+  (let ((elemento nil) (n 0) )
+
+    (when (= (length lista) 1 )
+        (setq elemento (first lista) )  )
+
+    (when (> (length lista) 1 )
+      (setq n (length lista))
+      (setq elemento (nth (random n) lista)) )
+  elemento
+  );let
+);defun
