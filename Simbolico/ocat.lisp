@@ -4,6 +4,7 @@
 (defparameter *indices-atributos* '(1 2 3 4 5 6))
 (defparameter *operador* 'equal)
 (defparameter *indice-clase* 7)
+(defparameter *m* 10)
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -429,7 +430,7 @@
 ;; (second) argumentos: Lista con los indices que contienen las k posiciones más grandes
 ;;==============================================================================
 (defun k-argmax (lista k)
-  (let ((k-max nil) (argumentos nil) (aux-lista nil) )
+  (let ((k-max nil) (argumentos nil) (aux-lista nil) (aux-flag nil) )
 
     ;Copia la lista inicial y la ordena de manera decreciente
     (setq aux-lista (copy-seq lista))
@@ -442,8 +443,15 @@
 
     ;Obtiene los índices de los k elementos más grandes en la lista original
     (loop for elemento in k-max do
+      ;Aux-flag es para evitar incluir indices relacionados al mismo elemento
+      (setq aux-flag nil)
+
       (loop for i from 0 to (- (length lista) 1) do
-        (if  (= elemento (nth i lista)) (setq argumentos (append argumentos (list i)))  )
+
+        (when (and (= elemento (nth i lista) ) (not aux-flag) (not (find i argumentos) )   )
+          (setq argumentos (append argumentos (list i)) )
+          (setq aux-flag t)
+        );when
       );loop i
     );loop elemento
 
@@ -539,3 +547,41 @@
     selector
   );let
 );defun
+
+;;PARA DEBUG
+;; (defvar datos) (defvar clases) (defvar separacion) (defvar entrenamiento)
+;; (defvar prueba) (defvar tabla) (defvar separacion-tabla) (defvar tabla-positivas)
+;; (defvar tabla-negativas) (defvar num-terminos) (defvar indices-terminos)
+;; (defvar lista-aptitudes) (defvar m-mejores)
+
+;;cargar código
+;;leer datos con función lee-datos (defvar datos (lee-datos "RUTA"))
+
+;;obtener las clases posibles con función obten-clases
+;;  (setq clases (obten-clases datos *indice-clase* ))
+
+;;separar conjunto de prueba y entrenamiento utilizando la función split-data
+;;  (setq separacion (split-data datos PROPORCION))
+;;  (setq entrenamiento (first separacion))
+;;  (setq prueba (second separacion))
+
+;;Con el conjunto de entrenamiento crear la tabla booleanizada
+;;  (setq tabla (tabla-booleana entrenamiento *indices-atributos*))
+
+;;Para la clases de interés separar la tabla booleanizada en observaciones positivas y en negativas
+;;  (setq separacion-tabla (separa-tabla entrenamiento tabla 1 *indice-clase*))
+;;  (setq tabla-positivas (first separacion-tabla))
+;;  (setq tabla-negativas (second separacion-tabla))
+
+;;Crear una lista con los índices de los posibles términos
+;; (setq num-terminos (length (first tabla)) )
+;; (setq indices-terminos nil)
+;; (loop for i from 0 to (- num-terminos 1) do
+;;  (setq indices-terminos (append indices-terminos (list i) ))
+;; )
+
+;;Para cada índice en la lista indices-terminos calcular la aptitud
+;;  (setq lista-aptitudes  (first (aptitudes tabla-positivas tabla-negativas indices-terminos) ))
+
+;;De lista-aptitudes obtener los *m* mejores (sólo second)
+;;  (setq m-mejores (second (k-argmax lista-aptitudes *m*)))
