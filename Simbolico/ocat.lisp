@@ -521,3 +521,21 @@
   nueva-tabla
   );let
 );defun
+
+;;==============================================================================
+;; Función para determinar un selector de una claúsula
+;;
+;; ENTRADA
+;; termino: Entero que se obtiene de lista argumentos de la función k-argmax
+;;
+;; SALIDA
+;; selector: Lista de la forma (:neg  termino) o (:pos o termino)
+;; dependiendo de si se niega (impar) o no (par) el término
+;;==============================================================================
+(defun obten-selector (termino)
+  (let ((selector nil))
+    (if (oddp termino ) (setq selector (list :neg termino))
+    (setq selector (list :pos termino))  )
+    selector
+  );let
+);defun
