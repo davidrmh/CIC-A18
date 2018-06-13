@@ -414,3 +414,39 @@
     (list lista-aptitudes aux)
   );let
 );defun
+
+;;==============================================================================
+;; Función para encontrar los k elementos más grandes en una lista así como
+;; sus índices
+;;
+;; ENTRADA
+;; lista: Lista con números
+;; k: Entero.
+;;
+;; SALIDA
+;; Lista con las siguientes componentes
+;; (first) k-max: Lista con los k números más grandes
+;; (second) argumentos: Lista con los indices que contienen las k posiciones más grandes
+;;==============================================================================
+(defun k-argmax (lista k)
+  (let ((k-max nil) (argumentos nil) (aux-lista nil) )
+
+    ;Copia la lista inicial y la ordena de manera decreciente
+    (setq aux-lista (copy-seq lista))
+    (setq aux-lista (sort aux-lista '>))
+
+    ;Obtiene los k elementos más grandes
+    (loop for i from 0 to (- k 1) do
+      (setq k-max (append k-max (list (nth i aux-lista) )) )
+    );loop i
+
+    ;Obtiene los índices de los k elementos más grandes en la lista original
+    (loop for elemento in k-max do
+      (loop for i from 0 to (- (length lista) 1) do
+        (if  (= elemento (nth i lista)) (setq argumentos (append argumentos (list i)))  )
+      );loop i
+    );loop elemento
+
+    (list k-max argumentos)
+  );let
+);defun
