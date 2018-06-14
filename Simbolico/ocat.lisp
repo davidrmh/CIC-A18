@@ -552,7 +552,9 @@
 ;; (defvar datos) (defvar clases) (defvar separacion) (defvar entrenamiento)
 ;; (defvar prueba) (defvar tabla) (defvar separacion-tabla) (defvar tabla-positivas)
 ;; (defvar tabla-negativas) (defvar num-terminos) (defvar indices-terminos)
-;; (defvar lista-aptitudes) (defvar m-mejores)
+;; (defvar lista-aptitudes) (defvar m-mejores) (defvar termino-azar) (defvar selector)
+;; (defvar nuevas-positivas) (defvar nuevas-negativas) (defvar clausula nil) (defvar lista-clausulas)
+;; (defvar negacion)
 
 ;;cargar código
 ;;leer datos con función lee-datos (defvar datos (lee-datos "RUTA"))
@@ -569,19 +571,60 @@
 ;;  (setq tabla (tabla-booleana entrenamiento *indices-atributos*))
 
 ;;Para la clases de interés separar la tabla booleanizada en observaciones positivas y en negativas
+;;en este caso es para clase 1
 ;;  (setq separacion-tabla (separa-tabla entrenamiento tabla 1 *indice-clase*))
 ;;  (setq tabla-positivas (first separacion-tabla))
 ;;  (setq tabla-negativas (second separacion-tabla))
 
-;;Crear una lista con los índices de los posibles términos
-;; (setq num-terminos (length (first tabla)) )
-;; (setq indices-terminos nil)
-;; (loop for i from 0 to (- num-terminos 1) do
-;;  (setq indices-terminos (append indices-terminos (list i) ))
-;; )
+;;Copia tabla-negativas en nuevas-negativas
+;;  (setq nuevas-negativas (copy-seq tabla-negativas))
 
-;;Para cada índice en la lista indices-terminos calcular la aptitud
-;;  (setq lista-aptitudes  (first (aptitudes tabla-positivas tabla-negativas indices-terminos) ))
+;;Mientras tabla-negativas no sea nil
 
-;;De lista-aptitudes obtener los *m* mejores (sólo second)
-;;  (setq m-mejores (second (k-argmax lista-aptitudes *m*)))
+  ;;Crear una lista con los índices de los posibles términos
+  ;; (setq num-terminos (length (first tabla)) )
+  ;; (setq indices-terminos nil)
+  ;; (loop for i from 0 to (- num-terminos 1) do
+  ;;  (setq indices-terminos (append indices-terminos (list i) ))
+  ;; )
+
+  ;;Copia tabla-positivas en nuevas-positivas para poder modificarla sin perder los valores iniciales
+  ;;  (setq nuevas-positivas (copy-seq tabla-positivas) )
+
+  ;;Reinicia la clausula a nil
+  ;;   (setq clausula nil)
+
+
+  ;;Mientras nuevas-positivas no sea nil
+
+      ;;Para cada índice en la lista indices-terminos calcular la aptitud
+      ;;  (setq lista-aptitudes  (first (aptitudes nuevas-positivas tabla-negativas indices-terminos) ))
+
+      ;;De lista-aptitudes obtener los *m* mejores (sólo second)
+      ;;  (setq m-mejores (second (k-argmax lista-aptitudes *m*)))
+
+      ;;De la lista m-mejores se selecciona un término al azar
+      ;; (setq termino-azar (selecciona-azar m-mejores) )
+
+      ;;Crea el selector y lo agrega a la claúsula actual
+      ;;  (setq selector (obten-selector termino-azar))
+      ;;  (push selector clausula)
+
+      ;;Actualiza las observaciones de la clase positiva
+      ;;  (setq nuevas-positivas (actualiza-tabla nuevas-positivas termino-azar (first selector) ) )
+
+      ;;Actualiza las observaciones de la clase negativa
+      ;; (if (equal (first selector) :pos) (setq negacion :neg) (setq negacion :pos)  )
+      ;; (setq nuevas-negativas (actualiza-tabla nuevas-negativas termino-azar negacion ) )
+
+      ;;Quita termino-azar de la lista indices-terminos
+      ;; (setq indices-terminos (actualiza-terminos indices-terminos termino-azar))
+
+  ;;Actualiza tabla-negativas y recupera tabla-positivas
+  ;;  (setq tabla-negativas nuevas-negativas)
+  ;;  (setq nuevas-positivas tabla-positivas)
+
+  ;;Agrega la claúsula a la lista de claúsulas
+  ;;La lista de claúsulas se interpreta como conjunción
+  ;;Los elementos de cada claúsula se interpretan como disyunción
+  ;;  (push clausula lista-clausulas)
