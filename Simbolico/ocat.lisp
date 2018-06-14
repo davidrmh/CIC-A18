@@ -43,7 +43,7 @@
   (let ((clases nil) (clase-aux nil))
     (loop for observacion in datos do
       (setq clase-aux (nth indice observacion))
-      (if (not (find clase-aux clases)) (setq clases (append clases  (list clase-aux)))) );loop
+      (if (not (find clase-aux clases :test #'equal)) (setq clases (append clases  (list clase-aux)))) );loop
   clases
   );let
 );defun
@@ -100,7 +100,7 @@
       (setq numero (random maximo))
 
       ;agrega a la lista revisando primer si el número ya se encontraba en ella
-      (if (not (find numero indices)) (push numero indices) )
+      (if (not (find numero indices :test #'equal)) (push numero indices) )
 
       ;Revisa condición de paro (hasta tener el número total de elementos)
       (when (equal total (length indices)) (return-from genera-indices indices))
@@ -140,7 +140,7 @@
 
     ;Crea el conjunto de prueba
     (loop for i from 0 to (- (length datos) 1) do
-      (if (not (find i indices-entrena)) (push (nth i datos) prueba ) )
+      (if (not (find i indices-entrena :test #'equal)) (push (nth i datos) prueba ) )
     );loop
 
     (list entrenamiento prueba)
@@ -197,7 +197,7 @@
     ;Obtiene los valores del atributo xi
     ;considerando que no existan repeticiones
     (loop for observacion in entrenamiento do
-      (if (not (find (nth indice observacion) valxi)) (push (nth indice observacion) valxi ))
+      (if (not (find (nth indice observacion) valxi :test #'equal )) (push (nth indice observacion) valxi ))
     );loop
 
     ;Ordena de menor a mayor
@@ -448,7 +448,7 @@
 
       (loop for i from 0 to (- (length lista) 1) do
 
-        (when (and (= elemento (nth i lista) ) (not aux-flag) (not (find i argumentos) )   )
+        (when (and (= elemento (nth i lista) ) (not aux-flag) (not (find i argumentos :test #'equal) )   )
           (setq argumentos (append argumentos (list i)) )
           (setq aux-flag t)
         );when
@@ -699,8 +699,8 @@
       ;;Crea el selector y lo agrega a la claúsula actual
       (setq selector (obten-selector termino-azar))
       (setq selector-humano (convierte-selector selector entrenamiento) )
-      (if (not (find selector clausula) ) (push selector clausula))
-      (if (not (find selector-humano clausula-humano))
+      (if (not (find selector clausula :test #'equal) ) (push selector clausula))
+      (if (not (find selector-humano clausula-humano :test #'equal))
         (push selector-humano clausula-humano)   )
 
       ;;Actualiza las observaciones de la clase positiva
@@ -711,8 +711,7 @@
       (setq nuevas-negativas (actualiza-tabla nuevas-negativas termino-azar negacion ) )
 
       ;;Quita termino-azar de la lista indices-terminos
-      ;;AQUÍ NO SÉ SI UTILIZAR M-MEJORES O INDICES-TERMINOS PARA EL ARGUMENTO DE LA FUNCIÓN
-      (setq indices-terminos (actualiza-terminos indices-terminos termino-azar))
+      (setq indices-terminos (actualiza-terminos m-mejores termino-azar))
 
       ;;Mensaje de información
       (format t "El conjunto E+ todavía tiene ~a observaciones ~% " (length nuevas-positivas) )
