@@ -549,6 +549,97 @@
 );defun
 
 ;;==============================================================================
+;; Función para obtener el índice del atributo relacionado a un índice de la
+;; tabla booleanizada
+;;
+;; ENTRADA
+;; indice-tabla: Número que se obtiene de second de un selector
+;; entrenamiento: Lista que representa el conjunto de entrenamiento
+;;
+;; SALIDA
+;; indice: Algún número de la lista *indices-atributos*
+;;==============================================================================
+(defun obten-indice-atributo (indice-tabla entrenamiento)
+  (let ((suma 0) (valxi nil))
+
+    (loop for indice in *indices-atributos* do
+      ;Obtiene el conjunto val(xi)
+      (setq valxi (val-xi entrenamiento indice))
+
+      ;Calcula la suma
+      ;esta suma es para saber hasta que índice se a abarco con los conjuntos
+      ;val(xi)
+      (setq suma (+ suma (length valxi)))
+
+      ;Revisa si ya se llegó al índice del selector
+      (if (<= indice-tabla (- suma 1) )
+        (return-from obten-indice-atributo indice)  )
+
+    );loop
+  );let
+);defun
+
+;;==============================================================================
+;; Función para obtener el valor del atributo relacionado a un selector
+;;
+;; ENTRADA
+;; indice-tabla: índice relacionado a un selector
+;; entrenamiento: lista que representa el conjunto de entrenamiento
+;;
+;; SALIDA
+;; valor: Valor del atributo que está relacionado al selector
+;;==============================================================================
+(defun obten-valor-atributo (indice-tabla entrenamiento)
+  (let ((lista-valxi nil) (valxi nil) (valor nil))
+
+    ;Primero concatena los conjuntos val(xi)
+    (loop for indice in *indices-atributos* do
+      (setq valxi (val-xi entrenamiento indice) )
+      (setq lista-valxi (append lista-valxi valxi))
+    );loop
+
+    ;Después extrae el valor correspondiente al índice indice-tabla
+    (setq valor  (nth indice-tabla lista-valxi) )
+    valor
+  );let
+);defun
+
+
+;;==============================================================================
+;; Función para convertir un selector para que sea más fácil de interpretar
+;;
+;; ENTRADA
+;; selector: Lista de la forma (:POS NUMERO) o (:NEG NUMERO)
+;; entrenamiento: Lista que representa el conjunto de entrenamiento
+;;
+;; SALIDA
+;; humano: Lista de la forma (< INDICE-ATR VALOR) o (>= INDICE-ATR VALOR)
+;; en donde INDICE-ATR es un número en la lista *indices-atributos*
+;;==============================================================================
+(defun convierte-selector (selector entrenamiento)
+  (let ((operador nil) (indice-tabla nil) (humano nil) (indice-atributo nil)
+        (valor-atributo nil))
+
+    ;Determina si el operador será >= o <
+    (if (equal (first selector) :pos ) (setq operador '>=) (setq operador '<))
+
+    ;Extrae el índice del selector
+    (setq indice-tabla (second selector))
+
+    ;Obtiene el índice del atributo relacionado al índice de la tabla booleanizada
+    (setq indice-atributo (obten-indice-atributo indice-tabla entrenamiento) )
+
+    ;Obtiene el valor del atributo relacionado al selector
+    (setq valor-atributo (obten-valor-atributo indice-tabla entrenamiento))
+
+    ;Convierte el selector
+    (setq humano `(,operador ,indice-atributo ,valor-atributo))
+
+    humano
+  );let
+);defun
+
+;;==============================================================================
 ;; Función para obtener la regla de una clase
 ;;
 ;; ENTRADA
