@@ -640,6 +640,60 @@
 );defun
 
 ;;==============================================================================
+;; Función para actualizar la tabla de observaciones de la clase negativa (E-)
+;;
+;; ENTRADA
+;; tabla: Lista representando una tabla booleanizada para la clase negativa
+;; clausula: Lista representando una claúsula
+;;
+;; SALIDA
+;; nueva-tabla: Lista similar a negativas pero removiendo las observaciones que
+;; cumplen los criterios de la negación de la claúsula
+;;==============================================================================
+(defun actualiza-negativas (tabla clausula)
+  (let ((condicion nil) (indice nil) (aux-filtro nil) (pasan-filtro nil)
+        (nueva-tabla nil))
+
+    ;Copia la tabla completa
+    (setq pasan-filtro (copy-seq tabla))
+
+    ;Comienza aplicar cada término de la cláusula, negándolo primero
+    (loop for selector in clausula do
+
+      ;negación del selector
+      (if (equal (first selector) :pos ) (setq condicion 0) (setq condicion 1) )
+
+      ;índice del selector
+      (setq indice (second selector))
+
+      ;Comienza a revisar cada observación en pasan-filtro y almacena
+      ;las que van cumpliendo la condición negada del selector
+      ;estas observaciones se quitarán de tabla
+      (loop for observacion in pasan-filtro do
+        (when (= (nth indice observacion) condicion )
+            (setq aux-filtro (append aux-filtro (list observacion) )) )
+      );loop observacion
+
+      ;Actualiza lista pasan-filtro
+      (setq pasan-filtro (copy-seq aux-filtro))
+
+      ;Reinicia aux-filtro para el siguiente selector
+      (setq aux-filtro nil)
+
+    );loop selector
+
+    ;Descarta las observacion en pasan-filtro de la tabla original
+    (loop for observacion in tabla do
+      (when (not  (find observacion pasan-filtro :test #'equal))
+        (setq nueva-tabla (append nueva-tabla (list observacion) ) ) )
+    );loop
+
+    nueva-tabla
+
+  );let
+);defun
+
+;;==============================================================================
 ;; Función para obtener la regla de una clase
 ;;
 ;; ENTRADA
