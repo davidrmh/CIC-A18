@@ -548,6 +548,101 @@
   );let
 );defun
 
+;;==============================================================================
+;; Función para obtener la regla de una clase
+;;
+;; ENTRADA
+;; tabla: Lista que representa una tabla booleanizada
+;; entrenamiento: Lista que representa el conjunto de entrenamiento
+;; clase: Algún elemento que regresa la función obten-clases
+;;
+;; SALIDA
+;; lista-clausulas: Lista de cláusulas, se interpreta como conjunción
+;; Los elementos de cada claúsula se interpretan como disyunción
+;;==============================================================================
+(defun obten-regla (tabla entrenamiento clase)
+  (let ((separacion-tabla nil) (tabla-positivas nil) (tabla-negativas nil)
+  (nuevas-negativas nil) (nuevas-positivas nil) (num-terminos 0)
+  (indices-terminos nil) (clausula nil) (lista-clausulas nil)
+  (lista-aptitudes nil) (m-mejores nil) (termino-azar nil) (selector nil)
+  (negacion  nil) )
+
+  ;;Separa la tabla booleanizada en observaciones positivas y en negativas
+  (setq separacion-tabla (separa-tabla entrenamiento tabla clase *indice-clase*))
+  (setq tabla-positivas (first separacion-tabla))
+  (setq tabla-negativas (second separacion-tabla))
+
+  ;;Copia tabla-negativas en nuevas-negativas
+  (setq nuevas-negativas (copy-seq tabla-negativas))
+
+  ;;Mientras tabla-negativas no sea nil
+  (loop
+    ;;Crear una lista con los índices de los posibles términos
+    (setq num-terminos (length (first tabla)) )
+    (setq indices-terminos nil)
+    (loop for i from 0 to (- num-terminos 1) do
+      (setq indices-terminos (append indices-terminos (list i) )) )
+
+    ;;Copia tabla-positivas en nuevas-positivas para poder modificarla sin perder los valores iniciales
+    (setq nuevas-positivas (copy-seq tabla-positivas) )
+
+    ;;Reinicia la clausula a nil
+    (setq clausula nil)
+
+    ;;Mientras nuevas-positivas no sea nil
+    (loop
+
+      ;;Para cada índice en la lista indices-terminos calcular la aptitud
+      (setq lista-aptitudes  (first (aptitudes nuevas-positivas tabla-negativas indices-terminos) ))
+
+      ;;De lista-aptitudes obtener los *m* mejores (sólo second)
+      (setq m-mejores (second (k-argmax lista-aptitudes *m*)))
+
+      ;;De la lista m-mejores se selecciona un término al azar
+      (setq termino-azar (selecciona-azar m-mejores) )
+
+      ;;Crea el selector y lo agrega a la claúsula actual
+      (setq selector (obten-selector termino-azar))
+      (if (not (find selector clausula) ) (push selector clausula))
+
+      ;;Actualiza las observaciones de la clase positiva
+      (setq nuevas-positivas (actualiza-tabla nuevas-positivas termino-azar (first selector) ) )
+
+      ;;Actualiza las observaciones de la clase negativa
+      (if (equal (first selector) :pos) (setq negacion :neg) (setq negacion :pos)  )
+      (setq nuevas-negativas (actualiza-tabla nuevas-negativas termino-azar negacion ) )
+
+      ;;Quita termino-azar de la lista indices-terminos
+      ;;AQUÍ NO SÉ SI UTILIZAR M-MEJORES O INDICES-TERMINOS PARA EL ARGUMENTO DE LA FUNCIÓN
+      (setq indices-terminos (actualiza-terminos m-mejores termino-azar))
+
+      ;;Mensaje de información
+      (format t "El conjunto E+ todavía tiene ~a observaciones ~% " (length nuevas-positivas) )
+
+      ;;Condición de paro
+      (when (equal nuevas-positivas nil) (return t) )
+
+    );loop E+
+
+    ;;Actualiza tabla-negativas y recupera tabla-positivas
+    (setq tabla-negativas nuevas-negativas)
+    (setq nuevas-positivas tabla-positivas)
+
+    ;;Agrega la claúsula a la lista de claúsulas
+    (push clausula lista-clausulas)
+
+    ;;Mensaje de información
+    (format t "El conjunto E- todavía tiene ~a observaciones ~% " (length tabla-negativas) )
+
+    ;;Condición de paro
+    (when (equal tabla-negativas nil) (return t)  )
+
+  );loop tabla-negativas (E-)
+
+  lista-clausulas
+  );let
+);defun
+
 ;;PARA DEBUG
 ;; (defvar datos) (defvar clases) (defvar separacion) (defvar entrenamiento)
 ;; (defvar prueba) (defvar tabla) (defvar separacion-tabla) (defvar tabla-positivas)
