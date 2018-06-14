@@ -648,15 +648,18 @@
 ;; clase: Algún elemento que regresa la función obten-clases
 ;;
 ;; SALIDA
-;; lista-clausulas: Lista de cláusulas, se interpreta como conjunción
+;; Lista con los siguientes componentes
+;; (first) lista-clausulas: Lista de cláusulas, se interpreta como conjunción
 ;; Los elementos de cada claúsula se interpretan como disyunción
+;; (second) lista-clausulas-humano: Lista de claúsulas de fácil interpretación
 ;;==============================================================================
 (defun obten-regla (tabla entrenamiento clase)
   (let ((separacion-tabla nil) (tabla-positivas nil) (tabla-negativas nil)
   (nuevas-negativas nil) (nuevas-positivas nil) (num-terminos 0)
   (indices-terminos nil) (clausula nil) (lista-clausulas nil)
   (lista-aptitudes nil) (m-mejores nil) (termino-azar nil) (selector nil)
-  (negacion  nil) )
+  (negacion  nil) (selector-humano nil) (clausula-humano nil)
+  (lista-clausulas-humano nil)   )
 
   ;;Separa la tabla booleanizada en observaciones positivas y en negativas
   (setq separacion-tabla (separa-tabla entrenamiento tabla clase *indice-clase*))
@@ -679,6 +682,7 @@
 
     ;;Reinicia la clausula a nil
     (setq clausula nil)
+    (setq clausula-humano nil)
 
     ;;Mientras nuevas-positivas no sea nil
     (loop
@@ -694,7 +698,10 @@
 
       ;;Crea el selector y lo agrega a la claúsula actual
       (setq selector (obten-selector termino-azar))
+      (setq selector-humano (convierte-selector selector entrenamiento) )
       (if (not (find selector clausula) ) (push selector clausula))
+      (if (not (find selector-humano clausula-humano))
+        (push selector-humano clausula-humano)   )
 
       ;;Actualiza las observaciones de la clase positiva
       (setq nuevas-positivas (actualiza-tabla nuevas-positivas termino-azar (first selector) ) )
@@ -705,7 +712,7 @@
 
       ;;Quita termino-azar de la lista indices-terminos
       ;;AQUÍ NO SÉ SI UTILIZAR M-MEJORES O INDICES-TERMINOS PARA EL ARGUMENTO DE LA FUNCIÓN
-      (setq indices-terminos (actualiza-terminos m-mejores termino-azar))
+      (setq indices-terminos (actualiza-terminos indices-terminos termino-azar))
 
       ;;Mensaje de información
       (format t "El conjunto E+ todavía tiene ~a observaciones ~% " (length nuevas-positivas) )
@@ -721,6 +728,7 @@
 
     ;;Agrega la claúsula a la lista de claúsulas
     (push clausula lista-clausulas)
+    (push clausula-humano lista-clausulas-humano)
 
     ;;Mensaje de información
     (format t "El conjunto E- todavía tiene ~a observaciones ~% " (length tabla-negativas) )
@@ -730,7 +738,7 @@
 
   );loop tabla-negativas (E-)
 
-  lista-clausulas
+  (list lista-clausulas lista-clausulas-humano)
   );let
 );defun
 
