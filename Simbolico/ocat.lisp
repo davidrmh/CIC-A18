@@ -5,6 +5,27 @@
 (defparameter *operador* 'equal)
 (defparameter *indice-clase* 7)
 (defparameter *m* 10)
+(defparameter *ejemplo* '((0.25 1.50 1)
+                          (0.75 1.50 1)
+                          (1.00 1.50 1)
+                          (0.50 1.25 1)
+                          (0.75 1.0 1)
+                          (1.25 1.0 1)
+                          (1.75 1.0 1)
+                          (0.25 0.75 1)
+                          (1.0 0.75 1)
+                          (1.5 0.75 1)
+                          (0.5 0.5 1)
+                          (1.25 1.25 0)
+                          (1.50 1.0 0)
+                          (2.25 1.0 0)
+                          (1.75 0.75 0)
+                          (1.25 0.5 0)
+                          (2.25 0.5 0)
+                          (2.75 0.5 0)
+                          (1.25 0.25 0)
+                          (1.75 0.25 0)
+                          (2.25 0.25 0) ) )
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -314,8 +335,9 @@
     (loop for i from 0 to num-obs do
       (setq observacion (nth i datos))
 
-      (if (equal (nth indice-clase observacion) clase) (push (nth i tabla) positivas)
-      (push (nth i tabla) negativas) )
+      (if (equal (nth indice-clase observacion) clase)
+        (setq positivas (append positivas (list (nth i tabla)) ) )
+      (setq negativas (append negativas (list (nth i tabla)) ) ) )
 
     );loop
 
