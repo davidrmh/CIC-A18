@@ -735,7 +735,8 @@
   (indices-terminos nil) (clausula nil) (lista-clausulas nil)
   (lista-aptitudes nil) (m-mejores nil) (termino-azar nil) (selector nil)
   (negacion  nil) (selector-humano nil) (clausula-humano nil)
-  (lista-clausulas-humano nil)   )
+  (lista-clausulas-humano nil) (lista-aux-aptitudes nil)
+  (lista-aux-mejores nil)     )
 
   ;;Separa la tabla booleanizada en observaciones positivas y en negativas
   (setq separacion-tabla (separa-tabla entrenamiento tabla clase *indice-clase*))
@@ -766,8 +767,19 @@
       ;;Para cada índice en la lista indices-terminos calcular la aptitud
       (setq lista-aptitudes  (first (aptitudes nuevas-positivas tabla-negativas indices-terminos) ))
 
-      ;;De lista-aptitudes obtener los *m* mejores (sólo second)
-      (setq m-mejores (second (k-argmax lista-aptitudes *m*)))
+      ;;Esta lista es auxiliar para determinar los *m* mejores términos.
+      ;;Para cada índice en indices-terminos se obtienen dos aptitudes
+      ;;una para xi y otra para ¬xi, por lo tanto esta lista tendrá
+      ;;la forma (0 0 1 1 2 2 .... N N)
+      (setq lista-aux-aptitudes nil)
+      (loop for i in indices-terminos do
+        (setq lista-aux-aptitudes (append lista-aux-aptitudes (list i i)) ) )
+
+      ;;Obtiene los *m* mejores términos
+      (setq lista-aux-mejores (second (k-argmax lista-aptitudes *m*)))
+      (setq m-mejores nil)
+      (loop for i in lista-aux-mejores do
+         (setq m-mejores (append m-mejores (list (nth i lista-aux-aptitudes) )  ) ) )
 
       ;;De la lista m-mejores se selecciona un término al azar
       (setq termino-azar (selecciona-azar m-mejores) )
