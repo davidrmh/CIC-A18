@@ -25,7 +25,8 @@
                           (2.75 0.5 0)
                           (1.25 0.25 0)
                           (1.75 0.25 0)
-                          (2.25 0.25 0) ) )
+                          (2.25 0.25 0) ) ) ;;Ejemplo visto en clase
+(defparameter *max-long-clasu* 5) ;;Longitud máxima de cada cláusula                          
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -556,16 +557,18 @@
 ;; Función para determinar un selector de una claúsula
 ;;
 ;; ENTRADA
-;; termino: Entero que se obtiene de lista argumentos de la función k-argmax
+;; xi: Representa un término
+;; azar: Elemento al azar que representa el índice de una aptitud
+;; (algún elemento de lista-aux-mejores)
 ;;
 ;; SALIDA
 ;; selector: Lista de la forma (:neg  termino) o (:pos o termino)
 ;; dependiendo de si se niega (impar) o no (par) el término
 ;;==============================================================================
-(defun obten-selector (termino)
+(defun obten-selector (xi azar)
   (let ((selector nil))
-    (if (oddp termino ) (setq selector (list :neg termino))
-    (setq selector (list :pos termino))  )
+    (if (oddp azar ) (setq selector (list :neg xi))
+    (setq selector (list :pos xi))  )
     selector
   );let
 );defun
@@ -734,9 +737,9 @@
   (nuevas-negativas nil) (nuevas-positivas nil) (num-terminos 0)
   (indices-terminos nil) (clausula nil) (lista-clausulas nil)
   (lista-aptitudes nil) (m-mejores nil) (termino-azar nil) (selector nil)
-  (negacion  nil) (selector-humano nil) (clausula-humano nil)
+  (selector-humano nil) (clausula-humano nil)
   (lista-clausulas-humano nil) (lista-aux-aptitudes nil)
-  (lista-aux-mejores nil)     )
+  (lista-aux-mejores nil) (xi nil) )
 
   ;;Separa la tabla booleanizada en observaciones positivas y en negativas
   (setq separacion-tabla (separa-tabla entrenamiento tabla clase *indice-clase*))
@@ -779,27 +782,27 @@
       (setq lista-aux-mejores (second (k-argmax lista-aptitudes *m*)))
       (setq m-mejores nil)
       (loop for i in lista-aux-mejores do
-         (setq m-mejores (append m-mejores (list (nth i lista-aux-aptitudes) )  ) ) )
+        (if (not (find (nth i lista-aux-aptitudes) m-mejores :test #'equal))
+         (setq m-mejores (append m-mejores (list (nth i lista-aux-aptitudes) )  ) ) ))
 
-      ;;De la lista m-mejores se selecciona un término al azar
-      (setq termino-azar (selecciona-azar m-mejores) )
+      ;;De la lista lista-aux-mejores se selecciona un término al azar
+      (setq termino-azar (selecciona-azar lista-aux-mejores) )
+
+      ;;Obtiene el término asociado a termino-azar
+      (setq xi (nth termino-azar lista-aux-aptitudes) )
 
       ;;Crea el selector y lo agrega a la claúsula actual
-      (setq selector (obten-selector termino-azar))
+      (setq selector (obten-selector xi termino-azar))
       (setq selector-humano (convierte-selector selector entrenamiento) )
       (if (not (find selector clausula :test #'equal) ) (push selector clausula))
       (if (not (find selector-humano clausula-humano :test #'equal))
         (push selector-humano clausula-humano)   )
 
       ;;Actualiza las observaciones de la clase positiva
-      (setq nuevas-positivas (actualiza-tabla nuevas-positivas termino-azar (first selector) ) )
-
-      ;;Actualiza las observaciones de la clase negativa
-      (if (equal (first selector) :pos) (setq negacion :neg) (setq negacion :pos)  )
-      (setq nuevas-negativas (actualiza-tabla nuevas-negativas termino-azar negacion ) )
+      (setq nuevas-positivas (actualiza-tabla nuevas-positivas xi (first selector) ) )
 
       ;;Quita termino-azar de la lista indices-terminos
-      (setq indices-terminos (actualiza-terminos m-mejores termino-azar))
+      (setq indices-terminos (actualiza-terminos indices-terminos xi))
 
       ;;Mensaje de información
       (format t "El conjunto E+ todavía tiene ~a observaciones ~% " (length nuevas-positivas) )
@@ -810,6 +813,7 @@
     );loop E+
 
     ;;Actualiza tabla-negativas y recupera tabla-positivas
+    (setq nuevas-negativas (actualiza-negativas nuevas-negativas clausula) )
     (setq tabla-negativas nuevas-negativas)
     (setq nuevas-positivas tabla-positivas)
 
