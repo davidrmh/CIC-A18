@@ -26,7 +26,6 @@
                           (1.25 0.25 0)
                           (1.75 0.25 0)
                           (2.25 0.25 0) ) ) ;;Ejemplo visto en clase
-(defparameter *max-long-clasu* 5) ;;Longitud máxima de cada cláusula
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -899,8 +898,182 @@
   );let
 );defun
 
-;; (loop for observacion in entrena-pos do
-;; (format t "~a~%" (evalua-regla regla observacion)))
+;;==============================================================================
+;; Función para calcular el número de verdaderos positivos de una regla
+;;
+;; ENTRADA
+;; regla: Regla formada por selectores de la forma
+;; (>= indice-atributo valor) o (< indice-atributo valor)
+;; (Se obtiene de second de la función obten-regla)
+;;  observaciones: Lista que representa un conjunto de observaciones
+;; (idealmente el conjunto de prueba)
+;; clase-positiva: Símbolo  que representa la clase positiva
+;;
+;; SALIDA
+;; verd-pos: Número que cuenta el número de prediciones verdaderas positivas
+;;==============================================================================
+(defun verdaderos-positivos (regla observaciones clase-positiva)
+  (let ((clase-obs nil) (verd-pos 0))
+
+    (loop for observacion in observaciones do
+      ;obtiene la clase de la observación
+      (setq clase-obs (nth *indice-clase* observacion) )
+
+      ;Cuenta verdaderos positivos
+      (if (and (evalua-regla regla observacion) (equal clase-obs clase-positiva))
+        (incf verd-pos)  )
+
+    );loop
+
+    verd-pos
+
+  );let
+);defun
+
+;;==============================================================================
+;; Función para calcular el número de falsos-negativos de una regla
+;;
+;; ENTRADA
+;; regla: Regla formada por selectores de la forma
+;; (>= indice-atributo valor) o (< indice-atributo valor)
+;; (Se obtiene de second de la función obten-regla)
+;;  observaciones: Lista que representa un conjunto de observaciones
+;; (idealmente el conjunto de prueba)
+;; clase-positiva: Símbolo  que representa la clase positiva
+;;
+;; SALIDA
+;; resultado: Número que cuenta el número de prediciones falsas-negativas
+;;==============================================================================
+(defun falsos-negativos (regla observaciones clase-positiva)
+  (let ((clase-obs nil) (resultado 0))
+
+    (loop for observacion in observaciones do
+      ;obtiene la clase de la observación
+      (setq clase-obs (nth *indice-clase* observacion) )
+
+      ;Cuenta falsos negativos
+      (if (and  (not (evalua-regla regla observacion)) (equal clase-obs clase-positiva))
+        (incf resultado)  )
+
+    );loop
+    resultado
+  );let
+);defun
+
+;;==============================================================================
+;; Función para calcular el número de falsos-positivos de una regla
+;;
+;; ENTRADA
+;; regla: Regla formada por selectores de la forma
+;; (>= indice-atributo valor) o (< indice-atributo valor)
+;; (Se obtiene de second de la función obten-regla)
+;;  observaciones: Lista que representa un conjunto de observaciones
+;; (idealmente el conjunto de prueba)
+;; clase-positiva: Símbolo  que representa la clase positiva
+;;
+;; SALIDA
+;; resultado: Número que cuenta el número de prediciones falsas positivas
+;;==============================================================================
+(defun falsos-positivos (regla observaciones clase-positiva)
+  (let ((clase-obs nil) (resultado 0))
+
+    (loop for observacion in observaciones do
+      ;obtiene la clase de la observación
+      (setq clase-obs (nth *indice-clase* observacion) )
+
+      ;Cuenta falsos positivos
+      (if (and  (evalua-regla regla observacion)  (not (equal clase-obs clase-positiva)) )
+        (incf resultado)  )
+
+    );loop
+    resultado
+  );let
+);defun
+
+;;==============================================================================
+;; Función para calcular el número de verdaderos negativos de una regla
+;;
+;; ENTRADA
+;; regla: Regla formada por selectores de la forma
+;; (>= indice-atributo valor) o (< indice-atributo valor)
+;; (Se obtiene de second de la función obten-regla)
+;;  observaciones: Lista que representa un conjunto de observaciones
+;; (idealmente el conjunto de prueba)
+;; clase-positiva: Símbolo  que representa la clase positiva
+;;
+;; SALIDA
+;; resultado: Número que cuenta el número de prediciones verdaderas negativas
+;;==============================================================================
+(defun verdaderos-negativos (regla observaciones clase-positiva)
+  (let ((clase-obs nil) (resultado 0))
+
+    (loop for observacion in observaciones do
+      ;obtiene la clase de la observación
+      (setq clase-obs (nth *indice-clase* observacion) )
+
+      ;Cuenta verdaderos-negativos
+      (if (and   (not (evalua-regla regla observacion) )  (not (equal clase-obs clase-positiva)) )
+        (incf resultado)  )
+
+    );loop
+    resultado
+  );let
+);defun
+
+;;==============================================================================
+;; Función para calculas métricas de desempeño
+;;
+;; ENTRADA
+;; regla: Regla formada por selectores de la forma
+;; (>= indice-atributo valor) o (< indice-atributo valor)
+;; (Se obtiene de second de la función obten-regla)
+;;  observaciones: Lista que representa un conjunto de observaciones
+;; (idealmente el conjunto de prueba)
+;; clase-positiva: Símbolo  que representa la clase positiva
+;;
+;; SALIDA
+;; Lista con los siguientes componentes
+;; (first): Accuracy
+;; (second): Precision
+;; (third): Recall
+;;==============================================================================
+(defun metricas (regla observaciones clase-positiva)
+  (let ((verd-pos 0) (fals-neg 0) (fals-pos 0) (verd-neg 0) (accuracy 0)
+        (precision  0) (recall 0)  )
+
+    ;Calcula verdaderos positivos
+    (setq verd-pos (verdaderos-positivos regla observaciones clase-positiva))
+
+    ;Calcula falsos negativos
+    (setq fals-neg (falsos-negativos regla observaciones clase-positiva))
+
+    ;Calcula falsos positivos
+    (setq fals-pos (falsos-positivos regla observaciones clase-positiva))
+
+    ;Calcula verdaderos negativos
+    (setq verd-neg (verdaderos-negativos regla observaciones clase-positiva))
+
+    ;Calcula accuracy
+    (if (/= (+ verd-pos fals-neg fals-pos verd-neg) 0)
+    (setq accuracy (/ (+ verd-pos verd-neg) (+ verd-pos fals-neg fals-pos verd-neg)) )
+    (setq accuracy 'NA) )
+
+    ;Calcula precision para la clase positiva
+    (if (/= (+ verd-pos fals-pos) 0)
+    (setq precision (/ verd-pos (+ verd-pos fals-pos)  ) )
+    (setq precision 'NA) )
+
+    ;Calcula recall para la clase positiva
+    (if (/= (+ verd-pos fals-neg) 0)
+    (setq recall (/ verd-pos (+ verd-pos fals-neg)  ))
+    (setq recall 'NA) )
+
+    (list accuracy precision recall)
+
+  );let
+);defun
+
+
 ;;PARA DEBUG
 ;; (defvar datos) (defvar clases) (defvar separacion) (defvar entrenamiento)
 ;; (defvar prueba) (defvar tabla) (defvar separacion-tabla) (defvar tabla-positivas)
@@ -922,62 +1095,3 @@
 
 ;;Con el conjunto de entrenamiento crear la tabla booleanizada
 ;;  (setq tabla (tabla-booleana entrenamiento *indices-atributos*))
-
-;;Para la clases de interés separar la tabla booleanizada en observaciones positivas y en negativas
-;;en este caso es para clase 1
-;;  (setq separacion-tabla (separa-tabla entrenamiento tabla 1 *indice-clase*))
-;;  (setq tabla-positivas (first separacion-tabla))
-;;  (setq tabla-negativas (second separacion-tabla))
-
-;;Copia tabla-negativas en nuevas-negativas
-;;  (setq nuevas-negativas (copy-seq tabla-negativas))
-
-;;Mientras tabla-negativas no sea nil
-
-  ;;Crear una lista con los índices de los posibles términos
-  ;; (setq num-terminos (length (first tabla)) )
-  ;; (setq indices-terminos nil)
-  ;; (loop for i from 0 to (- num-terminos 1) do
-  ;;  (setq indices-terminos (append indices-terminos (list i) ))
-  ;; )
-
-  ;;Copia tabla-positivas en nuevas-positivas para poder modificarla sin perder los valores iniciales
-  ;;  (setq nuevas-positivas (copy-seq tabla-positivas) )
-
-  ;;Reinicia la clausula a nil
-  ;;   (setq clausula nil)
-
-
-  ;;Mientras nuevas-positivas no sea nil
-
-      ;;Para cada índice en la lista indices-terminos calcular la aptitud
-      ;;  (setq lista-aptitudes  (first (aptitudes nuevas-positivas tabla-negativas indices-terminos) ))
-
-      ;;De lista-aptitudes obtener los *m* mejores (sólo second)
-      ;;  (setq m-mejores (second (k-argmax lista-aptitudes *m*)))
-
-      ;;De la lista m-mejores se selecciona un término al azar
-      ;; (setq termino-azar (selecciona-azar m-mejores) )
-
-      ;;Crea el selector y lo agrega a la claúsula actual
-      ;;  (setq selector (obten-selector termino-azar))
-      ;;  (push selector clausula)
-
-      ;;Actualiza las observaciones de la clase positiva
-      ;;  (setq nuevas-positivas (actualiza-tabla nuevas-positivas termino-azar (first selector) ) )
-
-      ;;Actualiza las observaciones de la clase negativa
-      ;; (if (equal (first selector) :pos) (setq negacion :neg) (setq negacion :pos)  )
-      ;; (setq nuevas-negativas (actualiza-tabla nuevas-negativas termino-azar negacion ) )
-
-      ;;Quita termino-azar de la lista indices-terminos
-      ;; (setq indices-terminos (actualiza-terminos indices-terminos termino-azar))
-
-  ;;Actualiza tabla-negativas y recupera tabla-positivas
-  ;;  (setq tabla-negativas nuevas-negativas)
-  ;;  (setq nuevas-positivas tabla-positivas)
-
-  ;;Agrega la claúsula a la lista de claúsulas
-  ;;La lista de claúsulas se interpreta como conjunción
-  ;;Los elementos de cada claúsula se interpretan como disyunción
-  ;;  (push clausula lista-clausulas)
