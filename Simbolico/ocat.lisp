@@ -804,7 +804,7 @@
       (setq indices-terminos (actualiza-terminos indices-terminos xi))
 
       ;;Mensaje de información
-      (format t "El conjunto E+ todavía tiene ~a observaciones ~% " (length nuevas-positivas) )
+      ;(format t "El conjunto E+ todavía tiene ~a observaciones ~% " (length nuevas-positivas) )
 
       ;;Condición de paro
       (when (equal nuevas-positivas nil) (return t) )
@@ -821,7 +821,7 @@
     (push clausula-humano lista-clausulas-humano)
 
     ;;Mensaje de información
-    (format t "El conjunto E- todavía tiene ~a observaciones ~% " (length tabla-negativas) )
+    ;(format t "El conjunto E- todavía tiene ~a observaciones ~% " (length tabla-negativas) )
 
     ;;Condición de paro
     (when (equal tabla-negativas nil) (return t)  )
@@ -1068,11 +1068,95 @@
     (setq recall (/ verd-pos (+ verd-pos fals-neg)  ))
     (setq recall 'NA) )
 
-    (list accuracy precision recall)
+    (list (float accuracy) (float precision) (float recall) )
 
   );let
 );defun
 
+;;==============================================================================
+;; Función para guardar una regla en un archivo txt
+;;
+;; ENTRADA
+;; regla: Lista obtenida de (second (obten-regla....))
+;; archivo-salida: String que representa el nombre del archivo txt
+;;==============================================================================
+(defun guarda-regla (regla archivo-salida)
+  (with-open-file (str archivo-salida
+                   :direction :output
+                   :if-exists :supersede
+                   :if-does-not-exist :create)
+  (format str "~a" regla))
+);defun
+
+;;==============================================================================
+;; Función para leer una regla a partir de un archivo
+;;
+;; ENTRADA
+;; nombre-archivo: String con el nombre del archivo en donde está la regla
+;;
+;; SALIDA
+;; regla: Lista que representa una regla
+;;==============================================================================
+(defun lee-regla (nombre-archivo)
+  (let ((regla nil))
+    (setq regla (first (lee-datos nombre-archivo)))
+  );let
+);defun
+
+;;==============================================================================
+;; Función principal
+;;
+;; ENTRADA
+;; archivo-datos: String con la ruta del archivo de datos
+;; proporcion: Número entre 0 y 1 que indica la proporción de datos que se
+;; utilizarán como conjunto de entrenamiento
+;;
+;; SALIDA
+;; Para cada clase escribe un archivo con la regla generada
+;;==============================================================================
+(defun main (archivo-datos proporcion)
+  (let ((datos nil) (tabla nil) (entrenamiento nil) (prueba nil) (clases nil)
+        (regla nil) (performance nil) (archivo-salida nil) (separacion nil))
+
+    ;;Lee los datos
+    (setq datos (lee-datos archivo-datos))
+
+    ;;Crea el conjunto de entrenamiento y prueba
+    (setq separacion (split-data datos proporcion))
+    (setq entrenamiento (first separacion))
+    (setq prueba (second separacion))
+
+    ;;Crea la tabla booleanizada
+    (setq tabla (tabla-booleana entrenamiento *indices-atributos*))
+
+    ;;Obtiene las clases posibles
+    (setq clases (obten-clases datos *indice-clase* ))
+
+    ;;Crea la regla para cada clase
+    (loop for clase in clases do
+
+      ;;Nombre del archivo en donde se guardará la regla
+      (setq archivo-salida (format nil "regla-clase-~a.txt" clase) )
+
+      ;;Crea la regla
+      (setq regla (second (obten-regla tabla entrenamiento clase)))
+
+      ;;Obtiene las métricas de desempeño
+      ;;sobre el conjunto de prueba
+      (setq performance (metricas regla prueba clase))
+
+      ;;Imprime resultados en pantalla
+      (format t "Regla clase ~a~%" clase)
+      (format t "Accuracy = ~a~%" (first performance))
+      (format t "Precision = ~a~%" (second performance))
+      (format t "Recall = ~a~%" (third performance))
+
+      ;;Guarda la regla en el archivo-salida
+      (guarda-regla regla archivo-salida)
+    );loop clase
+
+  );let
+);defun
 
 ;;PARA DEBUG
 ;; (defvar datos) (defvar clases) (defvar separacion) (defvar entrenamiento)
