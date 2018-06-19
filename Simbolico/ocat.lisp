@@ -1,7 +1,7 @@
 ;;==============================================================================
 ;;                            VARIABLES GLOBALES
 ;;==============================================================================
-(defparameter *indices-atributos* '(1 2 3 4 5 6))
+(defparameter *indices-atributos* '(1 2 3 4 5))
 (defparameter *operador* 'equal)
 (defparameter *indice-clase* 7)
 (defparameter *m* 10)
@@ -26,7 +26,7 @@
                           (1.25 0.25 0)
                           (1.75 0.25 0)
                           (2.25 0.25 0) ) ) ;;Ejemplo visto en clase
-(defparameter *max-long-clasu* 5) ;;Longitud máxima de cada cláusula                          
+(defparameter *max-long-clasu* 5) ;;Longitud máxima de cada cláusula
 
 ;;==============================================================================
 ;; Función para leer los datos
@@ -833,6 +833,74 @@
   );let
 );defun
 
+;;==============================================================================
+;; Función para evaluar un selector sobre una observación dada
+;;
+;; ENTRADA
+;; selector: Una lista de la forma (>= indice-atributo valor) o (< indice-atributo valor)
+;; observacion: Una lista que representa una observación
+;;
+;; SALIDA
+;; T si el valor del atributo cumple la condición del selector, NIL en otro caso
+;;==============================================================================
+(defun evalua-selector (selector observacion)
+  (let ((valor-selector nil) (valor-atributo nil) (operador nil) (indice nil))
+
+    ;Obtiene el índice del atributo de interés
+    (setq indice (second selector))
+
+    ;Obtiene el valor del selector
+    (setq valor-selector (third selector))
+
+    ;Obtiene el operador del selector
+    (setq operador (first selector) )
+
+    ;Obtiene el valor del atributo en el índice correspondiente
+    (setq valor-atributo (nth indice observacion) )
+
+    (if (eval `(,operador ,valor-atributo ,valor-selector)) t nil)
+  );let
+);defun
+
+;;==============================================================================
+;; Función para decidir si una observación pertenece a la clase positiva o
+;; a la clase negativa, de acuerdo a una regla para la clase positiva
+;;
+;; ENTRADA
+;; regla: Regla formada por selectores de la forma
+;; (>= indice-atributo valor) o (< indice-atributo valor)
+;; (Se obtiene de second de la función obten-regla)
+;; observación: Lista que representa una observación
+;;
+;; SALIDA
+;; T si la observación pertenece a la clase positiva, nil en otro caso
+;;
+;; NOTA
+;; La regla se interpreta como conjunción de disyunciones
+;;==============================================================================
+(defun evalua-regla (regla observacion)
+  (let ((flag-clausula nil) (contador 0) )
+    (loop for clausula in regla do
+      (loop for selector in clausula do
+        (when (and (evalua-selector selector observacion) (not flag-clausula) )
+            ;flag-clausula sirve sólo contar alguna disyunción
+           (setq flag-clausula t)
+           ;Contador sirve para contar cuantas conjunciones se cumplen
+           (setq contador (+ contador 1)) );when
+      );loop selector
+      (setq flag-clausula nil)
+    );loop clausula
+
+    ;Si se cumple cada una de las conjunciones entonces es de la clase
+    ;positiva
+    (if (= contador (length regla)) (return-from evalua-regla t)
+     (return-from evalua-regla nil)  )
+
+  );let
+);defun
+
+;; (loop for observacion in entrena-pos do
+;; (format t "~a~%" (evalua-regla regla observacion)))
 ;;PARA DEBUG
 ;; (defvar datos) (defvar clases) (defvar separacion) (defvar entrenamiento)
 ;; (defvar prueba) (defvar tabla) (defvar separacion-tabla) (defvar tabla-positivas)
