@@ -6,12 +6,34 @@
 \usepackage{graphicx}
 \usepackage{cite}
 
-\title{\textbf{Generación de estrategias de inversión en el mercado mexicano}}
-\author{David Ricardo Montalván Hernández}
-\date{}
 
+%\title{\textbf{Generación de estrategias de inversión en el mercado mexicano}}
+%\author{David Ricardo Montalván Hernández}
+%\date{}
+\pagestyle{empty}
 \begin{document}
-\maketitle	
+
+%\maketitle	
+
+\begin{center}
+\fontsize{14pt}{14pt}
+\textbf{Generación de estrategias de inversión en el mercado accionario}
+\end{center}
+
+\begin{center}
+David Ricardo Montalván Hernández, Ricardo Barrón Fernández.
+\end{center}
+
+\begin{center}
+Instituto Politécnico Nacional, Centro de Investigación en Computación, Ciudad de México, México.
+\end{center}
+
+\begin{center}
+
+\texttt{ \{davidricardo888,barron2131\}@gmail.com}
+
+\end{center}
+
 \begin{abstract}
 Con la digitalización de los mercados financieros, particularmente del mercado accionario, el desarrollo de algoritmos y técnicas computacionales para la determinación y ejecución de órdenes de compra o venta de títulos financieros ha ganado relevancia tanto en la academia como en la industria.
 En este artículo se explora el uso de técnicas computacionales relacionadas al área de reconocimiento de patrones, con el propósito de obtener estrategias de inversión para el mercado accionario mexicano.
@@ -38,13 +60,6 @@ Este trabajo busca también comparar el desempeño de distintas metodologías relac
 
 Finalmente, se consideran dos aportaciones, la primera es el análisis del mercado accionario mexicano desde una perspectiva del área de reconocimiento de patrones; la segunda, consiste en la propuesta de un método de etiquetamiento para las series de tiempo que representan los precios de estas acciones.
 
-%\begin{itemize}
-%	\item Motivación (justificación).
-%	\item Problema a resolver.
-%	\item Objetivo general.
-%	\item Objetivos específicos
-%	\item Aportaciones
-%\end{itemize}
 
 \section{Estado del arte}
 Con el fin de encontrar estrategias de inversión que generen ganancias consistentemente (es decir, que tengan mayores ganancias que la estrategia \textit{Buy and Hold}), se han explorado distintas técnicas relacionadas a la inteligencia artificial, por ejemplo uno de los primeros trabajos que utiliza este tipo de herramientas es el de \cite{Allen1999}, en el cual se utiliza programación genética con el fin de crear programas que generen estrategias de inversión capaces de obtener mayores ganancias que la estrategia de \textit{Buy and Hold} (explicada en la siguiente sección), en este trabajo se analiza el mercado de índices accionarios de Estados Unidos, en particular, el índice \textit{S\&P 500}, además se consideran costos de transacción; sin embargo no obtienen resultados favorecedores.\\
@@ -89,31 +104,31 @@ En su versión semi-fuerte, la hipótesis del mercado eficiente nos dice que la in
 \subsubsection{Versión fuerte de la HME}
 En su versión fuerte, la hipótesis del mercado eficiente nos dice que tanto la información pública como la privilegiada no nos permiten obtener pronosticar los movimientos del mercado.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
-	\caption{Versiones de la hipótesis del mercado eficiente}
-	\label{fig:HME}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
+%	\caption{Versiones de la hipótesis del mercado eficiente}
+%	\label{fig:HME}
+%\end{figure}
 
 \subsection{Estrategia Buy and Hold (BH)}
 Esta estrategia de inversión es la estrategia sugerida por la hipótesis del mercado eficiente y consiste en lo siguiente:
 
-\begin{itemize}
-	\item Fijar un periodo de tiempo $[0,T]$.
-	\item Comprar en el inicio del periodo a un precio $P_{0}$.
-	\item Vender en el final del periodo a un precio $P_{T}$.
-	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
-\end{itemize}
+%\begin{itemize}
+%	\item Fijar un periodo de tiempo $[0,T]$.
+%	\item Comprar en el inicio del periodo a un precio $P_{0}$.
+%	\item Vender en el final del periodo a un precio $P_{T}$.
+%	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+%\end{itemize}
 
 de acuerdo a la HME, la ganancia (pérdida) obtenida por la estrategia BH es la máxima (mínima) ganancia (pérdida) que se puede obtener de manera sistemática. Por lo tanto, esta estrategia será utilizada como marco de referencia al momento de compara las estrategias de inversión derivadas por los algoritmos propuestos.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
-	\caption{Estrategia Buy and Hold}
-	\label{fig:BH}
-\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
+%	\caption{Estrategia Buy and Hold}
+%	\label{fig:BH}
+%\end{figure}
 
 \subsection{Títulos referenciados a acciones}
 De acuerdo al sitio de la Bolsa Mexicana de Valores \footnote{https://www.bmv.com.mx/es/mercados/instrumentos}, el mercado mexicano cuenta con Títulos Referenciados a Acciones (TRACS), los cuales son certificados de participación que representan el patrimonio de fideicomisos de inversión y que mantienen en posición canastas de acciones de empresas cotizadas en bolsa además de una componente en efectivos. El objetivo principal de los TRACs, es replicar el comportamiento de las acciones al que está referido.
@@ -150,12 +165,12 @@ Con este algoritmo se trata de encontrar la mejor estrategia para el periodo de 
 
 Cada individuo en la población se codificó como un vector, $\mathbf{x}$, el cual representa una estrategia de inversión y tiene un número de componentes igual al número de días en el periodo de entrenamiento. Cada componente del vector toma un valor dentro conjunto $\{-1,0,1\}$ con $-1,0,1;$ representando señales de venta, no hacer nada y compra, respectivamente. De esta manera la \textit{i-ésima} componente representa la decisión tomada en el día $i$. El algoritmo busca individuos con la combinación de estos números que genere mayor ganancia, la cual es medida como la ganancia generada por la estrategia del individuo (los componentes del vector $\mathbf{x}$) menos la ganancia generada por la estrategia de \textit{Buy and Hold}, esta cantidad es llamada el \textbf{exceso de ganancia} y deseamos maximizarla.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/estrategia}
-	\caption{Resultado del proceso de etiquetamiento}
-	\label{fig:etiquetamiento}
-\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/estrategia}
+%	\caption{Resultado del proceso de etiquetamiento}
+%	\label{fig:etiquetamiento}
+%\end{figure}
 
 
 \subsection{Creación de atributos}
@@ -394,7 +409,7 @@ Las direcciones futuras de este trabajo podrían ser las siguientes:
 %Métodos simbólicos
 
 \bibliography{referencias_articulo}{}
-\bibliographystyle{apalike}
+\bibliographystyle{abbrv}
 
 
 \end{document}
