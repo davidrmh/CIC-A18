@@ -1,0 +1,400 @@
+\documentclass[10pt,letterpaper,onecolumn]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+
+\title{\textbf{Generación de estrategias de inversión en el mercado mexicano}}
+\author{David Ricardo Montalván Hernández}
+\date{}
+
+\begin{document}
+\maketitle	
+\begin{abstract}
+Con la digitalización de los mercados financieros, particularmente del mercado accionario, el desarrollo de algoritmos y técnicas computacionales para la determinación y ejecución de órdenes de compra o venta de títulos financieros ha ganado relevancia tanto en la academia como en la industria.
+En este artículo se explora el uso de técnicas computacionales relacionadas al área de reconocimiento de patrones, con el propósito de obtener estrategias de inversión para el mercado accionario mexicano.
+\end{abstract}
+
+\section{Introducción}	
+
+El aumento en el poder de cómputo, la digitalización de los mercados financieros y la posibilidad de obtener grandes ganancias, han motivado en gran medida a la investigación y el desarrollo de algoritmos computacionales cuyo fin es guiar al inversionista en la toma de decisiones de compra o venta de títulos financieros (en particular acciones).
+
+A pesar de que la idea básica es: "comprar barato hoy para vender a un precio mayor en el futuro", dada la incertidumbre de los mercados, esta investigación se ha auxiliado de herramientas matemáticas y computacionales  para la generación de modelos que auxilien en la toma de decisiones (cuando comprar y cuando vender). Particularmente, se ha dado énfasis en el uso de técnicas relacionadas a la inteligencia artificial.
+
+El objetivo de este trabajo consiste en proponer un método o algoritmo para la generación de señales de compra o venta en el mercado accionario mexicano.
+
+Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) superiores (menores) a las generadas por la \textbf{hipótesis del mercado eficiente} la cual se discutirá en la sección 3 y que básicamente consiste en lo siguiente:
+
+\begin{itemize}
+	\item Fijar un periodo de tiempo $[0,T]$.
+	\item Comprar en el inicio del periodo a un precio $P_{0}$.
+	\item Vender en el final del periodo a un precio $P_{T}$.
+	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+\end{itemize}
+
+Este trabajo busca también comparar el desempeño de distintas metodologías relacionadas al reconocimiento de patrones cuando se aplican al proceso de detectar señales de compra o venta de acciones.
+
+Finalmente, se consideran dos aportaciones, la primera es el análisis del mercado accionario mexicano desde una perspectiva del área de reconocimiento de patrones; la segunda, consiste en la propuesta de un método de etiquetamiento para las series de tiempo que representan los precios de estas acciones.
+
+%\begin{itemize}
+%	\item Motivación (justificación).
+%	\item Problema a resolver.
+%	\item Objetivo general.
+%	\item Objetivos específicos
+%	\item Aportaciones
+%\end{itemize}
+
+\section{Estado del arte}
+Con el fin de encontrar estrategias de inversión que generen ganancias consistentemente (es decir, que tengan mayores ganancias que la estrategia \textit{Buy and Hold}), se han explorado distintas técnicas relacionadas a la inteligencia artificial, por ejemplo uno de los primeros trabajos que utiliza este tipo de herramientas es el de \cite{Allen1999}, en el cual se utiliza programación genética con el fin de crear programas que generen estrategias de inversión capaces de obtener mayores ganancias que la estrategia de \textit{Buy and Hold} (explicada en la siguiente sección), en este trabajo se analiza el mercado de índices accionarios de Estados Unidos, en particular, el índice \textit{S\&P 500}, además se consideran costos de transacción; sin embargo no obtienen resultados favorecedores.\\
+
+En \cite{Leigh2002}, se utilizan heurísticas que permiten detectar el patrón de una \textit{bull flag} y logran vencer la estrategia \textit{Buy and Hold}; aunque cabe señalar que no consideran costos de transacción.\\
+
+\cite{Potvin2004}, continuan con el trabajo de \cite{Allen1999}, eliminando los costos de transacción y considerando otra forma de crear los árboles. Obtienen resultados favorecedores en mercados estables y a la baja pero no en mercados alcistas.\\
+
+\cite{Scott2010}, también utilizan programación genética para determinar sus estrategias, siendo la principal característica de este trabajo el uso de precios y decisiones mensuales; consideran costos de transacción y logran vencer la estrategia de \textit{Buy and Hold}.\\
+
+En \cite{Leitao2016}, se utilizan \textit{puntos perceptualmente importantes} (PIP por sus siglas en inglés) y \textit{aproximación agregada simbólica} (SAX en inglés) con el fin de reducir la dimensión de la serie de tiempo y expresarla utilizando símbolos, además utilizan un algoritmo genético para poder obtener estrategias de inversión a partir de los mismos. Obtienen resultados favorables pero no consideran costos de transacción\\
+
+Finalmente, en \cite{Kampouridis2017} se utiliza una escala de tiempo basada en eventos y no una escala de tiempo físico; definen lo que son los \textit{cambios direccionales} y con base en estos buscan obtener señales de compra y venta; además las ganancias obtenidas son ajustadas a una medida de riesgo, consideran costos de transacción y vencen a la estrategia \textit{Buy and Hold}.
+%Incluir una tabla comparativa
+
+\section{Fundamentos}
+
+\subsection{Análisis técnico}
+De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las acciones con la intención de guiar las  decisiones de inversión. Los supuestos básicos de este tipo de análisis son los siguientes:
+
+\begin{itemize}
+	\item Los precios están determinados únicamente por la interacción de la oferta y la demanda.
+	\item Los precios tienden a moverse siguiendo una tendencia.
+	\item Cambios en la oferta y la demanda provocan reversiones en las tendencias.
+	\item Cambios en la oferta y la demanda pueden detectarse utilizando gráficas.
+	\item Los patrones en las gráficas tienden a repetirse.
+\end{itemize}
+
+El análisis técnico hace el supuesto de que la información de todos los factores (incluyendo factores psicológicos como la avaricia, miedo, mal información, etc...) que afectan las curvas de oferta y demanda, está reflejada en el precio de la acción de la compañía.
+
+\subsection{Hipótesis del mercado eficiente (HME)}
+Esta hipótesis, propuesta por Eugene Fama en los años 60's, nos dice que los cambios observados en los precios son provocados únicamente por la nueva información disponible, es decir, la información histórica (de cualquier tipo) no tiene importancia al momento de  determinar los precios del futuro, en particular, el análisis técnico no nos permite estimar las tendencias del futuro.
+
+Existen tres versiones de la HME:
+\subsubsection{Versión débil de la HME}
+En su versión débil, la hipótesis del mercado eficiente nos dice que los precios del pasado no afectan los movimientos del futuro, en consecuencia, el análisis técnico es fútil para generar estrategias de inversión.
+Es importante señalar que esta versión sólo hace referencia a los precios históricos, dejando abierta la posibilidad de utilizar información de otro tipo, por ejemplo estados financieros de las compañías o noticias relacionadas a ella, para predecir los precios futuros.
+
+\subsubsection{Versión semi-fuerte de la HME}
+En su versión semi-fuerte, la hipótesis del mercado eficiente nos dice que la información pública histórica (precios, estados financieros, noticias, etc...) no es de utilidad alguna al momento de predecir los movimientos del futuro. En consecuencia, sólo la información privilegiada (aquella que sólo unas cuantas personas poseen) podría ser de utilidad para predecir los movimientos del futuro.
+
+\subsubsection{Versión fuerte de la HME}
+En su versión fuerte, la hipótesis del mercado eficiente nos dice que tanto la información pública como la privilegiada no nos permiten obtener pronosticar los movimientos del mercado.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
+	\caption{Versiones de la hipótesis del mercado eficiente}
+	\label{fig:HME}
+\end{figure}
+
+\subsection{Estrategia Buy and Hold (BH)}
+Esta estrategia de inversión es la estrategia sugerida por la hipótesis del mercado eficiente y consiste en lo siguiente:
+
+\begin{itemize}
+	\item Fijar un periodo de tiempo $[0,T]$.
+	\item Comprar en el inicio del periodo a un precio $P_{0}$.
+	\item Vender en el final del periodo a un precio $P_{T}$.
+	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+\end{itemize}
+
+de acuerdo a la HME, la ganancia (pérdida) obtenida por la estrategia BH es la máxima (mínima) ganancia (pérdida) que se puede obtener de manera sistemática. Por lo tanto, esta estrategia será utilizada como marco de referencia al momento de compara las estrategias de inversión derivadas por los algoritmos propuestos.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
+	\caption{Estrategia Buy and Hold}
+	\label{fig:BH}
+\end{figure}
+
+\subsection{Títulos referenciados a acciones}
+De acuerdo al sitio de la Bolsa Mexicana de Valores \footnote{https://www.bmv.com.mx/es/mercados/instrumentos}, el mercado mexicano cuenta con Títulos Referenciados a Acciones (TRACS), los cuales son certificados de participación que representan el patrimonio de fideicomisos de inversión y que mantienen en posición canastas de acciones de empresas cotizadas en bolsa además de una componente en efectivos. El objetivo principal de los TRACs, es replicar el comportamiento de las acciones al que está referido.
+
+Es de principal importancia el TRAC llamado NAFTRAC el cual está referenciado al \textbf{Índice de Precios y Cotizaciones} (IPC), índice que busca reflejar el mercado accionario mexicano en su totalidad.
+
+Buscamos entonces, estrategias que generen mejores rendimientos que aquellos generados por el NAFTRAC siguiendo la estrategia Buy and Hold.
+
+
+\section{Experimentos y resultados}
+\subsection{Conjunto de datos}
+Para los experimentos se utilizaron precios diarios (apertura,mínimo,máximo,cierre) del NAFTRAC obtenidos de Yahoo Finance \footnote{https://finance.yahoo.com/}, esta información abarca el periodo que inicia el día 4 de febrero de 2014 (2014-02-04) y termina el 5 de abril de 2018.
+
+Es importante señalar que este conjunto de datos no está etiquetado, por lo tanto, si buscamos detectar señales de compra o venta, es necesario primero etiquetar los datos históricos con el fin de aprender de ellos; en otras palabras, buscamos primero encontrar la estrategia que nos habría generado mayores ganancias en caso de haberla seguida (o encontrado) y a partir de ella aprender y generalizar para el futuro.
+
+\subsubsection{Conjuntos de entrenamiento y prueba}
+Para obtener los conjuntos de entrenamiento y prueba, se separó el conjunto de datos en periodos de tres meses iniciando el día 4 de febrero de 2014 siendo el periodo de prueba el periodo de los tres meses siguientes después del último día en el periodo de entrenamiento como lo ejemplifíca la siguiente tabla.\\
+
+\begin{tabular}{|c|c|c|c|}
+\hline Inicio entrenamiento & Fin entrenamiento & Inicio prueba & Fin prueba \\ 
+\hline 2014-02-04 & 2014-04-30 & 2014-05-02 & 2014-07-31 \\ 
+\hline 2014-05-02 & 2014-07-31 & 2014-08-04 & 2014-10-31 \\ 
+\hline 2014-08-04 & 2014-10-31 & 2014-11-03 & 2015-01-30 \\ 
+\hline 2014-11-03 & 2015-01-30 & 2015-02-03 & 2015-04-30 \\ 
+\hline 
+\end{tabular} \\
+
+Utilizando este procedimiento fue posible obtener 16 conjuntos de entrenamiento y prueba.
+
+\subsection{Proceso de etiquetamiento}
+Para etiquetar el conjunto de entrenamiento se utilizó un algoritmo de estimación de distribución (EDA por sus siglas en inglés \cite{dan-simon}) el cual es un algoritmo del tipo evolutivo, en particular se utilizó el algoritmo de distribución marginal univariada (UMDA por sus siglas en inglés).
+
+Con este algoritmo se trata de encontrar la mejor estrategia para el periodo de entrenamiento, es decir, aquella estrategia que nos habría generado las mayores ganancias.
+
+Cada individuo en la población se codificó como un vector, $\mathbf{x}$, el cual representa una estrategia de inversión y tiene un número de componentes igual al número de días en el periodo de entrenamiento. Cada componente del vector toma un valor dentro conjunto $\{-1,0,1\}$ con $-1,0,1;$ representando señales de venta, no hacer nada y compra, respectivamente. De esta manera la \textit{i-ésima} componente representa la decisión tomada en el día $i$. El algoritmo busca individuos con la combinación de estos números que genere mayor ganancia, la cual es medida como la ganancia generada por la estrategia del individuo (los componentes del vector $\mathbf{x}$) menos la ganancia generada por la estrategia de \textit{Buy and Hold}, esta cantidad es llamada el \textbf{exceso de ganancia} y deseamos maximizarla.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/estrategia}
+	\caption{Resultado del proceso de etiquetamiento}
+	\label{fig:etiquetamiento}
+\end{figure}
+
+
+\subsection{Creación de atributos}
+Se utilizaron dos métodos para obtener los atributos a considerar:
+
+\begin{itemize}
+	\item \textbf{Método 1:} Dado que los precios de las acciones no se mantienen en niveles semejantes a lo largo del tiempo, no es conveniente utilizarlos como atributos de nuestros patrones. En cambio, se optó por calcular las variaciones entre el \textbf{precio de cierre} de un día $t$, $P_t$, y los precios de cierre de un número de días anteriores a este día, concretamente, $P_{t-1},P_{t-2},\ldots,P_{t-m}$, para $m \geq 1$, terminando con un total de $m$ atributos.
+	
+	\item \textbf{Método 2:} Para cada día se consideraron los precios de: apertura, mínimo, máximo y cierre; como atributos.
+\end{itemize}
+
+
+
+\subsection{Resultados}
+Para cada conjunto de entrenamiento y prueba se evaluaron los siguientes modelos:
+
+\begin{itemize}
+	\item Support Vector Machine (kernel gaussiano, dando mayor importancia a las señales de compra y venta)
+	\item Multilayer Perceptron (1 capa oculta con 10 neuronas, ReLu como activación)
+	\item C4.5 (máxima profundidad 5)
+\end{itemize}
+
+La métrica de desempeño será el \textbf{exceso de ganancia}, la cual se calcula bajo los siguientes supuestos.
+
+\subsubsection{Supuestos}
+\begin{itemize}
+	\item No hay ventas en corto, es decir, sólo se puede vender si ocurrió antes una compra.
+	\item No se permite la ejecución de señales iguales, es decir, una vez que se ejecutó una señal de compra o venta, se tiene que esperar hasta la siguiente señal de venta o compra respectivamente.
+	\item Si una señal de compra o venta se recibe en el día $t$, entonces el precio de compra o venta (precio de ejecución) se calcula como el punto medio entre el precio más alto y el más bajo del día $t+1$.
+	\item Cada movimiento de compra o venta tiene un costo de transacción equivalente al $0.25 \%$ sobre el costo total, por ejemplo, si se compra una acción con un precio de $\$10$, se terminaría pagando una cantidad de $\$10(1+0.0025)$; por otro lado si se vende a un precio de $10$, se ganaría una cantidad de $\$10(1-0.0025)$.
+\end{itemize}
+
+En las siguientes tablas se reportan los resultados obtenidos para cada uno de los modelos y cada método de obtención de los atributos, para el método 1, se utilizó $m=17$, es decir se calcularon $17$ atributos, como se explicó anteriormente.
+
+\subsubsection{Support Vector Machines}
+\begin{center}
+
+\textbf{Método 1}
+\begin{tabular}{|c|c|}
+\hline Periodo de prueba & Exceso de ganancia \\ 
+\hline 2014-05-02 a 2014-07-31 & 0.0 \\ 
+\hline 2014-08-04 a 2014-10-31 & 0.0 \\ 
+\hline 2014-11-03 a 2015-01-30 & 0.0 \\ 
+\hline 2015-02-03 a 2015-04-30 & -0.066087 \\ 
+\hline 2015-05-04 a 2015-07-31 & 0.0 \\ 
+\hline 2015-08-03 a 2015-10-30 & 0.0 \\ 
+\hline 2015-11-04 a 2016-01-29 & 0.094256 \\ 
+\hline 2016-02-02 a 2016-04-28 & -0.003995 \\ 
+\hline 2016-05-02 a 2016-07-29 & 0.010805 \\ 
+\hline 2016-08-01 a 2016-10-31 & 0.0 \\ 
+\hline 2016-11-01 a 2017-01-31 & 0.043489 \\ 
+\hline 2017-02-01 a 2017-04-28 & -0.072961 \\ 
+\hline  2017-05-02 a 2017-07-31 & 0.000446 \\ 
+\hline 2017-08-01 a 2017-10-31 & 0.032601 \\ 
+\hline  2017-11-03 a 2018-01-31 & -0.02678 \\ 
+\hline 2018-02-01 a 2018-04-05 & 0.0 \\ 
+\hline 
+\end{tabular} 
+
+\end{center}
+
+El exceso de ganancia promedio fue de $0.000735$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.036319$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.042455$.
+
+En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $7$ de $16$ un exceso igual a cero y en $4$ de $16$ un exceso de ganancia negativo.
+
+\begin{center}
+	
+	\textbf{Método 2}
+	\begin{tabular}{|c|c|}
+		\hline Periodo de prueba & Exceso de ganancia \\ 
+		\hline 2014-05-02 a 2014-07-31 & -0.013065 \\ 
+		\hline 2014-08-04 a 2014-10-31 & 0.0 \\ 
+		\hline 2014-11-03 a 2015-01-30 & 0.0 \\ 
+		\hline 2015-02-03 a 2015-04-30 & -0.058205 \\ 
+		\hline 2015-05-04 a 2015-07-31 & 0.0 \\ 
+		\hline 2015-08-03 a 2015-10-30 & 0.020422 \\ 
+		\hline 2015-11-04 a 2016-01-29 & 0.113568 \\ 
+		\hline 2016-02-02 a 2016-04-28 & -0.053912 \\ 
+		\hline 2016-05-02 a 2016-07-29 & 0.046655 \\ 
+		\hline 2016-08-01 a 2016-10-31 & 0.003383 \\ 
+		\hline 2016-11-01 a 2017-01-31 & 0.028226 \\ 
+		\hline 2017-02-01 a 2017-04-28 & -0.008784 \\ 
+		\hline  2017-05-02 a 2017-07-31 & -0.029988 \\ 
+		\hline 2017-08-01 a 2017-10-31 & 0.016313 \\ 
+		\hline  2017-11-03 a 2018-01-31 & -0.033324 \\ 
+		\hline 2018-02-01 a 2018-04-05 & 0.0 \\ 
+		\hline 
+	\end{tabular} 
+	
+\end{center}
+
+El exceso de ganancia promedio fue de $0.001955$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.038094$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.032879$.
+
+En $6$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $4$ de $16$ un exceso igual a cero y en $6$ de $16$ un exceso de ganancia negativo.
+
+
+\subsubsection{Multilayer Perceptron}
+
+\begin{center}
+
+\textbf{Método 1}
+\begin{tabular}{|c|c|}
+\hline Periodo de prueba & Exceso de ganancia \\ 
+\hline 2014-05-02 a 2014-07-31 & -0.043936 \\ 
+\hline 2014-08-04 a 2014-10-31 & -0.001371 \\ 
+\hline 2014-11-03 a 2015-01-30 & -0.057658 \\ 
+\hline 2015-02-03 a 2015-04-30 & -0.027254 \\ 
+\hline 2015-05-04 a 2015-07-31 & 0.0 \\ 
+\hline 2015-08-03 a 2015-10-30 & -0.006667 \\ 
+\hline 2015-11-04 a 2016-01-29 & 0.017689 \\ 
+\hline 2016-02-02 a 2016-04-28 & -0.053912 \\ 
+\hline 2016-05-02 a 2016-07-29 & 0.073092 \\ 
+\hline 2016-08-01 a 2016-10-31 & -0.023306 \\ 
+\hline 2016-11-01 a 2017-01-31 & 0.03691 \\ 
+\hline 2017-02-01 a 2017-04-28 & -0.003091 \\ 
+\hline  2017-05-02 a 2017-07-31 & 0.004936 \\ 
+\hline 2017-08-01 a 2017-10-31 & 0.008535 \\ 
+\hline  2017-11-03 a 2018-01-31 & -0.057157 \\ 
+\hline 2018-02-01 a 2018-04-05 & -0.008248 \\ 
+\hline 
+\end{tabular} 
+
+\end{center}
+
+El exceso de ganancia promedio fue de $-0.008839$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.028232$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.02826$.
+
+En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $10$ de $16$ un exceso de ganancia negativo.
+
+\begin{center}
+	
+	\textbf{Método 2}
+	\begin{tabular}{|c|c|}
+		\hline Periodo de prueba & Exceso de ganancia \\ 
+		\hline 2014-05-02 a 2014-07-31 & -0.067212 \\ 
+		\hline 2014-08-04 a 2014-10-31 & -0.006648 \\ 
+		\hline 2014-11-03 a 2015-01-30 & 0.0 \\ 
+		\hline 2015-02-03 a 2015-04-30 & -0.066087 \\ 
+		\hline 2015-05-04 a 2015-07-31 & 0.0 \\ 
+		\hline 2015-08-03 a 2015-10-30 & 0.0 \\ 
+		\hline 2015-11-04 a 2016-01-29 & 0.054907 \\ 
+		\hline 2016-02-02 a 2016-04-28 & -0.053912 \\ 
+		\hline 2016-05-02 a 2016-07-29 & -0.025028 \\ 
+		\hline 2016-08-01 a 2016-10-31 & -0.027428 \\ 
+		\hline 2016-11-01 a 2017-01-31 & 0.004775 \\ 
+		\hline 2017-02-01 a 2017-04-28 & -0.045391 \\ 
+		\hline  2017-05-02 a 2017-07-31 & -0.029988 \\ 
+		\hline 2017-08-01 a 2017-10-31 & 0.054144 \\ 
+		\hline  2017-11-03 a 2018-01-31 & 0.032173 \\ 
+		\hline 2018-02-01 a 2018-04-05 & 0.0 \\ 
+		\hline 
+	\end{tabular} 
+	
+\end{center}
+
+El exceso de ganancia promedio fue de $-0.010981$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.036499$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.040211$.
+
+En $4$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $4$ de $16$ un exceso igual a cero y en $8$ de $16$ un exceso de ganancia negativo.
+
+
+\subsubsection{C4.5}
+
+\begin{center}
+
+\textbf{Método 1}
+\begin{tabular}{|c|c|}
+\hline Periodo de prueba & Exceso de ganancia \\ 
+\hline 2014-05-02 a 2014-07-31 & -0.090848 \\ 
+\hline 2014-08-04 a 2014-10-31 & -0.010264 \\ 
+\hline 2014-11-03 a 2015-01-30 & -0.032804 \\ 
+\hline 2015-02-03 a 2015-04-30 & -0.054073 \\ 
+\hline 2015-05-04 a 2015-07-31 & 0.014311 \\ 
+\hline 2015-08-03 a 2015-10-30 & -0.017513 \\ 
+\hline 2015-11-04 a 2016-01-29 & 0.050252 \\ 
+\hline 2016-02-02 a 2016-04-28 & -0.061404 \\ 
+\hline 2016-05-02 a 2016-07-29 & -0.02642 \\ 
+\hline 2016-08-01 a 2016-10-31 & -0.013863 \\ 
+\hline 2016-11-01 a 2017-01-31 & -0.018966 \\ 
+\hline 2017-02-01 a 2017-04-28 & 0.0 \\ 
+\hline  2017-05-02 a 2017-07-31 & -0.040108 \\ 
+\hline 2017-08-01 a 2017-10-31 & 0.000911 \\ 
+\hline  2017-11-03 a 2018-01-31 & -0.064618 \\ 
+\hline 2018-02-01 a 2018-04-05 & 0.016477 \\ 
+\hline 
+\end{tabular} 
+
+\end{center}
+
+El exceso de ganancia promedio fue de $-0.021808$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.020487$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.039171$.
+
+En $4$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $12$ de $16$ un exceso de ganancia negativo.
+
+\begin{center}
+	
+	\textbf{Método 2}
+	\begin{tabular}{|c|c|}
+		\hline Periodo de prueba & Exceso de ganancia \\ 
+		\hline 2014-05-02 a 2014-07-31 & -0.067212 \\ 
+		\hline 2014-08-04 a 2014-10-31 & -0.006648 \\ 
+		\hline 2014-11-03 a 2015-01-30 & 0.0 \\ 
+		\hline 2015-02-03 a 2015-04-30 & -0.070033 \\ 
+		\hline 2015-05-04 a 2015-07-31 & -0.039417 \\ 
+		\hline 2015-08-03 a 2015-10-30 & 0.025612 \\ 
+		\hline 2015-11-04 a 2016-01-29 & 0.091559 \\ 
+		\hline 2016-02-02 a 2016-04-28 & -0.065447 \\ 
+		\hline 2016-05-02 a 2016-07-29 & -0.024618 \\ 
+		\hline 2016-08-01 a 2016-10-31 & -0.027428 \\ 
+		\hline 2016-11-01 a 2017-01-31 & 0.01735 \\ 
+		\hline 2017-02-01 a 2017-04-28 & -0.047211 \\ 
+		\hline  2017-05-02 a 2017-07-31 & -0.014015 \\ 
+		\hline 2017-08-01 a 2017-10-31 & 0.045005 \\ 
+		\hline  2017-11-03 a 2018-01-31 & -0.06133 \\ 
+		\hline 2018-02-01 a 2018-04-05 & 0.069549 \\ 
+		\hline 
+	\end{tabular} 
+	
+\end{center}
+
+El exceso de ganancia promedio fue de $-0.010892$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.049814$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.042335$.
+
+En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $10$ de $16$ un exceso de ganancia negativo.
+
+\section{Conclusiones y trabajo futuro}
+Como se puede observar, de los tres modelos utilizados, el mejor fue aquel que utiliza máquinas de soporte vectorial; particularmente, cuando se utiliza el \textbf{método 2} para la obtención de atributos.
+
+Es además importante observar que el método de etiquetamiento, por si mismo, da evidencia sobre la existencia de estrategias que superan a la estrategia \textit{Buy and Hold}, descartando así la validez de la hipótesis del mercado eficiente.
+
+Las direcciones futuras de este trabajo podrían ser las siguientes:
+
+\begin{itemize}
+	\item Analizar la inclusión de indicadores técnicos.
+	\item Probar con nuevas formas de calcular los atributos de las observaciones.
+	\item Probar con otros métodos de clasificación de patrones.
+	\item Probar distintas frecuencias de muestreo.
+\end{itemize}
+%Trabajo futuro: Considerar medidas de riesgo
+%Métodos simbólicos
+
+\bibliography{referencias_articulo}{}
+\bibliographystyle{apalike}
+
+
+\end{document}
