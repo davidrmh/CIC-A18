@@ -1,42 +1,34 @@
-\documentclass[10pt,letterpaper,onecolumn]{article}
+\documentclass[10pt,letterpaper,onecolumn]{llncs}
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{cite}
+\usepackage{caption}
+\captionsetup[table]{name=Tabla}
+\captionsetup[figure] {name=Figura}
 
-
-%\title{\textbf{Generación de estrategias de inversión en el mercado mexicano}}
-%\author{David Ricardo Montalván Hernández}
-%\date{}
 \pagestyle{empty}
 \begin{document}
 
-%\maketitle	
 
-\begin{center}
-\fontsize{14pt}{14pt}
-\textbf{Generación de estrategias de inversión en el mercado accionario}
-\end{center}
+\title{Generación de estrategias de inversión en el mercado accionario}
 
-\begin{center}
-David Ricardo Montalván Hernández, Ricardo Barrón Fernández.
-\end{center}
+\author{David Ricardo Montalván Hernández, \and Ricardo Barrón Fernández  }
 
-\begin{center}
-Instituto Politécnico Nacional, Centro de Investigación en Computación, Ciudad de México, México.
-\end{center}
+\institute{ Instituto Politécnico Nacional, Centro de Investigación en Computación, Ciudad de México, México.\\
+\email{\{davidricardo888,barron2131\}@gmail.com}}
 
-\begin{center}
+\maketitle
 
-\texttt{ \{davidricardo888,barron2131\}@gmail.com}
-
-\end{center}
 
 \begin{abstract}
 Con la digitalización de los mercados financieros, particularmente del mercado accionario, el desarrollo de algoritmos y técnicas computacionales para la determinación y ejecución de órdenes de compra o venta de títulos financieros ha ganado relevancia tanto en la academia como en la industria.
 En este artículo se explora el uso de técnicas computacionales relacionadas al área de reconocimiento de patrones, con el propósito de obtener estrategias de inversión para el mercado accionario mexicano.
+
+\keywords {Estrategias de inversión, mercado mexicano.}
+
 \end{abstract}
 
 \section{Introducción}	
@@ -50,10 +42,10 @@ El objetivo de este trabajo consiste en proponer un método o algoritmo para la g
 Particularmente, se buscan reglas de operación que generen ganancias (pérdidas) superiores (menores) a las generadas por la \textbf{hipótesis del mercado eficiente} la cual se discutirá en la sección 3 y que básicamente consiste en lo siguiente:
 
 \begin{itemize}
-	\item Fijar un periodo de tiempo $[0,T]$.
-	\item Comprar en el inicio del periodo a un precio $P_{0}$.
-	\item Vender en el final del periodo a un precio $P_{T}$.
-	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+	\item[-] Fijar un periodo de tiempo $[0,T]$.
+	\item[-] Comprar en el inicio del periodo a un precio $P_{0}$.
+	\item[-] Vender en el final del periodo a un precio $P_{T}$.
+	\item[-] La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
 \end{itemize}
 
 Este trabajo busca también comparar el desempeño de distintas metodologías relacionadas al reconocimiento de patrones cuando se aplican al proceso de detectar señales de compra o venta de acciones.
@@ -66,9 +58,9 @@ Con el fin de encontrar estrategias de inversión que generen ganancias consisten
 
 En \cite{Leigh2002}, se utilizan heurísticas que permiten detectar el patrón de una \textit{bull flag} y logran vencer la estrategia \textit{Buy and Hold}; aunque cabe señalar que no consideran costos de transacción.\\
 
-\cite{Potvin2004}, continuan con el trabajo de \cite{Allen1999}, eliminando los costos de transacción y considerando otra forma de crear los árboles. Obtienen resultados favorecedores en mercados estables y a la baja pero no en mercados alcistas.\\
+En \cite{Potvin2004}, continuan con el trabajo de \cite{Allen1999}, eliminando los costos de transacción y considerando otra forma de crear los árboles. Obtienen resultados favorecedores en mercados estables y a la baja pero no en mercados alcistas.\\
 
-\cite{Scott2010}, también utilizan programación genética para determinar sus estrategias, siendo la principal característica de este trabajo el uso de precios y decisiones mensuales; consideran costos de transacción y logran vencer la estrategia de \textit{Buy and Hold}.\\
+\cite{Scott2010} también utilizan programación genética para determinar sus estrategias, siendo la principal característica de este trabajo el uso de precios y decisiones mensuales; consideran costos de transacción y logran vencer la estrategia de \textit{Buy and Hold}.\\
 
 En \cite{Leitao2016}, se utilizan \textit{puntos perceptualmente importantes} (PIP por sus siglas en inglés) y \textit{aproximación agregada simbólica} (SAX en inglés) con el fin de reducir la dimensión de la serie de tiempo y expresarla utilizando símbolos, además utilizan un algoritmo genético para poder obtener estrategias de inversión a partir de los mismos. Obtienen resultados favorables pero no consideran costos de transacción\\
 
@@ -82,9 +74,13 @@ De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudi
 
 \begin{itemize}
 	\item Los precios están determinados únicamente por la interacción de la oferta y la demanda.
+	
 	\item Los precios tienden a moverse siguiendo una tendencia.
+	
 	\item Cambios en la oferta y la demanda provocan reversiones en las tendencias.
+	
 	\item Cambios en la oferta y la demanda pueden detectarse utilizando gráficas.
+	
 	\item Los patrones en las gráficas tienden a repetirse.
 \end{itemize}
 
@@ -145,8 +141,12 @@ Para los experimentos se utilizaron precios diarios (apertura,mínimo,máximo,cier
 Es importante señalar que este conjunto de datos no está etiquetado, por lo tanto, si buscamos detectar señales de compra o venta, es necesario primero etiquetar los datos históricos con el fin de aprender de ellos; en otras palabras, buscamos primero encontrar la estrategia que nos habría generado mayores ganancias en caso de haberla seguida (o encontrado) y a partir de ella aprender y generalizar para el futuro.
 
 \subsubsection{Conjuntos de entrenamiento y prueba}
-Para obtener los conjuntos de entrenamiento y prueba, se separó el conjunto de datos en periodos de tres meses iniciando el día 4 de febrero de 2014 siendo el periodo de prueba el periodo de los tres meses siguientes después del último día en el periodo de entrenamiento como lo ejemplifíca la siguiente tabla.\\
+Para obtener los conjuntos de entrenamiento y prueba, se separó el conjunto de datos en periodos de tres meses iniciando el día 4 de febrero de 2014 siendo el periodo de prueba el periodo de los tres meses siguientes después del último día en el periodo de entrenamiento como lo ejemplifíca la siguiente tabla.
 
+\begin{table}
+\centering
+\caption{Ejemplo de separación de conjuntos de prueba y entrenamiento}
+\label{tabla-entrena-prueba}
 \begin{tabular}{cccc}
 \hline Inicio entrenamiento & Fin entrenamiento & Inicio prueba & Fin prueba \\ 
 \hline 2014-02-04 & 2014-04-30 & 2014-05-02 & 2014-07-31 \\ 
@@ -154,7 +154,9 @@ Para obtener los conjuntos de entrenamiento y prueba, se separó el conjunto de d
  2014-08-04 & 2014-10-31 & 2014-11-03 & 2015-01-30 \\ 
  2014-11-03 & 2015-01-30 & 2015-02-03 & 2015-04-30 \\ 
 \hline 
-\end{tabular} \\
+\end{tabular}
+
+\end{table} 
 
 Utilizando este procedimiento fue posible obtener 16 conjuntos de entrenamiento y prueba.
 
@@ -172,7 +174,6 @@ Cada individuo en la población se codificó como un vector, $\mathbf{x}$, el cual
 %	\label{fig:etiquetamiento}
 %\end{figure}
 
-
 \subsection{Creación de atributos}
 Se utilizaron dos métodos para obtener los atributos a considerar:
 
@@ -181,8 +182,6 @@ Se utilizaron dos métodos para obtener los atributos a considerar:
 	
 	\item \textbf{Método 2:} Para cada día se consideraron los precios de: apertura, mínimo, máximo y cierre; como atributos.
 \end{itemize}
-
-
 
 \subsection{Resultados}
 Para cada conjunto de entrenamiento y prueba se evaluaron los siguientes modelos:
@@ -204,6 +203,8 @@ La métrica de desempeño será el \textbf{exceso de ganancia}, la cual se calcula 
 \end{itemize}
 
 En las siguientes tablas se reportan los resultados obtenidos para cada uno de los modelos y cada método de obtención de los atributos, para el método 1, se utilizó $m=17$, es decir se calcularon $17$ atributos, como se explicó anteriormente.
+
+\newpage
 
 \subsubsection{Support Vector Machines}
 \begin{center}
@@ -405,11 +406,10 @@ Las direcciones futuras de este trabajo podrían ser las siguientes:
 	\item Probar con otros métodos de clasificación de patrones.
 	\item Probar distintas frecuencias de muestreo.
 \end{itemize}
-%Trabajo futuro: Considerar medidas de riesgo
-%Métodos simbólicos
 
+\bibliographystyle{splncs04}
 \bibliography{referencias_articulo}{}
-\bibliographystyle{abbrv}
+
 
 
 \end{document}
