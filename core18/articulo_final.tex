@@ -6,8 +6,10 @@
 \usepackage{graphicx}
 \usepackage{cite}
 \usepackage{caption}
+\usepackage{float}
 \captionsetup[table]{name=Tabla}
 \captionsetup[figure] {name=Figura}
+\captionsetup[bibname]{name=Referencias}
 
 \pagestyle{empty}
 \begin{document}
@@ -65,7 +67,7 @@ En \cite{Potvin2004}, continuan con el trabajo de \cite{Allen1999}, eliminando l
 En \cite{Leitao2016}, se utilizan \textit{puntos perceptualmente importantes} (PIP por sus siglas en inglés) y \textit{aproximación agregada simbólica} (SAX en inglés) con el fin de reducir la dimensión de la serie de tiempo y expresarla utilizando símbolos, además utilizan un algoritmo genético para poder obtener estrategias de inversión a partir de los mismos. Obtienen resultados favorables pero no consideran costos de transacción\\
 
 Finalmente, en \cite{Kampouridis2017} se utiliza una escala de tiempo basada en eventos y no una escala de tiempo físico; definen lo que son los \textit{cambios direccionales} y con base en estos buscan obtener señales de compra y venta; además las ganancias obtenidas son ajustadas a una medida de riesgo, consideran costos de transacción y vencen a la estrategia \textit{Buy and Hold}.
-%Incluir una tabla comparativa
+
 
 \section{Fundamentos}
 
@@ -100,34 +102,20 @@ En su versión semi-fuerte, la hipótesis del mercado eficiente nos dice que la in
 \subsubsection{Versión fuerte de la HME}
 En su versión fuerte, la hipótesis del mercado eficiente nos dice que tanto la información pública como la privilegiada no nos permiten obtener pronosticar los movimientos del mercado.
 
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=0.7\linewidth]{../imagenes_articulo/EMH}
-%	\caption{Versiones de la hipótesis del mercado eficiente}
-%	\label{fig:HME}
-%\end{figure}
-
 \subsection{Estrategia Buy and Hold (BH)}
 Esta estrategia de inversión es la estrategia sugerida por la hipótesis del mercado eficiente y consiste en lo siguiente:
 
-%\begin{itemize}
-%	\item Fijar un periodo de tiempo $[0,T]$.
-%	\item Comprar en el inicio del periodo a un precio $P_{0}$.
-%	\item Vender en el final del periodo a un precio $P_{T}$.
-%	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
-%\end{itemize}
+\begin{itemize}
+	\item Fijar un periodo de tiempo $[0,T]$.
+	\item Comprar en el inicio del periodo a un precio $P_{0}$.
+	\item Vender en el final del periodo a un precio $P_{T}$.
+	\item La ganancia (pérdida) porcentual es $\dfrac{P_{T}-P_{0}}{P_{0}}$
+\end{itemize}
 
 de acuerdo a la HME, la ganancia (pérdida) obtenida por la estrategia BH es la máxima (mínima) ganancia (pérdida) que se puede obtener de manera sistemática. Por lo tanto, esta estrategia será utilizada como marco de referencia al momento de compara las estrategias de inversión derivadas por los algoritmos propuestos.
 
-%\begin{figure}[h]
-%	\centering
-%	\includegraphics[width=0.9\linewidth]{../imagenes_articulo/estrategia_BH}
-%	\caption{Estrategia Buy and Hold}
-%	\label{fig:BH}
-%\end{figure}
-
 \subsection{Títulos referenciados a acciones}
-De acuerdo al sitio de la Bolsa Mexicana de Valores \footnote{https://www.bmv.com.mx/es/mercados/instrumentos}, el mercado mexicano cuenta con Títulos Referenciados a Acciones (TRACS), los cuales son certificados de participación que representan el patrimonio de fideicomisos de inversión y que mantienen en posición canastas de acciones de empresas cotizadas en bolsa además de una componente en efectivos. El objetivo principal de los TRACs, es replicar el comportamiento de las acciones al que está referido.
+De acuerdo al sitio de la Bolsa Mexicana de Valores\footnote{https://www.bmv.com.mx/es/mercados/instrumentos}, el mercado mexicano cuenta con Títulos Referenciados a Acciones (TRACS), los cuales son certificados de participación que representan el patrimonio de fideicomisos de inversión y que mantienen en posición canastas de acciones de empresas cotizadas en bolsa además de una componente en efectivos. El objetivo principal de los TRACs, es replicar el comportamiento de las acciones al que está referido.
 
 Es de principal importancia el TRAC llamado NAFTRAC el cual está referenciado al \textbf{Índice de Precios y Cotizaciones} (IPC), índice que busca reflejar el mercado accionario mexicano en su totalidad.
 
@@ -174,22 +162,20 @@ Cada individuo en la población se codificó como un vector, $\mathbf{x}$, el cual
 %	\label{fig:etiquetamiento}
 %\end{figure}
 
-\subsection{Creación de atributos}
-Se utilizaron dos métodos para obtener los atributos a considerar:
+\subsection{Atributos}
+Para cada día se consideraron los precios de: apertura, mínimo, máximo y cierre; como atributos.
 
-\begin{itemize}
-	\item \textbf{Método 1:} Dado que los precios de las acciones no se mantienen en niveles semejantes a lo largo del tiempo, no es conveniente utilizarlos como atributos de nuestros patrones. En cambio, se optó por calcular las variaciones entre el \textbf{precio de cierre} de un día $t$, $P_t$, y los precios de cierre de un número de días anteriores a este día, concretamente, $P_{t-1},P_{t-2},\ldots,P_{t-m}$, para $m \geq 1$, terminando con un total de $m$ atributos.
-	
-	\item \textbf{Método 2:} Para cada día se consideraron los precios de: apertura, mínimo, máximo y cierre; como atributos.
-\end{itemize}
 
 \subsection{Resultados}
 Para cada conjunto de entrenamiento y prueba se evaluaron los siguientes modelos:
 
 \begin{itemize}
-	\item Support Vector Machine (kernel gaussiano, dando mayor importancia a las señales de compra y venta)
-	\item Multilayer Perceptron (1 capa oculta con 10 neuronas, ReLu como activación)
+	\item Máquina de soporte vectorial (kernel gaussiano, dando mayor importancia a las señales de compra y venta)
+	
+	\item Perceptrón multicapa (1 capa oculta con 10 neuronas, ReLu como activación)
+	
 	\item C4.5 (máxima profundidad 5)
+	
 \end{itemize}
 
 La métrica de desempeño será el \textbf{exceso de ganancia}, la cual se calcula bajo los siguientes supuestos.
@@ -202,201 +188,118 @@ La métrica de desempeño será el \textbf{exceso de ganancia}, la cual se calcula 
 	\item Cada movimiento de compra o venta tiene un costo de transacción equivalente al $0.25 \%$ sobre el costo total, por ejemplo, si se compra una acción con un precio de $\$10$, se terminaría pagando una cantidad de $\$10(1+0.0025)$; por otro lado si se vende a un precio de $10$, se ganaría una cantidad de $\$10(1-0.0025)$.
 \end{itemize}
 
-En las siguientes tablas se reportan los resultados obtenidos para cada uno de los modelos y cada método de obtención de los atributos, para el método 1, se utilizó $m=17$, es decir se calcularon $17$ atributos, como se explicó anteriormente.
 
-\newpage
+\subsubsection{Máquina de soporte vectorial}
 
-\subsubsection{Support Vector Machines}
-\begin{center}
+Utilizando una máquina de soporte vectorial, se obtuvieron los siguientes resultados para cada periodo de prueba:
 
-\textbf{Método 1}
-\begin{tabular}{cc}
-\hline Periodo de prueba & Exceso de ganancia \\ 
-\hline 2014-05-02 a 2014-07-31 & 0.0 \\ 
- 2014-08-04 a 2014-10-31 & 0.0 \\ 
- 2014-11-03 a 2015-01-30 & 0.0 \\ 
- 2015-02-03 a 2015-04-30 & -0.066 \\ 
- 2015-05-04 a 2015-07-31 & 0.0 \\ 
- 2015-08-03 a 2015-10-30 & 0.0 \\ 
- 2015-11-04 a 2016-01-29 & 0.094 \\ 
- 2016-02-02 a 2016-04-28 & -0.003 \\ 
- 2016-05-02 a 2016-07-29 & 0.01 \\ 
- 2016-08-01 a 2016-10-31 & 0.0 \\ 
- 2016-11-01 a 2017-01-31 & 0.043 \\ 
- 2017-02-01 a 2017-04-28 & -0.072 \\ 
- 2017-05-02 a 2017-07-31 & 0.0004 \\ 
- 2017-08-01 a 2017-10-31 & 0.032 \\ 
- 2017-11-03 a 2018-01-31 & -0.02 \\ 
- 2018-02-01 a 2018-04-05 & 0.0 \\ 
-\hline 
-\end{tabular} 
-
-\end{center}
-
-El exceso de ganancia promedio fue de $0.000735$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.036319$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.042455$.
-
-En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $7$ de $16$ un exceso igual a cero y en $4$ de $16$ un exceso de ganancia negativo.
-
-\begin{center}
-	
-	\textbf{Método 2}
-	\begin{tabular}{cc}
-		\hline Periodo de prueba & Exceso de ganancia \\ 
-		\hline 2014-05-02 a 2014-07-31 & -0.013 \\ 
-		 2014-08-04 a 2014-10-31 & 0.0 \\ 
-		 2014-11-03 a 2015-01-30 & 0.0 \\ 
-		 2015-02-03 a 2015-04-30 & -0.058 \\ 
-		 2015-05-04 a 2015-07-31 & 0.0 \\ 
-		 2015-08-03 a 2015-10-30 & 0.02 \\ 
-		 2015-11-04 a 2016-01-29 & 0.113 \\ 
-		 2016-02-02 a 2016-04-28 & -0.053 \\ 
-		 2016-05-02 a 2016-07-29 & 0.046 \\ 
-		 2016-08-01 a 2016-10-31 & 0.003 \\ 
-		 2016-11-01 a 2017-01-31 & 0.028 \\ 
-		 2017-02-01 a 2017-04-28 & -0.008 \\ 
-		 2017-05-02 a 2017-07-31 & -0.029 \\ 
-		 2017-08-01 a 2017-10-31 & 0.016 \\ 
-		 2017-11-03 a 2018-01-31 & -0.033 \\ 
-		 2018-02-01 a 2018-04-05 & 0.0 \\ 
-		\hline 
-	\end{tabular} 
-	
-\end{center}
+\begin{table}[H]
+\caption{Resultados utilizando una máquina de soporte vectorial}
+\label{tabla-maquina-soporte}
+\centering
+\begin{tabular}{cr}
+	\hline Periodo de prueba & Exceso de ganancia \\ 
+	\hline 2014-05-02 a 2014-07-31 & -0.013 \\ 
+	 2014-08-04 a 2014-10-31 & 0.0 \\ 
+	 2014-11-03 a 2015-01-30 & 0.0 \\ 
+	 2015-02-03 a 2015-04-30 & -0.058 \\ 
+	 2015-05-04 a 2015-07-31 & 0.0 \\ 
+	 2015-08-03 a 2015-10-30 & 0.02 \\ 
+	 2015-11-04 a 2016-01-29 & 0.113 \\ 
+	 2016-02-02 a 2016-04-28 & -0.053 \\ 
+	 2016-05-02 a 2016-07-29 & 0.046 \\ 
+	 2016-08-01 a 2016-10-31 & 0.003 \\ 
+	 2016-11-01 a 2017-01-31 & 0.028 \\ 
+	 2017-02-01 a 2017-04-28 & -0.008 \\ 
+	 2017-05-02 a 2017-07-31 & -0.029 \\ 
+	 2017-08-01 a 2017-10-31 & 0.016 \\ 
+	 2017-11-03 a 2018-01-31 & -0.033 \\ 
+	 2018-02-01 a 2018-04-05 & 0.0 \\ 
+	\hline 
+\end{tabular}
+\end{table}	
 
 El exceso de ganancia promedio fue de $0.001955$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.038094$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.032879$.
 
 En $6$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $4$ de $16$ un exceso igual a cero y en $6$ de $16$ un exceso de ganancia negativo.
 
 
-\subsubsection{Multilayer Perceptron}
+\subsubsection{Perceptrón multicapa}
+Utilizando un perceptrón multicapa se obtuvo:
 
-\begin{center}
-
-\textbf{Método 1}
-\begin{tabular}{cc}
-\hline Periodo de prueba & Exceso de ganancia \\ 
-\hline 2014-05-02 a 2014-07-31 & -0.043 \\ 
- 2014-08-04 a 2014-10-31 & -0.001 \\ 
- 2014-11-03 a 2015-01-30 & -0.057 \\ 
- 2015-02-03 a 2015-04-30 & -0.027 \\ 
- 2015-05-04 a 2015-07-31 & 0.0 \\ 
- 2015-08-03 a 2015-10-30 & -0.006 \\ 
- 2015-11-04 a 2016-01-29 & 0.017 \\ 
- 2016-02-02 a 2016-04-28 & -0.053 \\ 
- 2016-05-02 a 2016-07-29 & 0.073 \\ 
- 2016-08-01 a 2016-10-31 & -0.023 \\ 
- 2016-11-01 a 2017-01-31 & 0.03 \\ 
- 2017-02-01 a 2017-04-28 & -0.003 \\ 
- 2017-05-02 a 2017-07-31 & 0.004 \\ 
- 2017-08-01 a 2017-10-31 & 0.008 \\ 
- 2017-11-03 a 2018-01-31 & -0.057 \\ 
- 2018-02-01 a 2018-04-05 & -0.008 \\ 
-\hline 
+\begin{table}[H]
+\caption{Resultados utilizando un perceptrón multicapa}
+\label{tabla-perceptron-multicapa}
+\centering
+\begin{tabular}{cr}
+	\hline Periodo de prueba & Exceso de ganancia \\ 
+	\hline 2014-05-02 a 2014-07-31 & -0.067 \\ 
+	 2014-08-04 a 2014-10-31 & -0.006 \\ 
+	 2014-11-03 a 2015-01-30 & 0.0 \\ 
+	 2015-02-03 a 2015-04-30 & -0.066 \\ 
+	 2015-05-04 a 2015-07-31 & 0.0 \\ 
+	 2015-08-03 a 2015-10-30 & 0.0 \\ 
+	 2015-11-04 a 2016-01-29 & 0.054 \\ 
+	 2016-02-02 a 2016-04-28 & -0.053 \\ 
+	 2016-05-02 a 2016-07-29 & -0.025 \\ 
+	 2016-08-01 a 2016-10-31 & -0.027 \\ 
+	 2016-11-01 a 2017-01-31 & 0.004 \\ 
+	 2017-02-01 a 2017-04-28 & -0.045 \\ 
+	 2017-05-02 a 2017-07-31 & -0.029 \\ 
+	 2017-08-01 a 2017-10-31 & 0.054 \\ 
+	 2017-11-03 a 2018-01-31 & 0.032 \\ 
+	 2018-02-01 a 2018-04-05 & 0.0 \\ 
+	\hline 
 \end{tabular} 
 
-\end{center}
-
-El exceso de ganancia promedio fue de $-0.008839$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.028232$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.02826$.
-
-En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $10$ de $16$ un exceso de ganancia negativo.
-
-\begin{center}
+\end{table}
 	
-	\textbf{Método 2}
-	\begin{tabular}{cc}
-		\hline Periodo de prueba & Exceso de ganancia \\ 
-		\hline 2014-05-02 a 2014-07-31 & -0.067 \\ 
-		 2014-08-04 a 2014-10-31 & -0.006 \\ 
-		 2014-11-03 a 2015-01-30 & 0.0 \\ 
-		 2015-02-03 a 2015-04-30 & -0.066 \\ 
-		 2015-05-04 a 2015-07-31 & 0.0 \\ 
-		 2015-08-03 a 2015-10-30 & 0.0 \\ 
-		 2015-11-04 a 2016-01-29 & 0.054 \\ 
-		 2016-02-02 a 2016-04-28 & -0.053 \\ 
-		 2016-05-02 a 2016-07-29 & -0.025 \\ 
-		 2016-08-01 a 2016-10-31 & -0.027 \\ 
-		 2016-11-01 a 2017-01-31 & 0.004 \\ 
-		 2017-02-01 a 2017-04-28 & -0.045 \\ 
-		  2017-05-02 a 2017-07-31 & -0.029 \\ 
-		 2017-08-01 a 2017-10-31 & 0.054 \\ 
-		  2017-11-03 a 2018-01-31 & 0.032 \\ 
-		 2018-02-01 a 2018-04-05 & 0.0 \\ 
-		\hline 
-	\end{tabular} 
-	
-\end{center}
 
 El exceso de ganancia promedio fue de $-0.010981$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.036499$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.040211$.
 
 En $4$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $4$ de $16$ un exceso igual a cero y en $8$ de $16$ un exceso de ganancia negativo.
 
+\newpage
 
 \subsubsection{C4.5}
+Utilizando un árbol C4.5 se obtienen los siguientes resultados:
 
-\begin{center}
-
-\textbf{Método 1}
-\begin{tabular}{cc}
-\hline Periodo de prueba & Exceso de ganancia \\ 
-\hline 2014-05-02 a 2014-07-31 & -0.09 \\ 
- 2014-08-04 a 2014-10-31 & -0.01 \\ 
- 2014-11-03 a 2015-01-30 & -0.032 \\ 
- 2015-02-03 a 2015-04-30 & -0.054 \\ 
- 2015-05-04 a 2015-07-31 & 0.014 \\ 
- 2015-08-03 a 2015-10-30 & -0.017 \\ 
- 2015-11-04 a 2016-01-29 & 0.05 \\ 
- 2016-02-02 a 2016-04-28 & -0.061 \\ 
- 2016-05-02 a 2016-07-29 & -0.02 \\ 
- 2016-08-01 a 2016-10-31 & -0.013 \\ 
- 2016-11-01 a 2017-01-31 & -0.018 \\ 
- 2017-02-01 a 2017-04-28 & 0.0 \\ 
-  2017-05-02 a 2017-07-31 & -0.04 \\ 
- 2017-08-01 a 2017-10-31 & 0.0009 \\ 
-  2017-11-03 a 2018-01-31 & -0.064 \\ 
- 2018-02-01 a 2018-04-05 & 0.016 \\ 
-\hline 
+\begin{table}[H]
+\caption{Resultados utilizando un árbol C4.5}
+\label{tabla-c4.5}
+\centering
+\begin{tabular}{cr}
+	\hline Periodo de prueba & Exceso de ganancia \\ 
+	\hline 2014-05-02 a 2014-07-31 & -0.067 \\ 
+	 2014-08-04 a 2014-10-31 & -0.006 \\ 
+	 2014-11-03 a 2015-01-30 & 0.0 \\ 
+	 2015-02-03 a 2015-04-30 & -0.07 \\ 
+	 2015-05-04 a 2015-07-31 & -0.039 \\ 
+	 2015-08-03 a 2015-10-30 & 0.025 \\ 
+	 2015-11-04 a 2016-01-29 & 0.091 \\ 
+	 2016-02-02 a 2016-04-28 & -0.065 \\ 
+	 2016-05-02 a 2016-07-29 & -0.024 \\ 
+	 2016-08-01 a 2016-10-31 & -0.027 \\ 
+	 2016-11-01 a 2017-01-31 & 0.01 \\ 
+	 2017-02-01 a 2017-04-28 & -0.047 \\ 
+	 2017-05-02 a 2017-07-31 & -0.014 \\ 
+	 2017-08-01 a 2017-10-31 & 0.045 \\ 
+	 2017-11-03 a 2018-01-31 & -0.06 \\ 
+	 2018-02-01 a 2018-04-05 & 0.069 \\ 
+	\hline 
 \end{tabular} 
 
-\end{center}
-
-El exceso de ganancia promedio fue de $-0.021808$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.020487$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.039171$.
-
-En $4$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $12$ de $16$ un exceso de ganancia negativo.
-
-\begin{center}
-	
-	\textbf{Método 2}
-	\begin{tabular}{cc}
-		\hline Periodo de prueba & Exceso de ganancia \\ 
-		\hline 2014-05-02 a 2014-07-31 & -0.067 \\ 
-		 2014-08-04 a 2014-10-31 & -0.006 \\ 
-		 2014-11-03 a 2015-01-30 & 0.0 \\ 
-		 2015-02-03 a 2015-04-30 & -0.07 \\ 
-		 2015-05-04 a 2015-07-31 & -0.039 \\ 
-		 2015-08-03 a 2015-10-30 & 0.025 \\ 
-		 2015-11-04 a 2016-01-29 & 0.091 \\ 
-		 2016-02-02 a 2016-04-28 & -0.065 \\ 
-		 2016-05-02 a 2016-07-29 & -0.024 \\ 
-		 2016-08-01 a 2016-10-31 & -0.027 \\ 
-		 2016-11-01 a 2017-01-31 & 0.01 \\ 
-		 2017-02-01 a 2017-04-28 & -0.047 \\ 
-		  2017-05-02 a 2017-07-31 & -0.014 \\ 
-		 2017-08-01 a 2017-10-31 & 0.045 \\ 
-		  2017-11-03 a 2018-01-31 & -0.06 \\ 
-		 2018-02-01 a 2018-04-05 & 0.069 \\ 
-		\hline 
-	\end{tabular} 
-	
-\end{center}
+\end{table}
 
 El exceso de ganancia promedio fue de $-0.010892$, mientras que,  condicionado a un exceso positivo (estrategias mejores a \textit{Buy and Hold}), el promedio fue de $0.049814$ y condicionado a un exceso negativo (estrategias peores que \textit{Buy and Hold}) el promedio fue de $-0.042335$.
 
-En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $10$ de $16$ un exceso de ganancia negativo.
+En $5$ de $16$ pruebas se obtuvo un exceso de ganancia positivo, $1$ de $16$ un exceso igual a cero y en $10$ de $16$ un exceso de ganancia negativo.\\
 
 \section{Conclusiones y trabajo futuro}
-Como se puede observar, de los tres modelos utilizados, el mejor fue aquel que utiliza máquinas de soporte vectorial; particularmente, cuando se utiliza el \textbf{método 2} para la obtención de atributos.
 
-Es además importante observar que el método de etiquetamiento, por si mismo, da evidencia sobre la existencia de estrategias que superan a la estrategia \textit{Buy and Hold}, descartando así la validez de la hipótesis del mercado eficiente.
+Como se puede observar, de los tres modelos utilizados, el mejor fue aquel que utiliza máquinas de soporte vectorial.
+
+Cabe resaltar también el proceso de etiquetamiento, ya que gracias a este, nos es posible utilizar distintas herramientas de aprendizaje supervisado.
 
 Las direcciones futuras de este trabajo podrían ser las siguientes:
 
