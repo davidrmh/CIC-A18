@@ -131,10 +131,10 @@ Es importante señalar que este conjunto de datos no está etiquetado, por lo tant
 \subsubsection{Conjuntos de entrenamiento y prueba}
 Para obtener los conjuntos de entrenamiento y prueba, se separó el conjunto de datos en periodos de tres meses iniciando el día 4 de febrero de 2014 siendo el periodo de prueba el periodo de los tres meses siguientes después del último día en el periodo de entrenamiento como lo ejemplifíca la siguiente tabla.
 
-\begin{table}
-\centering
+\begin{table}[H]
 \caption{Ejemplo de separación de conjuntos de prueba y entrenamiento}
 \label{tabla-entrena-prueba}
+\centering
 \begin{tabular}{cccc}
 \hline Inicio entrenamiento & Fin entrenamiento & Inicio prueba & Fin prueba \\ 
 \hline 2014-02-04 & 2014-04-30 & 2014-05-02 & 2014-07-31 \\ 
@@ -145,22 +145,21 @@ Para obtener los conjuntos de entrenamiento y prueba, se separó el conjunto de d
 \end{tabular}
 
 \end{table} 
-
 Utilizando este procedimiento fue posible obtener 16 conjuntos de entrenamiento y prueba.
 
 \subsection{Proceso de etiquetamiento}
-Para etiquetar el conjunto de entrenamiento se utilizó un algoritmo de estimación de distribución (EDA por sus siglas en inglés \cite{dan-simon}) el cual es un algoritmo del tipo evolutivo, en particular se utilizó el algoritmo de distribución marginal univariada (UMDA por sus siglas en inglés).
+Para etiquetar el conjunto de entrenamiento se utilizó un algoritmo de estimación de distribución (EDA por sus siglas en inglés \cite{dan-simon}) el cual es un algoritmo del tipo evolutivo, en particular se utilizó un algoritmo de distribución marginal univariada (UMDA por sus siglas en inglés).
 
 Con este algoritmo se trata de encontrar la mejor estrategia para el periodo de entrenamiento, es decir, aquella estrategia que nos habría generado las mayores ganancias.
 
 Cada individuo en la población se codificó como un vector, $\mathbf{x}$, el cual representa una estrategia de inversión y tiene un número de componentes igual al número de días en el periodo de entrenamiento. Cada componente del vector toma un valor dentro conjunto $\{-1,0,1\}$ con $-1,0,1;$ representando señales de venta, no hacer nada y compra, respectivamente. De esta manera la \textit{i-ésima} componente representa la decisión tomada en el día $i$. El algoritmo busca individuos con la combinación de estos números que genere mayor ganancia, la cual es medida como la ganancia generada por la estrategia del individuo (los componentes del vector $\mathbf{x}$) menos la ganancia generada por la estrategia de \textit{Buy and Hold}, esta cantidad es llamada el \textbf{exceso de ganancia} y deseamos maximizarla.
 
-%\begin{figure}[h]
-%	\centering
-%	\includegraphics[width=1.0\linewidth]{../imagenes_articulo/estrategia}
-%	\caption{Resultado del proceso de etiquetamiento}
-%	\label{fig:etiquetamiento}
-%\end{figure}
+\begin{figure}[H]
+	\centering
+	\rotatebox{0}{\includegraphics[width=1.0\linewidth]{etiquetamiento}}
+	\caption{Resultado del proceso de etiquetamiento}
+	\label{fig:etiquetamiento}
+\end{figure}
 
 \subsection{Atributos}
 Para cada día se consideraron los precios de: apertura, mínimo, máximo y cierre; como atributos.
