@@ -1,0 +1,405 @@
+;;==============================================================================
+;; Información de entrada
+;;==============================================================================
+(default-fluent-status *Inertial-Fluent)
+
+
+;;Personas
+
+(Persona has
+	 (instances (*Persona1 *Persona2 *Persona3 *Persona4 *Persona5)))
+
+(every Persona has
+       (color-casa ())
+       (numero-casa ())
+       (nacionalidad ())
+       (animal ())
+       (bebida ())
+       (cigarro ())
+       (valid-branch ()))
+
+;;Colores de las casas
+(Color has
+       (instances (*Amarillo *Azul *Rojo *Verde *Blanco)))
+
+;;Nacionalidades
+(Nacionalidad has
+      (instances (*Inglés *Español *Noruego *Japonés *Ukraniano)))
+
+;;Animales
+(Animal has
+	 (instances (*Perro *Caracol *Zorro *Caballo *Zebra)))
+
+;;Tipo de bebidas
+(Bebida has
+	(instances (*Café *Té *Leche *Jugo *Agua)))
+
+;;Tipo de cigarros
+(Cigarros has
+	  (instances (*Kools *Chesterfields *LuckyStrike *Parliaments *OldGold)))
+
+(every Accion has
+		       (instance-of (Situation)))
+
+(Accion has
+  (instances (*AsignaLukystrikes-Jugo *AsignaOlgold-Caracol *AsignaUk-Té *AsignaPerro-Español *AsignaBlanco *AsignaVerde) ))
+
+;;==============================================================================
+;; Conocimiento previo (el que se determina de manera directa)
+;;==============================================================================
+
+;;El Noruego vive en la primera casa
+(*Persona1 has
+	(numero-casa (1))
+	(nacionalidad (*Noruego)))
+
+;;El Noruego vive junto a la casa azul (por lo tanto la casa 2 es azul)
+(*Persona2 has
+	(numero-casa (2))
+	(color-casa (*Azul)) )
+
+;;En la casa número 3 (enmedio) se bebe leche
+(*Persona3 has
+	(numero-casa (3))
+	(bebida (*Leche)) )
+
+;;Dada la Información de arriba, las personas 1,2 y 3 ya tienen una casa
+;;asignada, por lo tanto:
+(*Persona4 has
+   (numero-casa (4)))
+
+(*Persona5 has
+    (numero-casa (5)))
+
+;;=============================================================================
+;; Posibles acciones y sus pre-(post) condiciones
+;;=============================================================================
+
+;;Acción de asignar un color a la casa de una persona
+;;Para asignar un color es necesario que no se haya asignado alguno
+
+(Asigna-color has (superclasses (Action)))
+
+(every Asigna-color has
+	(persona ((a Persona)))
+	(color ((a Color)))
+	(ncs-list ((:triple (the persona of Self) color-casa (the color of Self))))
+	(add-list ((:triple (the persona of Self) color-casa (the color of Self))))
+)
+
+;;Asignar cigarros y bebida
+(Asigna-cigarros-bebida has (superclasses (Action)))
+
+(every Asigna-cigarros-bebida has
+       (persona ((a Persona)))
+       (cigarro ((a Cigarros)))
+       (bebida ((a Bebida)))
+       (ncs-list ((:triple (the persona of Self) cigarro (the cigarro of Self))))
+       (del-list ((:triple (the persona of Self) valid-branch  *yes)))
+       (ncs-list ((:triple (the persona of Self) bebida (the bebida of Self))))
+       (add-list ((:triple (the persona of Self) bebida (the bebida of Self))))
+       (add-list ((:triple (the persona of Self) valid-branch  *Y)))
+       (add-list ((:triple (the persona of Self) cigarro (the cigarro of Self)))))
+
+;;Asignar cigarros y animal
+(Asigna-cigarros-animal has (superclasses (Action)))
+
+(every Asigna-cigarros-animal has
+       (persona ((a Persona)))
+       (cigarro ((a Cigarros)))
+       (animal ((a Animal)))
+       (ncs-list ((:triple (the persona of Self) cigarro (the cigarro of Self))))
+       (del-list ((:triple (the persona of Self) valid-branch  *yes)))
+       (ncs-list ((:triple (the persona of Self) animal (the animal of Self))))
+       (add-list ((:triple (the persona of Self) animal (the animal of Self))))
+       (add-list ((:triple (the persona of Self) valid-branch  *y)))
+       (add-list ((:triple (the persona of Self) cigarro (the cigarro of Self)))))
+
+;;Asigna cigarros y nacionalidad
+(Asigna-cigarros-nacionalidad has (superclasses (Action)))
+
+(every Asigna-cigarros-nacionalidad has
+       (persona ((a Persona)))
+       (cigarro ((a Cigarros)))
+       (nacionalidad ((a Nacionalidad)))
+       (ncs-list ((:triple (the persona of Self) cigarro (the cigarro of Self))))
+       (ncs-list ((:triple (the persona of Self) nacionalidad (the nacionalidad of Self))))
+       (add-list ((:triple (the persona of Self) nacionalidad (the nacionalidad of Self))))
+       (add-list ((:triple (the persona of Self) valid-branch  *yes)))
+       (add-list ((:triple (the persona of Self) cigarro (the cigarro of Self)))))
+
+;;Asigna bebida y nacionalidad
+(Asigna-bebida-nacionalidad has (superclasses (Action)))
+
+(every Asigna-bebida-nacionalidad has
+       (persona ((a Persona)))
+       (bebida ((a Bebida)))
+       (nacionalidad ((a Nacionalidad)))
+       (ncs-list ((:triple (the persona of Self) bebida (the bebida of Self))))
+       (ncs-list ((:triple (the persona of Self) nacionalidad (the nacionalidad of Self))))
+       (add-list ((:triple (the persona of Self) nacionalidad (the nacionalidad of Self))))
+       (add-list ((:triple (the persona of Self) valid-branch  *yes)))
+       (add-list ((:triple (the persona of Self) bebida (the bebida of Self)))))
+
+;;Asigna animal y nacionalidad
+(Asigna-animal-nacionalidad has (superclasses (Action)))
+
+(every Asigna-animal-nacionalidad has
+       (persona ((a Persona)))
+       (animal ((a Animal)))
+       (nacionalidad ((a Nacionalidad)))
+       (ncs-list ((:triple (the persona of Self) animal (the animal of Self))))
+       (ncs-list ((:triple (the persona of Self) nacionalidad (the nacionalidad of Self))))
+       (add-list ((:triple (the persona of Self) nacionalidad (the nacionalidad of Self))))
+       (add-list ((:triple (the persona of Self) valid-branch  *yes)))
+       (add-list ((:triple (the persona of Self) animal (the animal of Self)))))
+
+;;==============================================================================
+;; Inferencias
+;;==============================================================================
+
+
+;;La casa verde está junto a la blanca (6) y en ella se bebe café (4)
+(new-situation)
+
+(forall (the instances of Persona)
+	(if (not (the color-casa of It)) ;;No hay color asignado
+	    then (if (not (the bebida of It)) ;;No hay bebida asignada
+        ;;La casa verde está a lado de la blanca, por lo tanto no puede ser la 1
+	       then (if ((the numero-casa of It) > 1)
+		   then (do
+			(a Asigna-color with
+  			 	 (persona (It))
+  			   	 (color (*Verde)) ))  )))
+)
+
+;;La casa verde está junto a la blanca
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+		      	     (if (not (the color-casa of It))
+				      then (if ((the numero-casa of It) > 1)
+				      	   then (do
+					   	(a Asigna-color with
+						(persona (It))
+						(color (*Blanco)))) ) )))
+)
+
+;;Actualiza valid-branch
+;;Una rama válida es cuando la casa verda está a lado de la casa blanca
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+      	      (forall ?p in (the instances of Persona)
+	      	      (forall (the instances of Persona)
+		      	      (if (((the color-casa of ?p) = *Verde) or ((the color-casa of ?p) = *Blanco) )
+			      	  then (if (((the color-casa of It) = *Verde) or ((the color-casa of It) = *Blanco))
+				            then (if ((the numero-casa of ?p) /=  (the numero-casa of It))
+				                  then (It has
+					                   (valid-branch (*yes))) ))))))
+)
+
+;;En la casa verde se bebe café (4)
+;;La idea es: Si es una rama válida y la persona está en la casa verde, entonces bebe café
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+		      	     (if (has-value (the valid-branch of It)) ;; Se verifica que sea una rama válida (situación válida)
+		      	     	 then (if ((the color-casa of It) = *Verde)
+			     	      then (if (not (the bebida of It))
+				      	   then (It has
+				      	       	    (bebida (*Café))  ))) ))) )
+
+
+;;El dueño inglés vive en la casa roja
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+  (forall (the instances of Persona)
+  ;Si ya se ha asignado a alguna casa el color verde, entonces asigna
+  ;color rojo a las casas que no tienen color y en consecuencia
+  ;aquí vive el inglés.
+   (if (has-value (the valid-branch of (the color-casa-of of *Verde)))
+ 	 then (if (not (the color-casa of It))
+   then (if (not (the nacionalidad of It))
+   then (It has
+   (color-casa (*Rojo))
+   (nacionalidad (*Inglés))  )))))) )
+
+;;En la casa amarilla se fuman Kools (8)
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+          ;Si es una rama válida, busca las casas que no tienen color,
+          ;asigna el color amarillo y aquí se fuma Kools
+		      	     (if (has-value (the valid-branch of (the color-casa-of of *Verde)))
+		      	     	 then (if (not (the color-casa of It))
+			     	      then (It has
+				          (color-casa (*Amarillo))
+				          (cigarro (*Kools))  ))))))
+
+;;Los cigarros Kools se fuman junto a la casa que tiene un caballo
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+		      	  (if  (has-value (the valid-branch of  (the color-casa-of of *Verde)))
+              ;Considera sólo las casas que están a lado de la casa en donde se fuma Kools
+		      	     then (if ( ((the numero-casa of It) = ((the numero-casa of (the cigarro-of of *Kools)) + 1 )) or ((the numero-casa of It) = ((the numero-casa of (the cigarro-of of *Kools)) - 1 )) )
+			     	 then (It has
+				          (animal (*Caballo))  ))))) )
+
+;;El español tiene un perro (3)
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		 (forall (the instances of Persona)
+		  	 (if  (has-value (the valid-branch of (the color-casa-of of *Verde)))
+			      then (if ((not (the animal of It)) and (not (the nacionalidad of It)))
+			      	   then (do
+				        (a Asigna-animal-nacionalidad with
+  					   	 (persona (It))
+  					   	 (animal (*Perro))
+						 (nacionalidad (*Español)) ))  )))) )
+
+;;El Ukraniano bebe té
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+          ;;Una rama válida es cuando ya se ha asignado
+		      	     (if (has-value (the valid-branch of (the animal-of of *Perro)))
+		      	     	 then (if ((not (the bebida of It)) and (not (the nacionalidad of It)))
+			     	      then (do
+				           (a Asigna-bebida-nacionalidad with
+  					   	 (persona (It))
+  					   	 (bebida (*Té))
+						 (nacionalidad (*Ukraniano)) ))  )))) )
+
+;;El japonés fuma Parliaments (14)
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+		      	     (if (has-value (the valid-branch of (the bebida-of of *Té)))
+		      	     	 then (if ((not (the cigarro of It)) and (not (the nacionalidad of It)))
+			     	      then (do
+				           (a Asigna-cigarros-nacionalidad with
+  					   	 (persona (It))
+  					   	 (cigarro (*Parliaments))
+						 (nacionalidad (*Japonés)) ))  )))) )
+
+;;El fumador de OldGold tiene un caracol (7)
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+		      	     (if (has-value (the valid-branch of (the cigarro-of of *Parliaments)))
+		      	     	 then (if ((not (the cigarro of It)) and (not (the animal of It)))
+			     	      then (do
+				           (a Asigna-cigarros-animal with
+  					   	 (persona (It))
+  					   	 (cigarro (*OldGold))
+						 (animal (*Caracol)) ))  )))) )
+
+;;El fumador de LuckyStrike bebe jugo (13)
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (forall (the instances of Persona)
+		      	     (if ( (the valid-branch of (the cigarro-of of *OldGold)) = *y)
+		      	     	 then (if ((not (the cigarro of It)) and (not (the bebida of It)))
+			     	      then (do
+				           (a Asigna-cigarros-bebida with
+  					   	 (persona (It))
+  					   	 (cigarro (*LuckyStrike))
+						 (bebida (*Jugo)) ))  )))) )
+
+;;El fumador de Chesterfields vive junto al dueño del zorro (11)
+
+;;Asigna cigarros
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (if  ((the valid-branch of (the cigarro-of of *LuckyStrike)) = *Y)
+		      	   then (forall (the instances of Persona)
+			   		(if (not (the cigarro of It))
+					     then (It has
+					     	      (cigarro (*Chesterfields))) )))))
+
+;;Asigna el zorro
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+		      (if  ((the valid-branch of (the cigarro-of of *LuckyStrike)) = *Y)
+		      	   then (forall (the instances of Persona)
+			   		(if (not (the animal of It))
+					    then (if ( (the numero-casa of (the cigarro-of of *Chesterfields)) = ((the numero-casa of It) - 1));; Se verifica que el de al lado fume Chesterfields
+					     	 then (It has
+					     	      (animal (*Zorro)))
+					     	 else (if ( (the numero-casa of (the cigarro-of of *Chesterfields)) = ((the numero-casa of It) + 1))
+					     	       then (It has
+					     	       	    (animal (*Zorro)))    ))))) ))
+
+
+;;Finalmente encuentra quien bebe agua y quien tiene una zebra
+(forall ?situation in (the all-instances of Situation)
+	(in-situation ?situation
+  (if  ((the valid-branch of (the cigarro-of of *LuckyStrike)) = *Y)
+   then (forall (the instances of Persona)
+   (if (not (the bebida of It))
+    then (It has
+     (bebida (*Agua)))
+     else (if (not (the animal of It))
+   	  then (It has
+      (animal (*Zebra)))    ))))) )
+
+;;==============================================================================
+;; Consultas para obtener quien bebe agua y quien tiene una zebra
+;;==============================================================================
+
+
+;;Despliega todas las personas
+;;POR ALGUNA RAZÓN NO FUNCIONA ANIDAR LOS DOS LOOS FORALL
+(forall ?situation in (the all-instances of Situation)
+  (in-situation ?situation) )
+
+	(forall ?x  in (the all-instances of Persona)
+	  (if ( (has-value (the color-casa of ?x))
+		 		 and (has-value (the numero-casa of ?x))
+				 and (has-value (the nacionalidad of ?x))
+				 and (has-value (the animal of ?x))
+				 and (has-value (the bebida of ?x))
+				 and (has-value (the cigarro of ?x)) )
+			 then (km-format t "----------------------~a~%" (showme-here ?x ) )
+	  )
+  )
+
+;;=============================================================================
+;; RESULTADOS
+;;=============================================================================
+
+;; CASA 1
+;; Persona: Noruego
+;; Cigarros: Kools
+;; Animal: Zorro
+;; Bebida: Agua
+;; Color: Amarillo
+
+;; CASA 2
+;; Persona: Ukraniano
+;; Cigarros: Chesterfields
+;; Animal: Caballo
+;; Bebida: Té
+;; Color: Azul
+
+;; CASA 3
+;; Persona: Inglés
+;; Cigarros: OldGold
+;; Animal: Caracol
+;; Bebida: Leche
+;; Color: Rojo
+
+;; CASA 4
+;; Persona: Español
+;; Cigarros: LuckyStrike
+;; Animal: Perro
+;; Bebida: Jugo
+;; Color: Blanco
+
+;; CASA 5
+;; Persona: Japonés
+;; Cigarros: Parliaments
+;; Animal: Zebra
+;; Bebida: Café
+;; Color: Verde
