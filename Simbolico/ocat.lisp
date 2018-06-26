@@ -1146,10 +1146,12 @@
       (setq performance (metricas regla prueba clase))
 
       ;;Imprime resultados en pantalla
+      (format t "----------------------------~%")
       (format t "Regla clase ~a~%" clase)
       (format t "Accuracy = ~a~%" (first performance))
       (format t "Precision = ~a~%" (second performance))
       (format t "Recall = ~a~%" (third performance))
+      (format t "----------------------------~%")
 
       ;;Guarda la regla en el archivo-salida
       (guarda-regla regla archivo-salida)
