@@ -17,7 +17,7 @@
 
 \title{Generación de estrategias de inversión en el mercado accionario}
 
-\author{David Ricardo Montalván Hernández, \and Ricardo Barrón Fernández  }
+\author{David Ricardo Montalván Hernández \and Ricardo Barrón Fernández \and Salvador Godoy Calderón}
 
 \institute{ Instituto Politécnico Nacional, Centro de Investigación en Computación, Ciudad de México, México.\\
 \email{\{davidricardo888,barron2131\}@gmail.com}}
@@ -32,6 +32,14 @@ En este artículo se explora el uso de técnicas computacionales relacionadas al á
 \keywords {Estrategias de inversión, mercado mexicano, reconocimiento de patrones, máquinas de soporte vectorial, perceptrón multicapa, c4.5.}
 
 \end{abstract}
+
+\begin{abstract}
+	With the digitalization of financial markets, namely, stock markets; the development of algorithms and computational techniques in order to determine trading strategies has gained relevance as much as in academia as in the industry. In this article the use of pattern recognition techniques is explored in order to determine trading strategies in the mexican stock market.
+	
+	\keywords {Trading strategies, mexican market, pattern recognition, support vector machines, multilayer perceptron, c4.5.}
+	
+\end{abstract}
+
 
 \section{Introducción}	
 
@@ -72,7 +80,7 @@ Finalmente, en \cite{Kampouridis2017} se utiliza una escala de tiempo basada en 
 \section{Fundamentos}
 
 \subsection{Análisis técnico}
-De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las acciones con la intención de guiar las  decisiones de inversión. Los supuestos básicos de este tipo de análisis son los siguientes:
+De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudio de los precios y volúmenes históricos de las series accionarias financieras con la intención de guiar las  decisiones de inversión. Los supuestos básicos de este tipo de análisis son los siguientes:
 
 \begin{itemize}
 	\item Los precios están determinados únicamente por la interacción de la oferta y la demanda.
@@ -86,7 +94,7 @@ De acuerdo a \cite{tabook}, en su forma básica, el análisis técnico es el estudi
 	\item Los patrones en las gráficas tienden a repetirse.
 \end{itemize}
 
-El análisis técnico hace el supuesto de que la información de todos los factores (incluyendo factores psicológicos como la avaricia, miedo, mal información, etc...) que afectan las curvas de oferta y demanda, está reflejada en el precio de la acción de la compañía.
+El análisis técnico hace el supuesto de que la información de todos los factores (incluyendo factores psicológicos como la avaricia, miedo, información incorrecta, etc...) que afectan las curvas de oferta y demanda, está reflejada en el precio de la acción de la compañía.
 
 \subsection{Hipótesis del mercado eficiente (HME)}
 Esta hipótesis, propuesta por Eugene Fama en los años 60's, nos dice que los cambios observados en los precios son provocados únicamente por la nueva información disponible, es decir, la información histórica (de cualquier tipo) no tiene importancia al momento de  determinar los precios del futuro, en particular, el análisis técnico no nos permite estimar las tendencias del futuro.
