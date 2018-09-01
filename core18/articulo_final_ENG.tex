@@ -12,7 +12,7 @@
 \begin{document}
 
 
-\title{Generating trading strategies in the mexican stock market: \\
+\title{Generating trading strategies in the Mexican Stock Market: \\
 A pattern recognition approach.}
 
 \author{David Ricardo Montalván Hernández \and Ricardo Barrón Fernández \and Salvador Godoy Calderón}
@@ -24,9 +24,12 @@ A pattern recognition approach.}
 
 
 \begin{abstract}
-	With the digitalization of financial markets, namely, stock markets; the development of algorithms and computational techniques in order to determine trading strategies has gained relevance as much as in academia as in the industry. In this article the use of pattern recognition techniques is explored in order to determine trading strategies in the Mexican stock market.
+
+	With the digitalization of financial markets, namely, stock markets; the development of algorithms and computational techniques in order to determine trading strategies has gained relevance as much as in academia as in the industry. This article explores the use of pattern recognition techniques (Support Vector Machines, Multilayer Perceptron and C4.5) as tools for finding trading strategies in the Mexican Stock Market.
 	
-	\keywords {Trading strategies, Mexican market, pattern recognition, support vector machines, multilayer perceptron, c4.5.}
+	Our results show that, statistically speaking, the methods proposed in this paper, can't outperform the so called Efficient Market Hypothesis in its weak version.
+	
+	\keywords {Trading strategies, Mexican stock market, pattern recognition, support vector machines, multilayer perceptron, c4.5.}
 	
 \end{abstract}
 
@@ -48,7 +51,7 @@ We'll try to find  a set of trading signals that will generate profits (losses) 
 	\item[-] The percetange profit (loss) is given by $\dfrac{P_{T}-P_{0}}{P_{0}}$.
 \end{itemize}
 
-This work also compares the performance of various pattern recognition methodologies when applied to trading strategy generation.
+This work also compares the performance of various pattern recognition methodologies when applied to the generation of trading strategies.
 
 Lastly, two contributions are considered. The first one is the analysis of Mexican stock market from a pattern recognition perspective, the second one is the proposal of a method for labeling financial time series.
 
@@ -324,14 +327,14 @@ On $5$ out of $16$ tests we obtained a positive excess return, $1$ out of $16$ a
 
 As we can observe, among the three models used, the best results were obtained using a Support Vector Machine.
 
-Unfortunately, even tough when in this model we obtained a positive average excess return, using a t-test for the mean we found that we can't reject the null hypothesis that the true mean equals zero, thus we can't conclude that our method beats the BH strategy.
+Unfortunately, even tough when in this model we obtained a positive average excess return, using a t-test for the mean (with a confidence level of $95 \%$) we found that is not possible to reject the null hypothesis (the true mean is zero) thus, statistically speaking, we can't conclude that this method beats the BH strategy.
 
-Also worth mention, that thanks to the labeling method we can explore further other types of supervised learning techniques whether using a symbolic or sub-symbolic approach.
+Nonetheless it's worth to mention that thanks to the labeling method we can explore further other types of supervised learning techniques whether using a symbolic or sub-symbolic approach.
 
 The future directions for this work might be:
 
 \begin{itemize}
-	\item Explore symbolic approaches for pattern recognition.
+	\item Explore symbolic approaches for pattern recognition, such as Extended Classifier System (XCS).
 	\item Analyze the inclusion of technical indicators.
 	\item Use another set of features.
 	\item Use other sampling frequencies.
