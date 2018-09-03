@@ -8,10 +8,16 @@ etiquetas <- c(rep("svm",n),rep("mlp",n),rep("c4.5",n))
 
 datos <- data.frame(index = 1:n, excess.return = todos, model = etiquetas)
 
+## Box plot ##
 g <- ggplot(data = datos, mapping = aes(x = model, y = excess.return))
 
 g <- g + geom_boxplot(fill='#A4A4A4', outlier.size = 0) 
 
 g + geom_jitter(shape=16, position=position_jitter(0.2), size= 3.5) + coord_flip()
+
+## Density plot ##
+g <- ggplot(data = datos, mapping = aes(x = excess.return, linetype = model)) + theme_gray()
+
+g + geom_density()  + scale_linetype_manual(values=c("dashed", "dotdash", "solid")) + theme(legend.position="right", plot.title = element_text(hjust = 0.5, size = 12), axis.text.x  = element_text(size = 11), axis.text.y  = element_text(size = 11) ) + labs(title= "Excess return for each model") + xlab("Excess return") + ylab("Density")
 
 
