@@ -80,6 +80,7 @@ In \cite{Kampouridis2017} an event-based time scale is considered and \textit{di
 
 (Biclustering) The authors in [], propose the use of biclustering mining to discover effective technical trading patterns that contain a combination of indicators from historical financial data series. A modified K nearest neighborhood method is applied to classification of trading days in the testing period. They outperform \textit{Buy and Hold} strategy but don't consider transaction costs.
 
+Finally in [] (An evolutionary trend reversion model for stock trading rule discovery), an Evolutionary Trend Reversion Model based on an extension of the XCS (extended classifier system) algorithm
 
 \section{Basic Concepts in Finance}
 
@@ -212,125 +213,64 @@ As described above, the performance measure was \textbf{Excess Return} which is 
 %\subsubsection{Assumptions}
 \begin{itemize}
 
-	\item No short-sales allowed, this means that one can only sell if a buy action ocurred in the past.
+	\item No short-sales allowed, this means that one can only sell if a buy action occurred in the past.
 	
-	\item Once a trading signal is activated, we have to wait until we see a different trading signal, so no repetitions of the same signal are allowed. This avoids excessive buys or sells.
+	\item Once a trading signal is activated, we have to wait until we see a different one, so no repetitions of the same signal are allowed. This avoids excessive buys or sells.
 		
 	\item Since we are using end of day data, if we have a buy or sell signal on day $t$, then the buy or sell price (execution price) is the average between the minimum and maximum price at day $t+1$.
 	
-	\item The cost of every transaction is equal to a $0.25 \%$ over the total cost. For example, if a stock is bought  at a price of $\$10$, then the actual monetary ammount paid for is equal to $\$10(1+0.0025)$; likewise if a stock is sold at a price of $\$10$ we end up with a monetary ammount of $\$10(1-0.0025)$.
+	\item The cost of every transaction is equal to a $0.25 \%$ over the total cost. For example, if a stock was bought  at a price of $\$10$, then the actual monetary amount paid for is equal to $\$10(1+0.0025)$; likewise if a stock was sold at a price of $\$10$ we end up with a monetary amount of $\$10(1-0.0025)$.
 \end{itemize}
 
-\subsubsection{Support Vector Machine}
-
-For every test set the results using a Support Vector Machine model are the following:
+For every test set and every model we obtained the following results.
 
 \begin{table}[H]
-\caption{Results obtained using a Support Vector Machine}
-\label{tabla-maquina-soporte}
+\caption{Results obtained for every model}
+\label{table excess returns}
 \centering
-\begin{tabular}{cr}
-	\hline Test set & Excess Return \\ 
-	\hline 2014-05-02 - 2014-07-31 & -0.013 \\ 
-	 2014-08-04 - 2014-10-31 & 0.0 \\ 
-	 2014-11-03 - 2015-01-30 & 0.0 \\ 
-	 2015-02-03 - 2015-04-30 & -0.058 \\ 
-	 2015-05-04 - 2015-07-31 & 0.0 \\ 
-	 2015-08-03 - 2015-10-30 & 0.02 \\ 
-	 2015-11-04 - 2016-01-29 & 0.113 \\ 
-	 2016-02-02 - 2016-04-28 & -0.053 \\ 
-	 2016-05-02 - 2016-07-29 & 0.046 \\ 
-	 2016-08-01 - 2016-10-31 & 0.003 \\ 
-	 2016-11-01 - 2017-01-31 & 0.028 \\ 
-	 2017-02-01 - 2017-04-28 & -0.008 \\ 
-	 2017-05-02 - 2017-07-31 & -0.029 \\ 
-	 2017-08-01 - 2017-10-31 & 0.016 \\ 
-	 2017-11-03 - 2018-01-31 & -0.033 \\ 
-	 2018-02-01 - 2018-04-05 & 0.0 \\ 
+\begin{tabular}{p{5cm}rrr}
+	\hline
+	\multicolumn{4}{r}{Excess Return} \\
+	\hline
+	Test set & SVM & MLP & C4.5 \\
+	\hline
+	2014-05-02 / 2014-07-31 & -0.013  & -0.067 & -0.067 \\
+	2014-08-04 / 2014-10-31 & 0.0 & -0.006 & -0.006 \\
+	2014-11-03 / 2015-01-30 & 0.0 & 0.0 & 0.0 \\
+	2015-02-03 / 2015-04-30 & -0.058 &  -0.066 & -0.07 \\
+	2015-05-04 / 2015-07-31 & 0.0 & 0.0 & -0.039 \\
+	2015-08-03 / 2015-10-30 & 0.02 & 0.0 & 0.025 \\
+	2015-11-04 / 2016-01-29 & 0.113 & 0.054 & 0.091 \\
+	2016-02-02 / 2016-04-28 & -0.053 & -0.025 & -0.065 \\
+	2016-05-02 / 2016-07-29 & 0.046 & -0.025 &  -0.024 \\
+	2016-08-01 / 2016-10-31 & 0.003 & -0.027 & -0.027 \\
+	2016-11-01 / 2017-01-31 & 0.028 & 0.004 & 0.01 \\
+	2017-02-01 / 2017-04-28 & -0.008 & -0.045 & -0.047 \\
+	2017-05-02 / 2017-07-31 & -0.029 & -0.029 & -0.014 \\
+	2017-08-01 / 2017-10-31 & 0.016 & 0.054 & 0.045 \\
+	2017-11-03 / 2018-01-31 & -0.033 & 0.032 & -0.06 \\
+	2018-02-01 / 2018-04-05 & 0.0 & 0.0 &  0.069 \\
+	
+	\hline
+	Overall sum & 0.32 & -0.174 & -0.179 \\
+	
+	\hline
+	Average & 0.002 & -0.01 & -0.011 \\
+	\hline
+	Number of positive excess returns &  6 & 4 & 5 \\
+	\hline
+	Number of negative excess returns & 6 & 8 & 10 \\  
+	
+
 	\hline 
 \end{tabular}
 \end{table}	
 
-The average excess return was $0.001955$, while conditioning on a positive and negative excess return, the average was $0.038094$ and $-0.032879$ respectively.
-
-On $6$ out of $16$ tests we obtained a positive excess return, $4$ out of $16$ an excess return equal to zero and $6$ out of $16$ a negative excess return.
-%\newpage
-\subsubsection{Multilayer Perceptron}
-
-For every test set the results using a Multilayer Perceptron model are the following:
-
-\begin{table}[H]
-\caption{Results obtained using a Multilayer Perceptron}
-\label{tabla-perceptron-multicapa}
-\centering
-\begin{tabular}{cr}
-	\hline Test Set & Excess Return \\ 
-	\hline 2014-05-02 - 2014-07-31 & -0.067 \\ 
-	 2014-08-04 - 2014-10-31 & -0.006 \\ 
-	 2014-11-03 - 2015-01-30 & 0.0 \\ 
-	 2015-02-03 - 2015-04-30 & -0.066 \\ 
-	 2015-05-04 - 2015-07-31 & 0.0 \\ 
-	 2015-08-03 - 2015-10-30 & 0.0 \\ 
-	 2015-11-04 - 2016-01-29 & 0.054 \\ 
-	 2016-02-02 - 2016-04-28 & -0.053 \\ 
-	 2016-05-02 - 2016-07-29 & -0.025 \\ 
-	 2016-08-01 - 2016-10-31 & -0.027 \\ 
-	 2016-11-01 - 2017-01-31 & 0.004 \\ 
-	 2017-02-01 - 2017-04-28 & -0.045 \\ 
-	 2017-05-02 - 2017-07-31 & -0.029 \\ 
-	 2017-08-01 - 2017-10-31 & 0.054 \\ 
-	 2017-11-03 - 2018-01-31 & 0.032 \\ 
-	 2018-02-01 - 2018-04-05 & 0.0 \\ 
-	\hline 
-\end{tabular} 
-
-\end{table}
-	
-The average excess return was $-0.010981$, while conditioning on a positive and negative excess return, the average was $0.036499$ and $-0.040211$ respectively.
-
-On $4$ out of $16$ tests we obtained a positive excess return, $4$ out of $16$ an excess return equal to zero and $8$ out of $16$ a negative excess return.
-
-%\newpage
-
-\subsubsection{C4.5}
-For every test set the results using a C4.5 tree model are the following:
-
-
-\begin{table}[H]
-\caption{Results obtained using a C4.5 tree}
-\label{tabla-c4.5}
-\centering
-\begin{tabular}{cr}
-	\hline Test Set & Excess Return \\ 
-	\hline 2014-05-02 - 2014-07-31 & -0.067 \\ 
-	 2014-08-04 - 2014-10-31 & -0.006 \\ 
-	 2014-11-03 - 2015-01-30 & 0.0 \\ 
-	 2015-02-03 - 2015-04-30 & -0.07 \\ 
-	 2015-05-04 - 2015-07-31 & -0.039 \\ 
-	 2015-08-03 - 2015-10-30 & 0.025 \\ 
-	 2015-11-04 - 2016-01-29 & 0.091 \\ 
-	 2016-02-02 - 2016-04-28 & -0.065 \\ 
-	 2016-05-02 - 2016-07-29 & -0.024 \\ 
-	 2016-08-01 - 2016-10-31 & -0.027 \\ 
-	 2016-11-01 - 2017-01-31 & 0.01 \\ 
-	 2017-02-01 - 2017-04-28 & -0.047 \\ 
-	 2017-05-02 - 2017-07-31 & -0.014 \\ 
-	 2017-08-01 - 2017-10-31 & 0.045 \\ 
-	 2017-11-03 - 2018-01-31 & -0.06 \\ 
-	 2018-02-01 - 2018-04-05 & 0.069 \\ 
-	\hline 
-\end{tabular} 
-
-\end{table}
-
-The average excess return was $-0.010892$, while conditioning on a positive and negative excess return, the average was $0.049814$ and $-0.042335$ respectively.
-
-On $5$ out of $16$ tests we obtained a positive excess return, $1$ out of $16$ an excess return equal to zero and $10$ out of $16$ a negative excess return.\\
 
 
 \section{Conclusions}
 
-As we can observe, among the three models used, the best results were obtained using a Support Vector Machine.
+As we can observe, among the three models used, the best results were obtained by the Support Vector Machine.
 
 Unfortunately, even tough when in this model we obtained a positive average excess return, using a t-test for the mean (with a confidence level of $95 \%$) we found that is not possible to reject the null hypothesis (the true mean is zero) thus, statistically speaking, we can't conclude that this method beats the BH strategy.
 
