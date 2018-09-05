@@ -195,7 +195,8 @@ For each day, the open, minimum, maximum and adjusted close prices were used as 
 
 \subsection{Results}
 
-For every training and test set, the following models were tested:
+For every training and test set, the following models were tested\footnote{We choose these models since they're among the most popular ones used in the pattern recognition literature.
+}:
 
 \begin{itemize}
 
@@ -204,9 +205,10 @@ For every training and test set, the following models were tested:
 	\item Multilayer perceptron with a hidden layer with 10 neurons and \textit{ReLu} as activation function.
 	
 	
-	\item C4.5 tree with max depth of 5.
+	\item C4.5 tree with max depth of 5.	
 	
 \end{itemize}
+
 
 As described above, the performance measure was \textbf{Excess Return} which is calculated using the following assumptions:
 
